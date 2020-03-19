@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+    <!-- location填本地mysql-connector-java-5.1.40.jar的路径 -->
+    <classPathEntry
+            location="C:/Users/RongChao Xu/.m2/repository/mysql/mysql-connector-java/8.0.16/mysql-connector-java-8.0.16.jar" />
+    <context id="context1" targetRuntime="MyBatis3">
+        <!-- 去注释 -->
+        <commentGenerator>
+            <property name="suppressAllComments" value="true" />
+            <property name="suppressDate" value="true" />
+        </commentGenerator>
+
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=UTC"
+                        userId="root"
+                        password="123456" />
+
+        <!-- 实体层 -->
+        <javaModelGenerator  targetPackage="com.xrc.gb.repository.domain"
+                            targetProject="src/main/java" />
+
+        <!-- DAO层 -->
+        <javaClientGenerator targetPackage="com.xrc.gb.repository.dao"
+                         targetProject="src/main/java" />
+
+        <!-- Mappering.xml -->
+        <sqlMapGenerator targetPackage="mapping"
+                             targetProject="src/main/resources" type="XMLMAPPER" />
+
+        <!-- schema填数据库名 tableName填需要生成代码的表名 若要一次性多张表就将下面的代码多复制，修改表名即可-->
+        <table schema="gobang" tableName="gb_user"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false" />
+
+    </context>
+</generatorConfiguration>

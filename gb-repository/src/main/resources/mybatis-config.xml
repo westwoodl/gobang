@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Cainiao.com Inc.
+  ~ Copyright (c) 2013-2019 All Rights Reserved.
+  -->
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+    <settings>
+        <setting name="cacheEnabled" value="false"/>
+        <setting name="multipleResultSetsEnabled" value="true"/>
+        <setting name="useColumnLabel" value="true"/>
+        <setting name="defaultExecutorType" value="SIMPLE"/>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!--
+        允许JDBC支持自动生成主键，需要驱动兼容。
+        如果设置为true则这个设置强制使用自动生成主键，尽管一些驱动不能兼容但仍可正常工作（比如 Derby）。
+        -->
+        <setting name="useGeneratedKeys" value="true" />
+    </settings>
+
+    <typeAliases>
+        <!--默认alias为类名首字母小写，类上@Alias可以覆盖默认alias-->
+
+    </typeAliases>
+
+</configuration>
