@@ -19,6 +19,8 @@
         <module>gb-repository</module>
         <module>gb-web</module>
         <module>gb-service</module>
+        <module>gb-work</module>
+        <module>gb-manager</module>
     </modules>
 
     <properties>

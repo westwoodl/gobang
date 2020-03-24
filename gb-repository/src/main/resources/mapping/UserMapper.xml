@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.xrc.gb.repository.dao.UserDAO" >
-  <resultMap id="BaseResultMap" type="com.xrc.gb.repository.domain.UserDO" >
+  <resultMap id="BaseResultMap" type="com.xrc.gb.repository.domain.user.UserDO" >
     <id column="user_id" property="userId" jdbcType="INTEGER" />
     <result column="user_name" property="userName" jdbcType="VARCHAR" />
     <result column="user_account" property="account" jdbcType="VARCHAR" />
@@ -23,7 +23,7 @@
     delete from gb_user
     where user_id = #{userId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.xrc.gb.repository.domain.UserDO" >
+  <insert id="insert" parameterType="com.xrc.gb.repository.domain.user.UserDO" >
     insert into gb_user ( user_name, user_account,
       user_password, user_power, create_time,
       modify_time)
@@ -31,7 +31,7 @@
       #{userPassword,jdbcType=VARCHAR}, #{userPower,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
       #{modifyTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.xrc.gb.repository.domain.UserDO" >
+  <insert id="insertSelective" parameterType="com.xrc.gb.repository.domain.user.UserDO" >
     insert into gb_user
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="userId != null" >
@@ -80,7 +80,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.xrc.gb.repository.domain.UserDO" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.xrc.gb.repository.domain.user.UserDO" >
     update gb_user
     <set >
       <if test="userName != null" >
@@ -104,7 +104,7 @@
     </set>
     where user_id = #{userId,jdbcType=INTEGER}
   </update>
-  <update id="update" parameterType="com.xrc.gb.repository.domain.UserDO" >
+  <update id="update" parameterType="com.xrc.gb.repository.domain.user.UserDO" >
     update gb_user
     set user_name = #{userName,jdbcType=VARCHAR},
       user_account = #{userAccount,jdbcType=VARCHAR},

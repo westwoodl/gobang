@@ -1,8 +1,7 @@
 package com.xrc.gb.repository.dao;
 
-import com.xrc.gb.repository.domain.UserDO;
+import com.xrc.gb.repository.domain.user.UserDO;
 import org.apache.ibatis.annotations.Mapper;
-import org.springframework.stereotype.Repository;
 
 /**
  * @author xu rongchao

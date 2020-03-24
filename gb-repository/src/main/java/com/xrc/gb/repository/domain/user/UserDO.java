@@ -1,5 +1,6 @@
-package com.xrc.gb.repository.domain;
+package com.xrc.gb.repository.domain.user;
 
+import com.xrc.gb.repository.domain.BaseDO;
 import lombok.Data;
 
 /**

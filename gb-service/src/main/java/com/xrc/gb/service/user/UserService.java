@@ -1,6 +1,6 @@
 package com.xrc.gb.service.user;
 
-import com.xrc.gb.repository.domain.UserDO;
+import com.xrc.gb.repository.domain.user.UserDO;
 
 /**
  * @author xu rongchao

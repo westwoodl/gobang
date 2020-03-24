@@ -1,7 +1,7 @@
 package com.xrc.gb.service.user;
 
 import com.xrc.gb.repository.dao.UserDAO;
-import com.xrc.gb.repository.domain.UserDO;
+import com.xrc.gb.repository.domain.user.UserDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

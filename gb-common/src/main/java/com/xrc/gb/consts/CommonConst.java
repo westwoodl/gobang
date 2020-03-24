@@ -1,4 +1,4 @@
-package com.xrc.gb;
+package com.xrc.gb.consts;
 
 /**
  * @author xu rongchao

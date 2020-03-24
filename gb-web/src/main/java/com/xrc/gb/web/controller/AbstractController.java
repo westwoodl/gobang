@@ -1,6 +1,6 @@
 package com.xrc.gb.web.controller;
 
-import com.xrc.gb.CommonConst;
+import com.xrc.gb.consts.CommonConst;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;

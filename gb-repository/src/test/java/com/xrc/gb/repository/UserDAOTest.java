@@ -1,7 +1,7 @@
 package com.xrc.gb.repository;
 
 import com.xrc.gb.repository.dao.UserDAO;
-import com.xrc.gb.repository.domain.UserDO;
+import com.xrc.gb.repository.domain.user.UserDO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
