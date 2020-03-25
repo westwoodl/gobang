@@ -17,6 +17,8 @@ import javax.annotation.Resource;
 public class GoManager {
     private static final String GO_KEY_PRE = "go_key_";
 
+    private static final long GO_STORE_MINUTES =  30L;
+
     @Resource
     private RedisCache redisCache;
 
@@ -24,17 +26,23 @@ public class GoManager {
     private GoDAO goDAO;
 
     public GoDO queryGo(@NonNull Integer goId) {
-        String value = redisCache.get(GO_KEY_PRE + goId);
+        String value = String.valueOf(redisCache.get(GO_KEY_PRE + goId));
         if (StringUtils.isNotBlank(value)) {
             GoDO goDO = new GoDO();
             goDO.setGoContext(value);
             return goDO;
+        } else {
+            GoDO goDO = goDAO.getById(goId);
+            if(goDO!=null) {
+                redisCache.set(GO_KEY_PRE + goDO.getId(), goDO.getGoContext(), GO_STORE_MINUTES);
+                return goDO;
+            }
+            return null;
         }
-        return goDAO.getById(goId);
     }
 
     public boolean updateGo(@NonNull GoDO go) {
-        boolean isSuccess = redisCache.set(GO_KEY_PRE + go.getId(), go.getGoContext(), 30L);
+        boolean isSuccess = redisCache.set(GO_KEY_PRE + go.getId(), go.getGoContext(), GO_STORE_MINUTES);
         if (isSuccess) {
             return goDAO.insert(go) != null;
         }

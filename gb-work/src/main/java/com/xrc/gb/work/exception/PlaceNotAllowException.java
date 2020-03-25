@@ -6,4 +6,12 @@ package com.xrc.gb.work.exception;
  */
 public class PlaceNotAllowException extends IllegalArgumentException {
 
+    public PlaceNotAllowException(){
+        super();
+    }
+
+
+    public PlaceNotAllowException(String str) {
+        super(str);
+    }
 }
