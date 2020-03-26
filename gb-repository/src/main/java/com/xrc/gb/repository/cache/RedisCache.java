@@ -26,6 +26,8 @@ import org.springframework.data.redis.core.ValueOperations;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
+import javax.annotation.Resource;
+
 
 /**
  * redis 缓存工具类
@@ -33,46 +35,63 @@ import com.alibaba.fastjson.JSONArray;
  * @author xu rongchao
  * @date 2020/3/5 9:36
  */
-@Component
 @Slf4j
 public class RedisCache {
-    @Autowired
-    protected RedisTemplate<Object, Object> redisTemplate;
-    @Autowired
-    protected RedisTemplate<String, String> redisTemplate2;
+    protected RedisTemplate<String, Object> redisTemplate;
+
+    public RedisCache(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     /**
      * 读取缓存
      */
-    public Object get(final Object key) {
-        Object result = null;
-        try {
-            ValueOperations<Object, Object> operations = redisTemplate.opsForValue();
-            result = operations.get(key);
-        } catch (Exception e) {
-            log.info("RedisCache Error{}", e.toString());
+    public Object get(final String key) {
+        if (key == null) {
+            return null;
         }
-        return result;
+        ValueOperations<String, Object> operations = redisTemplate.opsForValue();
+        return operations.get(key);
     }
 
     /**
      * 写入缓存
      */
-    public boolean set(final Object key, Object value) {
+    public boolean set(final String key, Object value) {
+        if (key == null || value == null) {
+            return false;
+        }
         try {
-            ValueOperations<Object, Object> operations = redisTemplate.opsForValue();
+            ValueOperations<String, Object> operations = redisTemplate.opsForValue();
             operations.set(key, value);
             return true;
         } catch (Exception e) {
             return false;
         }
+    }
 
+    public boolean set(final String key, Object value, Long s, TimeUnit unit) {
+        if (key == null) {
+            return false;
+        }
+        try {
+            ValueOperations<String, Object> operations = redisTemplate.opsForValue();
+            operations.set(key, value, s, unit);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 
-    public boolean set(final Object key, Object value, Long minutes) {
+
+
+    public boolean set(final String key, Object value, Long minutes) {
+        if (key == null) {
+            return false;
+        }
         try {
-            ValueOperations<Object, Object> operations = redisTemplate.opsForValue();
+            ValueOperations<String, Object> operations = redisTemplate.opsForValue();
             operations.set(key, value, minutes, TimeUnit.MINUTES);
             return true;
         } catch (Exception e) {
@@ -86,7 +105,7 @@ public class RedisCache {
      * <p>
      * key
      */
-    public void remove(final Object key) {
+    public void remove(final String key) {
         if (exists(key)) {
             redisTemplate.delete(key);
         }
@@ -97,7 +116,10 @@ public class RedisCache {
      * <p>
      * key
      */
-    public boolean exists(final Object key) {
+    public boolean exists(final String key) {
+        if (key == null) {
+            return false;
+        }
         return redisTemplate.hasKey(key);
     }
 //
@@ -157,6 +179,7 @@ public class RedisCache {
 //        return fieldValueMap;
 //    }
 //
+
     /**
      * hIncr 原子自增
      */

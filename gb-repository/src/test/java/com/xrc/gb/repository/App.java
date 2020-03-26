@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @date 2020/3/4 13:53
  */
 @SpringBootApplication(scanBasePackages = {
-        "com.xrc.gb.repository.dao"
+        "com.xrc.gb.repository"
 })
 public class App {
     public static void main(String[] args) {

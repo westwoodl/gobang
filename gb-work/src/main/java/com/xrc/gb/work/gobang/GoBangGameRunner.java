@@ -31,21 +31,7 @@ public class GoBangGameRunner extends AbstractGoGameRunner {
 
     private static final int GAME_PIECES_CONTINUITY_MAX_NUM = 3;
 
-    @Override
-    public PlaceResultTypeEnum place(GoContext goContext) {
-        List<GoPieces> piecesList = goContext.getPlaceArrays();
-        CheckParameter.assertTrue(CollectionUtils.isNotEmpty(piecesList));
 
-        int[][] goArrArrays = buildArrays(goContext);
-        GoPieces lastHand = piecesList.get(piecesList.size() - 1);
-
-        if (judgeLast(goArrArrays, lastHand.getX(), lastHand.getY())) {
-           return PieceTypeEnum.WHITE_PIECE.getCode().equals(lastHand.getPieceType()) ?
-                   PlaceResultTypeEnum.WHITE_WIN_GAME : PlaceResultTypeEnum.BLACK_WIN_GAME;
-        }
-        return PlaceResultTypeEnum.PLACING_PIECES_SUCCESS;
-
-    }
 
     @Override
     public int[][] buildArrays(@NonNull GoContext goContext) {

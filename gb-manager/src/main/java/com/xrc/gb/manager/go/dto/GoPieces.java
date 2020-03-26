@@ -23,4 +23,9 @@ public class GoPieces implements Serializable {
      * {@link  com.xrc.gb.enums.PieceTypeEnum}
      */
     private int pieceType;
+
+    /**
+     * 是否被提子
+     */
+    private boolean isDead;
 }
