@@ -14,10 +14,10 @@ import javax.annotation.Resource;
  * @date 2020/3/23 17:02
  */
 @Component
-public class GoManager {
+public class GoCacheManager {
     private static final String GO_KEY_PRE = "go_key_";
 
-    private static final long GO_STORE_MINUTES =  30L;
+    private static final long GO_STORE_MINUTES = 30L;
 
     @Resource
     private RedisCache redisCache;
@@ -26,30 +26,28 @@ public class GoManager {
     private GoDAO goDAO;
 
     public GoDO queryGo(@NonNull Integer goId) {
-        String value = String.valueOf(redisCache.get(GO_KEY_PRE + goId));
-        if (StringUtils.isNotBlank(value)) {
-            GoDO goDO = new GoDO();
-            goDO.setGoContext(value);
+        GoDO goDO = (GoDO) redisCache.get(GO_KEY_PRE + goId);
+        if (goDO != null) {
             return goDO;
         } else {
-            GoDO goDO = goDAO.getById(goId);
-            if(goDO!=null) {
-                redisCache.set(GO_KEY_PRE + goDO.getId(), goDO.getGoContext(), GO_STORE_MINUTES);
-                return goDO;
+            GoDO goDORep = goDAO.getById(goId);
+            if (goDORep != null) {
+                redisCache.set(GO_KEY_PRE + goDORep.getId(), goDORep.getGoContext(), GO_STORE_MINUTES);
+                return goDORep;
             }
             return null;
         }
     }
 
     public boolean updateGo(@NonNull GoDO go) {
-        boolean isSuccess = redisCache.set(GO_KEY_PRE + go.getId(), go.getGoContext(), GO_STORE_MINUTES);
-        if (isSuccess) {
-            return goDAO.insert(go) != null;
-        }
-        return false;
+        boolean isSuccess = goDAO.update(go) == 1;
+        redisCache.set(GO_KEY_PRE + go.getId(), go.getGoContext(), GO_STORE_MINUTES);
+        return isSuccess;
     }
 
     public GoDO createGo(@NonNull GoDO go) {
-        return new GoDO();
+        GoDO goDO = goDAO.insert(go);
+        redisCache.set(GO_KEY_PRE + go.getId(), go.getGoContext(), GO_STORE_MINUTES);
+        return goDO;
     }
 }

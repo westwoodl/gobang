@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xrc.gb.repository.dao.GoDAO">
+
+    <resultMap type="com.xrc.gb.repository.domain.go.GoDO" id="GbGoMap">
+        <result property="id" column="go_id" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="modifyTime" column="modify_time" jdbcType="TIMESTAMP"/>
+        <result property="blackUserId" column="black_user_id" jdbcType="INTEGER"/>
+        <result property="whiteUserId" column="white_user_Id" jdbcType="INTEGER"/>
+        <result property="goContext" column="go_context" jdbcType="VARCHAR"/>
+        <result property="roomId" column="room_id" jdbcType="INTEGER"/>
+        <result property="isEnd" column="is_end" jdbcType="INTEGER"/>
+        <result property="endTime" column="end_time" jdbcType="TIMESTAMP"/>
+        <result property="lastUserId" column="last_user_id" jdbcType="INTEGER"/>
+        <result property="goResult" column="go_result" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="getById" resultMap="GbGoMap">
+        select
+          go_id, create_time, modify_time, black_user_id, white_user_Id, go_context, room_id, is_end, end_time, last_user_id, go_result
+        from gobang.gb_go
+        where go_id = #{goId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="GbGoMap">
+        select
+          go_id, create_time, modify_time, black_user_id, white_user_Id, go_context, room_id, is_end, end_time, last_user_id, go_result
+        from gobang.gb_go
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="GbGoMap">
+        select
+          go_id, create_time, modify_time, black_user_id, white_user_Id, go_context, room_id, is_end, end_time, last_user_id, go_result
+        from gobang.gb_go
+        <where>
+            <if test="goId != null">
+                and go_id = #{goId}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="modifyTime != null">
+                and modify_time = #{modifyTime}
+            </if>
+            <if test="blackUserId != null">
+                and black_user_id = #{blackUserId}
+            </if>
+            <if test="whiteUserId != null">
+                and white_user_Id = #{whiteUserId}
+            </if>
+            <if test="goContext != null and goContext != ''">
+                and go_context = #{goContext}
+            </if>
+            <if test="roomId != null">
+                and room_id = #{I}
+            </if>
+            <if test="isEnd != null">
+                and is_end = #{isEnd}
+            </if>
+            <if test="endTime != null">
+                and end_time = #{endTime}
+            </if>
+            <if test="lastUserId != null">
+                and last_user_id = #{lastUserId}
+            </if>
+            <if test="goResult != null and goResult != ''">
+                and go_result = #{goResult}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="goId" useGeneratedKeys="true">
+        insert into gobang.gb_go(create_time, modify_time, black_user_id, white_user_Id, go_context, room_id, is_end, end_time, last_user_id, go_result)
+        values (#{createTime}, #{modifyTime}, #{blackUserId}, #{whiteUserId}, #{goContext}, #{roomId}, #{isEnd}, #{endTime}, #{lastUserId}, #{goResult})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update gobang.gb_go
+        <set>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="modifyTime != null">
+                modify_time = #{modifyTime},
+            </if>
+            <if test="blackUserId != null">
+                black_user_id = #{blackUserId},
+            </if>
+            <if test="whiteUserId != null">
+                white_user_Id = #{whiteUserId},
+            </if>
+            <if test="goContext != null and goContext != ''">
+                go_context = #{goContext},
+            </if>
+            <if test="roomId != null">
+                room_id = #{roomId},
+            </if>
+            <if test="isEnd != null">
+                is_end = #{isEnd},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime},
+            </if>
+            <if test="lastUserId != null">
+                last_user_id = #{lastUserId},
+            </if>
+            <if test="goResult != null and goResult != ''">
+                go_result = #{goResult},
+            </if>
+        </set>
+        where go_id = #{goId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="delete">
+        delete from gobang.gb_go where go_id = #{goId}
+    </delete>
+
+</mapper>

@@ -11,6 +11,7 @@ import java.util.Date;
  */
 @Data
 public class GoQueryResp implements Serializable {
+    private Integer id;
 
     private Integer blackUserId;
 
@@ -20,7 +21,7 @@ public class GoQueryResp implements Serializable {
 
     private Integer roomId;
 
-    private boolean isEnd;
+    private Integer isEnd;
 
     private Date endTime;
 

@@ -20,7 +20,7 @@ public class GoDO extends BaseDO {
 
     private Integer roomId;
 
-    private boolean isEnd;
+    private Integer isEnd;
 
     private Date endTime;
 

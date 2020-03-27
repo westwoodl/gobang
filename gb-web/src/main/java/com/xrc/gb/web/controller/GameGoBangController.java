@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/gobang")
 public class GameGoBangController {
 
+
+
     @PutMapping
     public JSONObject place() {
 
