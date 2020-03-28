@@ -5,6 +5,8 @@ import com.xrc.gb.repository.domain.user.UserDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
 /**
  * @author xu rongchao
  * @date 2020/3/4 15:35
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService{
 
-    @Autowired
+    @Resource
     private UserDAO userDAO;
 
     public boolean add(String username, String account, String password) {
@@ -21,12 +23,12 @@ public class UserServiceImpl implements UserService{
         userDO.setUserName(username);
         userDO.setAccount(account);
         userDO.setPassword(password);
-        UserDO re = userDAO.insert(userDO);
-        return true;
+        int id = userDAO.insert(userDO);
+        return id > 0;
     }
 
     @Override
     public UserDO find(Integer id) {
-        return userDAO.getById(id);
+        return userDAO.queryById(id);
     }
 }

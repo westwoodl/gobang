@@ -17,7 +17,7 @@ public class GoGameFactory {
         factory.put(code, abstractGoGameRunner);
     }
 
-    public static AbstractGoGameRunner getInstants(GameTypeEnum code) {
+    public static AbstractGoGameRunner subscribe(GameTypeEnum code) {
         return factory.get(code);
     }
 }

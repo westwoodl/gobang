@@ -27,7 +27,6 @@ create table gb_go (
     black_user_id int not null  comment '执黑者',
     white_user_Id int not null  comment '执白',
     go_context varchar(100) not null comment '棋盘json',
-    room_id int not null  comment '房间id',
     is_end int comment '对局是否结束',
     end_time timestamp  comment '对局结束时间',
     last_user_id int  comment '最后落子玩家',
@@ -35,3 +34,20 @@ create table gb_go (
 );
 create index query_go_by_white_user_index on gb_go(white_user_Id);
 create index query_go_by_black_user_index on gb_go(black_user_id);
+
+-- 创建房间表
+drop table if exists gb_room;
+create table gb_room (
+    room_id int primary key auto_increment,
+    create_time timestamp not null default now(),
+    modify_time timestamp,
+    room_number int comment '房间当前人数',
+    create_user int not null comment '房间创造者',
+    opponents int comment '对手',
+    watch_user varchar(100) comment '观战者',
+    go_id int comment '对局id',
+    room_status int not null comment '房间状态',
+    room_name varchar(20) not null comment '房间名',
+    room_password varchar(20) comment '房间密码'
+);
+create index query_room_by_create_user_index on gb_room(create_user);

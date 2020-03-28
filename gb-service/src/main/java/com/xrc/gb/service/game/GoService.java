@@ -1,5 +1,7 @@
 package com.xrc.gb.service.game;
 
+import com.xrc.gb.enums.PlaceResultTypeEnum;
+import com.xrc.gb.manager.go.dto.GoPlaceReq;
 import com.xrc.gb.manager.go.dto.GoQueryResp;
 import com.xrc.gb.util.PageQueryReq;
 import com.xrc.gb.util.PageQueryResultResp;
@@ -18,6 +20,6 @@ public interface GoService {
 
     PageQueryResultResp<GoQueryResp> queryGameList(PageQueryReq<GoQueryResp> pageQueryReq);
 
-    boolean updateGame(GoQueryResp goQueryResp);
+    PlaceResultTypeEnum updateGameForPlace(GoPlaceReq goPlaceReq);
 
 }

@@ -1,5 +1,8 @@
-package com.xrc.gb.web.common;
+package com.xrc.gb.web.config;
 
+import com.xrc.gb.exception.BusinessException;
+import com.xrc.gb.exception.SystemBusyException;
+import com.xrc.gb.web.common.JSONObjectResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -19,16 +22,16 @@ import java.io.IOException;
 @ControllerAdvice
 public class GlobalControllerAdvice {
 
-    /**
-     * 处理NullPointerException，并返回错误信息字符串
-     *
-     * @param ex
-     * @return
-     */
-    @ExceptionHandler(NullPointerException.class)
+    @ExceptionHandler(SystemBusyException.class)
     @ResponseBody
-    public String handleIOException(NullPointerException ex) {
-        return ex.getMessage();
+    public JSONObjectResult handleSystemBusyException(SystemBusyException ex) {
+        return JSONObjectResult.create().fail(ex.getMessage());
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    @ResponseBody
+    public JSONObjectResult handleBusinessException(BusinessException ex) {
+        return JSONObjectResult.create().fail(ex.getMessage());
     }
 
     /**
@@ -40,7 +43,6 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(IOException.class)
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     public void handleIOException(IOException ex) {
-
     }
 
 

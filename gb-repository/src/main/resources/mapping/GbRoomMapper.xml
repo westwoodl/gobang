@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xrc.gb.repository.dao.RoomDAO">
+
+    <resultMap type="com.xrc.gb.repository.domain.go.RoomDO" id="GbRoomMap">
+        <result property="id" column="room_id" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="modifyTime" column="modify_time" jdbcType="TIMESTAMP"/>
+        <result property="roomNumber" column="room_number" jdbcType="INTEGER"/>
+        <result property="createUser" column="create_user" jdbcType="INTEGER"/>
+        <result property="opponents" column="opponents" jdbcType="INTEGER"/>
+        <result property="watchUser" column="watch_user" jdbcType="VARCHAR"/>
+        <result property="goId" column="go_id" jdbcType="INTEGER"/>
+        <result property="roomStatus" column="room_status" jdbcType="INTEGER"/>
+        <result property="roomName" column="room_name" jdbcType="VARCHAR"/>
+        <result property="roomPassword" column="room_password" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="GbRoomMap">
+        select
+          room_id, create_time, modify_time, room_number, create_user, opponents, watch_user, go_id, room_status, room_name, room_password
+        from gobang.gb_room
+        where room_id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="GbRoomMap">
+        select
+          room_id, create_time, modify_time, room_number, create_user, opponents, watch_user, go_id, room_status, room_name, room_password
+        from gobang.gb_room
+        <where>
+            <if test="t.createTime != null">
+                and create_time = #{t.createTime}
+            </if>
+            <if test="t.modifyTime != null">
+                and modify_time = #{t.modifyTime}
+            </if>
+            <if test="t.roomNumber != null">
+                and room_number = #{t.roomNumber}
+            </if>
+            <if test="t.createUser != null">
+                and create_user = #{t.createUser}
+            </if>
+            <if test="t.opponents != null">
+                and opponents = #{t.opponents}
+            </if>
+            <if test="t.watchUser != null and t.watchUser != ''">
+                and watch_user = #{t.watchUser}
+            </if>
+            <if test="t.goId != null">
+                and go_id = #{t.goId}
+            </if>
+            <if test="t.roomStatus != null">
+                and room_status = #{t.roomStatus}
+            </if>
+            <if test="t.roomName != null and t.roomName !=''">
+                and room_name = #{t.roomName}
+            </if>
+        </where>
+        limit #{offset}, #{limit}
+        order by create_time
+    </select>
+
+    <select id="countAll" resultType="int">
+        select
+            count(1)
+        from gobang.gb_room
+        <where>
+            <if test="t.createTime != null">
+                and create_time = #{t.createTime}
+            </if>
+            <if test="t.modifyTime != null">
+                and modify_time = #{t.modifyTime}
+            </if>
+            <if test="t.roomNumber != null">
+                and room_number = #{t.roomNumber}
+            </if>
+            <if test="t.createUser != null">
+                and create_user = #{t.createUser}
+            </if>
+            <if test="t.opponents != null">
+                and opponents = #{t.opponents}
+            </if>
+            <if test="t.watchUser != null and t.watchUser != ''">
+                and watch_user = #{t.watchUser}
+            </if>
+            <if test="t.goId != null">
+                and go_id = #{t.goId}
+            </if>
+            <if test="t.roomStatus != null">
+                and room_status = #{t.roomStatus}
+            </if>
+            <if test="t.roomName != null and t.roomName !=''">
+                and room_name = #{t.roomName}
+            </if>
+        </where>
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="GbRoomMap">
+        select
+          room_id, create_time, modify_time, room_number, create_user, opponents, watch_user, go_id, room_status
+        from gobang.gb_room
+        <where>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="modifyTime != null">
+                and modify_time = #{modifyTime}
+            </if>
+            <if test="roomNumber != null">
+                and room_number = #{roomNumber}
+            </if>
+            <if test="createUser != null">
+                and create_user = #{createUser}
+            </if>
+            <if test="opponents != null">
+                and opponents = #{opponents}
+            </if>
+            <if test="watchUser != null and watchUser != ''">
+                and watch_user = #{watchUser}
+            </if>
+            <if test="goId != null">
+                and go_id = #{goId}
+            </if>
+            <if test="roomStatus != null">
+                and room_status = #{roomStatus}
+            </if>
+            <if test="t.roomName != null and t.roomName !=''">
+                and room_name = #{roomName}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into gobang.gb_room(create_time, modify_time, room_number, create_user, opponents, watch_user, go_id, room_status, room_name, room_password)
+        values (now(), now(), #{roomNumber}, #{createUser}, #{opponents}, #{watchUser}, #{goId}, #{roomStatus}, #{roomName}, #{roomPassword})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update gobang.gb_room
+        <set>
+            <if test="modifyTime != null">
+                modify_time = now(),
+            </if>
+            <if test="roomNumber != null">
+                room_number = #{roomNumber},
+            </if>
+            <if test="opponents != null">
+                opponents = #{opponents},
+            </if>
+            <if test="watchUser != null and watchUser != ''">
+                watch_user = #{watchUser},
+            </if>
+            <if test="goId != null">
+                go_id = #{goId},
+            </if>
+            <if test="roomStatus != null">
+                room_status = #{roomStatus},
+            </if>
+            <if test="roomName != null and roomName !=''">
+                and room_name = #{roomName}
+            </if>
+            <if test="roomPassword != null and roomPassword !=''">
+                and room_password = #{roomPassword}
+            </if>
+        </set>
+        where room_id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from gobang.gb_room where room_id = #{id}
+    </delete>
+
+</mapper>

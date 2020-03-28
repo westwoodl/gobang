@@ -29,7 +29,7 @@ public class UserDAOTest {
 
     @Test
     public void test_query(){
-        UserDO userDO = userDAO.getById(1);
+        UserDO userDO = userDAO.queryById(1);
     }
 
     @Test

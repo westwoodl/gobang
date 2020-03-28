@@ -9,7 +9,6 @@
         <result property="blackUserId" column="black_user_id" jdbcType="INTEGER"/>
         <result property="whiteUserId" column="white_user_Id" jdbcType="INTEGER"/>
         <result property="goContext" column="go_context" jdbcType="VARCHAR"/>
-        <result property="roomId" column="room_id" jdbcType="INTEGER"/>
         <result property="isEnd" column="is_end" jdbcType="INTEGER"/>
         <result property="endTime" column="end_time" jdbcType="TIMESTAMP"/>
         <result property="lastUserId" column="last_user_id" jdbcType="INTEGER"/>
@@ -17,9 +16,9 @@
     </resultMap>
 
     <!--查询单个-->
-    <select id="getById" resultMap="GbGoMap">
+    <select id="queryById" resultMap="GbGoMap">
         select
-          go_id, create_time, modify_time, black_user_id, white_user_Id, go_context, room_id, is_end, end_time, last_user_id, go_result
+          go_id, create_time, modify_time, black_user_id, white_user_Id, go_context, is_end, end_time, last_user_id, go_result
         from gobang.gb_go
         where go_id = #{goId}
     </select>
@@ -27,15 +26,47 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="GbGoMap">
         select
-          go_id, create_time, modify_time, black_user_id, white_user_Id, go_context, room_id, is_end, end_time, last_user_id, go_result
+          go_id, create_time, modify_time, black_user_id, white_user_Id, go_context, is_end, end_time, last_user_id, go_result
         from gobang.gb_go
+        <where>
+            <if test="t.goId != null">
+                and go_id = #{t.goId}
+            </if>
+            <if test="t.createTime != null">
+                and create_time = #{t.createTime}
+            </if>
+            <if test="t.modifyTime != null">
+                and modify_time = #{t.modifyTime}
+            </if>
+            <if test="t.blackUserId != null">
+                and black_user_id = #{t.blackUserId}
+            </if>
+            <if test="t.whiteUserId != null">
+                and white_user_Id = #{t.whiteUserId}
+            </if>
+            <if test="t.goContext != null and t.goContext != ''">
+                and go_context = #{t.goContext}
+            </if>
+            <if test="t.isEnd != null">
+                and is_end = #{t.isEnd}
+            </if>
+            <if test="t.endTime != null">
+                and end_time = #{t.endTime}
+            </if>
+            <if test="t.lastUserId != null">
+                and last_user_id = #{t.lastUserId}
+            </if>
+            <if test="t.goResult != null and goResult != ''">
+                and go_result = #{t.goResult}
+            </if>
+        </where>
         limit #{offset}, #{limit}
     </select>
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="GbGoMap">
         select
-          go_id, create_time, modify_time, black_user_id, white_user_Id, go_context, room_id, is_end, end_time, last_user_id, go_result
+          go_id, create_time, modify_time, black_user_id, white_user_Id, go_context, is_end, end_time, last_user_id, go_result
         from gobang.gb_go
         <where>
             <if test="goId != null">
@@ -56,9 +87,6 @@
             <if test="goContext != null and goContext != ''">
                 and go_context = #{goContext}
             </if>
-            <if test="roomId != null">
-                and room_id = #{I}
-            </if>
             <if test="isEnd != null">
                 and is_end = #{isEnd}
             </if>
@@ -76,31 +104,19 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="goId" useGeneratedKeys="true">
-        insert into gobang.gb_go(create_time, modify_time, black_user_id, white_user_Id, go_context, room_id, is_end, end_time, last_user_id, go_result)
-        values (#{createTime}, #{modifyTime}, #{blackUserId}, #{whiteUserId}, #{goContext}, #{roomId}, #{isEnd}, #{endTime}, #{lastUserId}, #{goResult})
+        insert into gobang.gb_go(create_time, modify_time, black_user_id, white_user_Id, go_context, is_end, end_time, last_user_id, go_result)
+        values (now(), now(), #{blackUserId}, #{whiteUserId}, #{goContext}, #{isEnd}, #{endTime}, #{lastUserId}, #{goResult})
     </insert>
 
     <!--通过主键修改数据-->
     <update id="update">
         update gobang.gb_go
         <set>
-            <if test="createTime != null">
-                create_time = #{createTime},
-            </if>
             <if test="modifyTime != null">
-                modify_time = #{modifyTime},
-            </if>
-            <if test="blackUserId != null">
-                black_user_id = #{blackUserId},
-            </if>
-            <if test="whiteUserId != null">
-                white_user_Id = #{whiteUserId},
+                modify_time = now(),
             </if>
             <if test="goContext != null and goContext != ''">
                 go_context = #{goContext},
-            </if>
-            <if test="roomId != null">
-                room_id = #{roomId},
             </if>
             <if test="isEnd != null">
                 is_end = #{isEnd},
@@ -119,7 +135,7 @@
     </update>
 
     <!--通过主键删除-->
-    <delete id="delete">
+    <delete id="deleteById">
         delete from gobang.gb_go where go_id = #{goId}
     </delete>
 

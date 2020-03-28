@@ -1,5 +1,6 @@
 package com.xrc.gb.work.gobang;
 
+import com.xrc.gb.enums.GameTypeEnum;
 import com.xrc.gb.enums.PieceTypeEnum;
 import com.xrc.gb.enums.PlaceResultTypeEnum;
 import com.xrc.gb.manager.go.dto.GoContext;
@@ -7,8 +8,10 @@ import com.xrc.gb.manager.go.dto.GoPieces;
 import com.xrc.gb.manager.go.dto.GoQueryResp;
 import com.xrc.gb.util.CheckParameter;
 import com.xrc.gb.work.AbstractGoGameRunner;
+import com.xrc.gb.work.GoGameFactory;
 import com.xrc.gb.work.exception.PlaceNotAllowException;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +29,7 @@ import java.util.List;
  * @date 2020/3/23 16:26
  */
 @Component
-public class GoBangGameRunner extends AbstractGoGameRunner {
+public class GoBangGameRunner extends AbstractGoGameRunner implements InitializingBean {
     private static int[][] checkerboard;
 
     private static final int GAME_PIECES_CONTINUITY_MAX_NUM = 3;
@@ -145,4 +148,8 @@ public class GoBangGameRunner extends AbstractGoGameRunner {
     }
 
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        GoGameFactory.register(GameTypeEnum.GO_BANG, this);
+    }
 }

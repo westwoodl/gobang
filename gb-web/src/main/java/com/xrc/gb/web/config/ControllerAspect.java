@@ -1,4 +1,4 @@
-package com.xrc.gb.web.common;
+package com.xrc.gb.web.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;

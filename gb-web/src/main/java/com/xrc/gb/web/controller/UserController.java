@@ -30,4 +30,6 @@ public class UserController {
         userService.add(userName, account, password);
         return JSONObjectResult.create().success();
     }
+
+
 }

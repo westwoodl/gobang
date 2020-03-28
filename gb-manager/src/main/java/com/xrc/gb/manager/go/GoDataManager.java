@@ -6,6 +6,7 @@ import com.xrc.gb.repository.domain.go.GoDO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -14,7 +15,8 @@ import javax.annotation.Resource;
  * @date 2020/3/23 17:02
  */
 @Component
-public class GoCacheManager {
+@Transactional
+public class GoDataManager {
     private static final String GO_KEY_PRE = "go_key_";
 
     private static final long GO_STORE_MINUTES = 30L;
@@ -30,7 +32,7 @@ public class GoCacheManager {
         if (goDO != null) {
             return goDO;
         } else {
-            GoDO goDORep = goDAO.getById(goId);
+            GoDO goDORep = goDAO.queryById(goId);
             if (goDORep != null) {
                 redisCache.set(GO_KEY_PRE + goDORep.getId(), goDORep.getGoContext(), GO_STORE_MINUTES);
                 return goDORep;
@@ -41,13 +43,18 @@ public class GoCacheManager {
 
     public boolean updateGo(@NonNull GoDO go) {
         boolean isSuccess = goDAO.update(go) == 1;
-        redisCache.set(GO_KEY_PRE + go.getId(), go.getGoContext(), GO_STORE_MINUTES);
-        return isSuccess;
+        if (isSuccess) {
+            redisCache.set(GO_KEY_PRE + go.getId(), go.getGoContext(), GO_STORE_MINUTES);
+            return true;
+        }
+        return false;
     }
 
     public GoDO createGo(@NonNull GoDO go) {
-        GoDO goDO = goDAO.insert(go);
-        redisCache.set(GO_KEY_PRE + go.getId(), go.getGoContext(), GO_STORE_MINUTES);
-        return goDO;
+        int id = goDAO.insert(go);
+        if (id > 0) {
+            redisCache.set(GO_KEY_PRE + id, go.getGoContext(), GO_STORE_MINUTES);
+        }
+        return go;
     }
 }

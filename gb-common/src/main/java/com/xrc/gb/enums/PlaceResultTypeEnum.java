@@ -19,5 +19,11 @@ public enum PlaceResultTypeEnum {
         this.desc = desc;
     }
 
+    public String getDesc() {
+        return desc;
+    }
 
+    public int getCode() {
+        return code;
+    }
 }

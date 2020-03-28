@@ -13,9 +13,9 @@ public class PageQueryResultResp<T> {
 
     private int pageIndex;
     /**
-     * 总共有几页
+     * 总共有几条
      */
-    private int totalPage;
+    private int totalCount;
 
     private T data;
 

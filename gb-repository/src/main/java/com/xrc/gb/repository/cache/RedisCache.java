@@ -1,36 +1,21 @@
 package com.xrc.gb.repository.cache;
 
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.ValueOperations;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-
-import javax.annotation.Resource;
-
 
 /**
  * redis 缓存工具类
+ *
+ * 2020/3/29 有必要改成泛型 TODO
  *
  * @author xu rongchao
  * @date 2020/3/5 9:36
@@ -100,6 +85,8 @@ public class RedisCache {
     }
 
 
+
+
     /**
      * 删除对应的value
      * <p>
@@ -120,8 +107,120 @@ public class RedisCache {
         if (key == null) {
             return false;
         }
-        return redisTemplate.hasKey(key);
+        Boolean exists = redisTemplate.hasKey(key);
+        return exists == null ? false : exists;
     }
+
+    public boolean lPush(String key, Object value) {
+        try {
+            redisTemplate.opsForList().leftPush(key, value);
+            return true;
+        } catch (Exception e) {
+            log.info("redis error:{}",e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean rPush(String key, Object value) {
+        try {
+            redisTemplate.opsForList().rightPush(key, value);
+            return true;
+        } catch (Exception e) {
+            log.info("redis error:{}",e.getMessage());
+        }
+        return false;
+    }
+
+    public List<Object> lRang(String key, int start, int stop) {
+        try {
+            return redisTemplate.opsForList().range(key, start, stop);
+        } catch (Exception e) {
+            log.info("redis error:{}",e.getMessage());
+        }
+        return null;
+    }
+
+    public boolean lPop(String key) {
+        try {
+            redisTemplate.opsForList().leftPop(key);
+            return true;
+        } catch (Exception e) {
+            log.info("redis error:{}",e.getMessage());
+        }
+        return false;
+    }
+
+    @Deprecated
+    public List<Object> leftPopAll(String key) {
+        try {
+            Long size = redisTemplate.opsForList().size(key);
+            if (size==null||size == 0) {
+                return new ArrayList<>();
+            }
+            List<Object> resultObjList = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                resultObjList.add(redisTemplate.opsForList().leftPop(key));
+            }
+            return resultObjList;
+        } catch (Exception e) {
+            log.info("redis error:{}",e.getMessage());
+        }
+        return null;
+    }
+
+    public Long lLen(String key) {
+        try {
+            return redisTemplate.opsForList().size(key);
+        } catch (Exception e) {
+            log.info("redis error:{}",e.getMessage());
+        }
+        return 0L;
+    }
+
+
+
+//
+//    /**
+//     * 从缓存中获取列表
+//     * <p>
+//     * key 缓存key
+//     * clazz
+//     */
+//    public <T> List<T> getListFromCache(String key, Class<T> clazz) {
+//        List<T> data = new ArrayList<T>();
+//        String result = this.get(key);
+//        if (StringUtils.isBlank(result)) {
+//            return data;
+//        }
+//        data = getListByJsonStr(result, clazz);
+//        return data;
+//    }
+//
+//    /**
+//     * 从缓存中获取列表
+//     * <p>
+//     * jsonStr
+//     * clazz
+//     */
+//    public <T> List<T> getListByJsonStr(String jsonStr, Class<T> clazz) {
+//        List<T> data = new ArrayList<T>();
+//        if (StringUtils.isBlank(jsonStr)) {
+//            return data;
+//        }
+//        try {
+//            JSONArray jsonArray = JSONArray.parseArray(jsonStr);
+//            if (jsonArray != null && jsonArray.size() > 0) {
+//                for (int i = 0; i < jsonArray.size(); i++) {
+//                    T elem = JSON.parseObject(jsonArray.get(i).toString(), clazz);
+//                    data.add(elem);
+//                }
+//            }
+//        } catch (Exception ex) {
+//        }
+//
+//        return data;
+//    }
+//
 //
 //    /**
 //     * hset
@@ -262,46 +361,6 @@ public class RedisCache {
 //        this.set(key, JSON.toJSONString(data), expire);
 //    }
 //
-//    /**
-//     * 从缓存中获取列表
-//     * <p>
-//     * key 缓存key
-//     * clazz
-//     */
-//    public <T> List<T> getListFromCache(String key, Class<T> clazz) {
-//        List<T> data = new ArrayList<T>();
-//        String result = this.get(key);
-//        if (StringUtils.isBlank(result)) {
-//            return data;
-//        }
-//        data = getListByJsonStr(result, clazz);
-//        return data;
-//    }
-//
-//    /**
-//     * 从缓存中获取列表
-//     * <p>
-//     * jsonStr
-//     * clazz
-//     */
-//    public <T> List<T> getListByJsonStr(String jsonStr, Class<T> clazz) {
-//        List<T> data = new ArrayList<T>();
-//        if (StringUtils.isBlank(jsonStr)) {
-//            return data;
-//        }
-//        try {
-//            JSONArray jsonArray = JSONArray.parseArray(jsonStr);
-//            if (jsonArray != null && jsonArray.size() > 0) {
-//                for (int i = 0; i < jsonArray.size(); i++) {
-//                    T elem = JSON.parseObject(jsonArray.get(i).toString(), clazz);
-//                    data.add(elem);
-//                }
-//            }
-//        } catch (Exception ex) {
-//        }
-//
-//        return data;
-//    }
 //
 //    /**
 //     * 将对象保存到缓存

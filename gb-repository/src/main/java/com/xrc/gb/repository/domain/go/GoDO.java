@@ -18,6 +18,7 @@ public class GoDO extends BaseDO {
 
     private String goContext;
 
+    @Deprecated
     private Integer roomId;
 
     private Integer isEnd;

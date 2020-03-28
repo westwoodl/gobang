@@ -1,5 +1,6 @@
 package com.xrc.gb.util;
 
+import com.xrc.gb.exception.BusinessException;
 import com.xrc.gb.exception.SystemBusyException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,11 +19,15 @@ public class ExceptionHelper {
         private String errorMsg;
     }
 
-    public static SystemBusyException newBizException(String exceptionInfo, Throwable e) {
+    public static BusinessException newBusinessException(String info) {
+        return new BusinessException(info);
+    }
+
+    public static SystemBusyException newSysException(String exceptionInfo, Throwable e) {
         return new SystemBusyException(exceptionInfo + ":" + e.getMessage());
     }
 
-    public static RuntimeException newBizException(String exceptionInfo) {
+    public static SystemBusyException newSysException(String exceptionInfo) {
         return new SystemBusyException(exceptionInfo);
     }
 

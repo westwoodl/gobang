@@ -1,6 +1,9 @@
 package com.xrc.gb.repository.dao;
 
 import com.xrc.gb.repository.domain.BaseDO;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @author xu rongchao
@@ -8,11 +11,15 @@ import com.xrc.gb.repository.domain.BaseDO;
  */
 public interface BaseDAO<T extends BaseDO> {
 
-    T insert(T domain);
+    int insert(T domain);
 
-    T getById(int id);
+    T queryById(int id);
 
-    int delete(int id);
+    List<T> queryAllByLimit(@Param("t") T t, @Param("offset")Integer offset, @Param("limit") Integer limit);
+
+    int countAll(@Param("t") T t);
+
+    int deleteById(int id);
 
     int update(T domain);
 

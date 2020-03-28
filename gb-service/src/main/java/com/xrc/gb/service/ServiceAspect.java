@@ -25,9 +25,9 @@ public class ServiceAspect {
         try {
             obj = pjp.proceed();
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(ErrorInfoConstants.BIZ_PARAMETER_ERROR + e.getMessage());
+            throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_PARAMETER_ERROR + e.getMessage());
         } catch (RuntimeException e) {
-            throw ExceptionHelper.newBizException(ErrorInfoConstants.BIZ_SYSTEM_BUSY, e);
+            throw ExceptionHelper.newSysException(ErrorInfoConstants.BIZ_SYSTEM_BUSY, e);
         }
         return obj;
     }

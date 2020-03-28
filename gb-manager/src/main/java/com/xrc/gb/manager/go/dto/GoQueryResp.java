@@ -19,6 +19,7 @@ public class GoQueryResp implements Serializable {
 
     private GoContext goContext;
 
+    @Deprecated
     private Integer roomId;
 
     private Integer isEnd;
