@@ -23,7 +23,7 @@ public class PageQueryReq<T> {
         return (1-pageIndex) * pageSize;
     }
 
-    public int getStop() {
-        return getStart() + pageSize;
+    public int getRedisStop() {
+        return getStart() + pageSize - 1;
     }
 }

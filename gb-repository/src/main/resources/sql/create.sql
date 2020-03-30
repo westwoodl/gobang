@@ -51,3 +51,4 @@ create table gb_room (
     room_password varchar(20) comment '房间密码'
 );
 create index query_room_by_create_user_index on gb_room(create_user);
+insert into gb_room values (1, null,now(),1,1,2,null,null,1,'fuckYouRoom','123');

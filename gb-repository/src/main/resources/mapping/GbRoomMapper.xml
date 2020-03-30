@@ -58,8 +58,8 @@
                 and room_name = #{t.roomName}
             </if>
         </where>
-        limit #{offset}, #{limit}
         order by create_time
+        limit #{offset}, #{limit}
     </select>
 
     <select id="countAll" resultType="int">

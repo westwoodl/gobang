@@ -2,6 +2,9 @@ package com.xrc.gb.repository.domain.go;
 
 import com.xrc.gb.repository.domain.BaseDO;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -10,6 +13,7 @@ import java.util.Date;
  * @author xu rongchao
  * @date 2020/3/28 11:28
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class RoomDO extends BaseDO implements Serializable {
     private static final long serialVersionUID = -50276990212253640L;

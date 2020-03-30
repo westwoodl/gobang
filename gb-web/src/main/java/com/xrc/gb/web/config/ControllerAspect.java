@@ -1,5 +1,6 @@
 package com.xrc.gb.web.config;
 
+import com.xrc.gb.util.ExceptionHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -35,6 +36,7 @@ public class ControllerAspect {
         try {
             obj = pjp.proceed();
         } catch (Throwable throwable) {
+            log.info("Controller:erro{}", throwable.getMessage());
             throw throwable;
         }
         stopWatch.stop();

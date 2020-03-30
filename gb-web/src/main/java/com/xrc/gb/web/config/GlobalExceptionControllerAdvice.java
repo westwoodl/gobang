@@ -1,5 +1,6 @@
 package com.xrc.gb.web.config;
 
+import com.alibaba.fastjson.JSONObject;
 import com.xrc.gb.exception.BusinessException;
 import com.xrc.gb.exception.SystemBusyException;
 import com.xrc.gb.web.common.JSONObjectResult;
@@ -20,17 +21,30 @@ import java.io.IOException;
  * @date 2020/3/9 20:32
  */
 @ControllerAdvice
-public class GlobalControllerAdvice {
+public class GlobalExceptionControllerAdvice {
 
     @ExceptionHandler(SystemBusyException.class)
     @ResponseBody
-    public JSONObjectResult handleSystemBusyException(SystemBusyException ex) {
+    public JSONObject handleSystemBusyException(SystemBusyException ex) {
         return JSONObjectResult.create().fail(ex.getMessage());
     }
 
     @ExceptionHandler(BusinessException.class)
     @ResponseBody
-    public JSONObjectResult handleBusinessException(BusinessException ex) {
+    public JSONObject Exception(BusinessException ex) {
+        return JSONObjectResult.create().fail(ex.getMessage());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseBody
+    public JSONObject handleBusinessException(RuntimeException ex) {
+        return JSONObjectResult.create().fail(ex.getMessage());
+    }
+
+    @ExceptionHandler(Error.class)
+    @ResponseBody
+    public JSONObject handleBusinessException11(Error ex) {
+        ex.printStackTrace();
         return JSONObjectResult.create().fail(ex.getMessage());
     }
 
@@ -54,12 +68,12 @@ public class GlobalControllerAdvice {
      * @param e
      * @return
      */
-    @ExceptionHandler(Exception.class)
-    public ModelAndView Exception(Exception e) {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("msg", e.getMessage());
-        modelAndView.setViewName("/xrc/error");
-        return modelAndView;
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ModelAndView Exception(Exception e) {
+//        ModelAndView modelAndView = new ModelAndView();
+//        modelAndView.addObject("msg", e.getMessage());
+//        modelAndView.setViewName("/xrc/error");
+//        return modelAndView;
+//    }
 
 }

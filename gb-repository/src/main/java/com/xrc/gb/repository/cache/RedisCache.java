@@ -15,12 +15,13 @@ import org.springframework.data.redis.core.ValueOperations;
 /**
  * redis 缓存工具类
  *
- * 2020/3/29 有必要改成泛型 TODO
  *
  * @author xu rongchao
  * @date 2020/3/5 9:36
+ * @see TypeRedisCache
  */
 @Slf4j
+@Deprecated
 public class RedisCache {
     protected RedisTemplate<String, Object> redisTemplate;
 

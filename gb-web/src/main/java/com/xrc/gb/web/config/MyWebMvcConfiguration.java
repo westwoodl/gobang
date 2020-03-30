@@ -3,6 +3,7 @@ package com.xrc.gb.web.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -34,8 +35,10 @@ public class MyWebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         //符合如下url的会运行loginHandlerInterceptor的方法
-        registry.addInterceptor(loginHandlerInterceptor).
-                addPathPatterns("/**")
+        InterceptorRegistration loginRegistry = registry.addInterceptor(loginHandlerInterceptor);
+        loginRegistry.addPathPatterns("/**")
+                .excludePathPatterns("/error")
+                .excludePathPatterns("/user/login")
                 .excludePathPatterns("/login", "/register")
                 .excludePathPatterns("/room", "/room/*").addPathPatterns("/room/create")
                 .excludePathPatterns("/gobang/query")

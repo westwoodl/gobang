@@ -21,19 +21,23 @@ public class RoomServiceImpl {
 
 
     public PageQueryResultResp<List<RoomDO>> queryPage(PageQueryReq<RoomDO> pageQueryReq) {
+        CheckParameter.isNotNull(pageQueryReq);
+        CheckParameter.isNotNull(pageQueryReq.getData());
+
         return roomManager.queryPage(pageQueryReq);
     }
 
     public boolean create(RoomDO roomDO) {
+        CheckParameter.isNotNull(roomDO);
+        CheckParameter.isNotNull(roomDO.getRoomName());
+        CheckParameter.isNotNull(roomDO.getCreateUser());
+        CheckParameter.isNotNull(roomDO.getRoomStatus());
         return roomManager.createRoom(roomDO);
     }
 
     public boolean update(RoomDO roomDO) {
         CheckParameter.isNotNull(roomDO);
         CheckParameter.isNotNull(roomDO.getId());
-
-
-
         return roomManager.update(roomDO);
     }
 

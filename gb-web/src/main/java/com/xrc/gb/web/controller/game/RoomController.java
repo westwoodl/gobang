@@ -39,8 +39,9 @@ public class RoomController extends AbstractController {
 
     @GetMapping
     public JSONObject queryPage() {
-        roomService.queryPage(getPageQueryReq());
-        return JSONObjectResult.create().success();
+        PageQueryReq<RoomDO> roomDOPageQueryReq = getPageQueryReq();
+        roomDOPageQueryReq.setData(new RoomDO());
+        return JSONObjectResult.create().success(roomService.queryPage(roomDOPageQueryReq));
     }
 
     @PutMapping
