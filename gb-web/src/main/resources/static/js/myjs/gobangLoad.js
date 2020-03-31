@@ -2,10 +2,10 @@ var over = false;
 var me = true; //我
 var resultTxt = document.getElementById('result-wrap');
 
-var broad_size = 1000; //****** 棋盘的大小
+var broad_size = 700; //****** 棋盘的大小
 var line_num = 19; // *****线的数量
 var bSize = broad_size / (line_num + 1);
-var font_size = 17;
+var font_size = 13;
 
 var chressBord = [];//棋盘
 for (var i = 0; i < line_num; i++) {
@@ -24,17 +24,27 @@ context.strokeStyle = '#000000'; //边框颜色
 // 图片
 var img = new Image();
 img.src = "../static/image/go/board.jpg";
-img.height = '1000px';
-img.width = "1000px";
+
 //棋子
 var b1_img = new Image();
 b1_img.src = "../static/image/go/b1.png";
+b1_img.width = bSize - 1;
+b1_img.height = bSize - 1;
+
 var b2_img = new Image();
 b2_img.src = "../static/image/go/b2.png";
+b2_img.width = bSize - 1;
+b2_img.height = bSize - 1;
+
 var w1_img = new Image();
 w1_img.src = "../static/image/go/w1.png";
+w1_img.width = bSize - 1;
+w1_img.height = bSize - 1;
+
 var w2_img = new Image();
 w2_img.src = "../static/image/go/w2.png";
+w2_img.width = bSize - 1;
+w2_img.height = bSize - 1;
 
 
 window.onload = function () {
@@ -55,6 +65,7 @@ chess.onclick = function (e) {
         oneStep(i, j, me, bSize);
         chressBord[i][j] = me ? 1 : 2; //我，已占位置
         me = !me;
+        playSound();
     }
 };
 //悬停提示
@@ -69,7 +80,13 @@ chess.onmousemove = function (e) {
 
     var i = Math.floor((x - bSize / 2) / bSize);
     var j = Math.floor((y - bSize / 2) / bSize);
+    if (i < 0 || j < 0 || i >= chressBord.length || j >= chressBord.length) {
+        return;
+    }
     if (chressBord[i][j] === 0) {
+        if (las_move_j ===j && las_move_i === i) {
+            return;
+        }
         if (las_move_i >= 0 && las_move_j >= 0 && chressBord[las_move_i][las_move_j] === 0) {
             reflash()
         }
@@ -77,7 +94,7 @@ chess.onmousemove = function (e) {
         las_move_j = j;
         oneStep(i, j, me, bSize, true);
     }
-}
+};
 
 
 function reflash() {
