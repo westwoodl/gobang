@@ -42,7 +42,6 @@
             display: flex;
             justify-content: space-between;
         }
-
         table {
             box-shadow: 1px 1px 3px gray;
         }
@@ -52,6 +51,7 @@
 <!--<body>-->
 <body bgcolor="#2B2B2B">
 <div id="wrap">
+    <!--导航-->
     <div style="background: #2B2B2B;width:250px">
 
         <ul class="layui-nav layui-nav-tree  layui-nav-side" lay-filter="demo" style="margin-right: 10px;width: 250px">
@@ -516,9 +516,14 @@
 
     <div id="user_detail_div" class="layui-anim layui-anim-scale" style="display: none;margin-top: 40px;">
         <div class="layui-card" style="box-shadow: 1px 1px 2px gray;width: 700px">
-            <div class="layui-card-header">
-                <img src="http://pic4.zhimg.com/50/v2-7fece9a613445edb78271216c8c20c6d_hd.jpg" class="layui-nav-img">
-                西部木头</div>
+            <div class="layui-card-header" style="height: 70px;display: flex;justify-content: space-between;">
+                <div style="margin-top: 10px">
+                    <img src="http://pic4.zhimg.com/50/v2-7fece9a613445edb78271216c8c20c6d_hd.jpg"
+                         class="layui-nav-img">
+                    西部木头
+                </div>
+                <div id="user_start_div"></div>
+            </div>
             <div class="layui-card-body" style="">
                 <i class="layui-icon layui-icon-email" style="font-size: 18px; color: #1E9FFF;"></i>
                 &nbsp;12312323321<br>
@@ -552,7 +557,7 @@
 <script type="text/javascript" src="../static/js/myjs/room.js"></script>
 <!--收藏-->
 <script type="text/javascript" src="../static/js/myjs/collection.js"></script>
-<!--记录-->
+<!--记录，用户-->
 <script type="text/javascript" src="../static/js/myjs/user.js"></script>
 <!--页面加载 用户事件-->
 <script type="text/javascript" src="../static/js/myjs/gobangLoad.js"></script>
@@ -560,6 +565,7 @@
 <script src="https://www.layuicdn.com/layui-v2.5.6/layui.js" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
 
+    var base_gobang_url = "127.0.0.1:8080";
     //导航 依赖 element 模块，否则无法进行功能性操作
     layui.use('element', function () {
         var element = layui.element;

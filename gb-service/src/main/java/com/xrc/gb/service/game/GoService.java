@@ -6,6 +6,8 @@ import com.xrc.gb.manager.go.dto.GoQueryResp;
 import com.xrc.gb.util.PageQueryReq;
 import com.xrc.gb.util.PageQueryResultResp;
 
+import java.util.List;
+
 /**
  * 预计围棋和五子棋都能实现该接口
  *
@@ -18,7 +20,7 @@ public interface GoService {
 
     GoQueryResp queryGame(Integer id);
 
-    PageQueryResultResp<GoQueryResp> queryGameList(PageQueryReq<GoQueryResp> pageQueryReq);
+    PageQueryResultResp<List<GoQueryResp>> queryGameList(PageQueryReq<GoQueryResp> pageQueryReq);
 
     PlaceResultTypeEnum updateGameForPlace(GoPlaceReq goPlaceReq);
 

@@ -24,6 +24,7 @@ public class GoBangGameVO implements Serializable {
 //    @NotNull(message = "房间号不能为空")
 //    private Integer roomId;
 
+
     private Date endTime;
 
 }

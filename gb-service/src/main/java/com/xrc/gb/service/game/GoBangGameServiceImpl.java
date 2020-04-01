@@ -11,6 +11,7 @@ import com.xrc.gb.manager.go.dto.GoContext;
 import com.xrc.gb.manager.go.dto.GoPieces;
 import com.xrc.gb.manager.go.dto.GoPlaceReq;
 import com.xrc.gb.manager.go.dto.GoQueryResp;
+import com.xrc.gb.repository.dao.GoDAO;
 import com.xrc.gb.repository.domain.go.GoDO;
 import com.xrc.gb.util.CheckParameter;
 import com.xrc.gb.util.ExceptionHelper;
@@ -19,7 +20,6 @@ import com.xrc.gb.util.PageQueryResultResp;
 import com.xrc.gb.work.GoGameFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -34,6 +34,9 @@ import java.util.List;
 public class GoBangGameServiceImpl implements GoService {
     @Resource
     private GoDataManager goDataManager;
+
+    @Resource
+    private GoDAO goDAO;
 
     @Override
     public boolean createGame(GoQueryResp goQueryResp) {
@@ -84,8 +87,20 @@ public class GoBangGameServiceImpl implements GoService {
     }
 
     @Override
-    public PageQueryResultResp<GoQueryResp> queryGameList(PageQueryReq<GoQueryResp> pageQueryReq) {
-        return null;
+    public PageQueryResultResp<List<GoQueryResp>> queryGameList(PageQueryReq<GoQueryResp> pageQueryReq) {
+        int count = goDAO.countAll(buildGoDO(pageQueryReq.getData()));
+        PageQueryResultResp<List<GoQueryResp>> resultResp = pageQueryReq.getQueryResult(count);
+        if (count < 1) {
+            return resultResp;
+        }
+        List<GoDO> goDOS = goDAO.queryAllByLimit(buildGoDO(pageQueryReq.getData()),
+                pageQueryReq.getOffSet(), pageQueryReq.getPageSize());
+        if (CollectionUtils.isNotEmpty(goDOS)) {
+            for (GoDO goDO : goDOS) {
+                resultResp.getData().add(buildGoQueryResp(goDO));
+            }
+        }
+        return resultResp;
     }
 
     /**

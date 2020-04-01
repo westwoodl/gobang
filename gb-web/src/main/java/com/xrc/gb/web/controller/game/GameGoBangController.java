@@ -8,6 +8,7 @@ import com.xrc.gb.manager.go.dto.GoPlaceReq;
 import com.xrc.gb.manager.go.dto.GoQueryResp;
 import com.xrc.gb.repository.domain.go.GoDO;
 import com.xrc.gb.service.game.GoBangGameServiceImpl;
+import com.xrc.gb.util.PageQueryReq;
 import com.xrc.gb.web.common.JSONObjectResult;
 import com.xrc.gb.web.controller.AbstractController;
 import com.xrc.gb.web.controller.vo.GoBangGameVO;
@@ -44,14 +45,26 @@ public class GameGoBangController extends AbstractController {
         return JSONObjectResult.create().success(placeResultTypeEnum.getDesc());
     }
 
+    @GetMapping("/queryByUserId")
+    public JSONObject queryByUserId(@RequestParam(required = false) String name) {
+        PageQueryReq<GoQueryResp> pageQueryReq = getPageQueryReq();
+        GoQueryResp goQueryResp = new GoQueryResp();
+        //goQueryResp.set; //todo 添加房间名
+        goQueryResp.setBlackUserId(getUserId());
+        goQueryResp.setWhiteUserId(getUserId());
+        pageQueryReq.setData(goQueryResp);
+
+        return JSONObjectResult.create().success(goBangGameService.queryGameList(pageQueryReq));
+    }
+
 
     @PostMapping
     public JSONObject create(@RequestBody @Validated GoBangGameVO goBangGameVO, BindingResult bindResult) {
-        if(bindResult.hasErrors()) {
+        if (bindResult.hasErrors()) {
             JSONObjectResult.create().fail(bindResult.getAllErrors().get(0).getDefaultMessage());
         }
         GoQueryResp goQueryResp = buildGoQueryResp(goBangGameVO);
-        if(goBangGameService.createGame(goQueryResp)) {
+        if (goBangGameService.createGame(goQueryResp)) {
             return JSONObjectResult.create().success("创建成功");
         } else {
             return JSONObjectResult.create().fail("创建失败");
