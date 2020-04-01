@@ -2,6 +2,7 @@ package com.xrc.gb.service.user;
 
 import com.xrc.gb.repository.dao.UserDAO;
 import com.xrc.gb.repository.domain.user.UserDO;
+import com.xrc.gb.util.ExceptionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,12 @@ public class UserServiceImpl implements UserService{
     private UserDAO userDAO;
 
     public boolean add(String username, String account, String password) {
+        if(userDAO.queryByUserName(username)!=null) {
+            throw ExceptionHelper.newBusinessException("昵称已存在");
+        }
+        if(userDAO.queryByUserName(account)!=null) {
+            throw ExceptionHelper.newBusinessException("账号已存在");
+        }
 
         UserDO userDO = new UserDO();
         userDO.setUserName(username);
@@ -30,5 +37,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserDO find(Integer id) {
         return userDAO.queryById(id);
+    }
+
+    @Override
+    public UserDO login(String account, String pwd) {
+        return userDAO.queryByAccountAndPwd(account, pwd);
     }
 }

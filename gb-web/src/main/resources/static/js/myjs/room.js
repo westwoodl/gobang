@@ -8,7 +8,7 @@ function roomListShow() {
     });
     $("body").css("background", "#F8F9FA");
 
-    useLayuiPage('room_page_div');
+    roomUseLayuiPage();
 
     console.log("room");
     return false;
@@ -46,11 +46,8 @@ function creatRoom() {
                     $dom.find("#span").attr("style", "font-size: 10px;color: red;margin-top: 20px;");
                     return;
                 }
-                if(creatRoomRequest(room_name, room_pwd) === true) {
+                if(creatRoomRequest(room_name, room_pwd, $dom) === true) {
                     layer.close(index); //如果设定了yes回调，需进行手工关闭
-                } else {
-                    $dom.find("#span").html("系统繁忙，创建失败")
-                    $dom.find("#span").attr("style", "font-size: 10px;color: red;margin-top: 20px;");
                 }
             }
         });
@@ -58,43 +55,85 @@ function creatRoom() {
 
 }
 
-function creatRoomRequest(room_name, room_password) {
-    //TODO
-    return false;
+function creatRoomRequest(room_name, room_password, $dom) {
+    let isSuccess = false;
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: base_gobang_url + "/room/create",
+        xhrFields: {withCredentials:true},	//前端适配：允许session跨域
+        crossDomain: true,
+        contentType: "application/json",
+        data:JSON.stringify( {
+            "roomName": room_name,
+            "roomPassword": room_password
+        }),
+        dataType: "json",
+        success: function (data) {
+            domTipsShow($dom, data.msg);
+            isSuccess = data.success;
+        },
+        error: function () {
+            alert("系统繁忙");
+        }
+    });
+    return isSuccess;
 }
 
 function queryRoomRequest(pageIndex, pageSize) {
-    //TODO
-    return false;
+    let totalCount = 0;
+    $.ajax({
+        async: false,
+        type: "GET",
+        url: base_gobang_url + "/room",
+        xhrFields: {withCredentials:true},	//前端适配：允许session跨域
+        crossDomain: true,
+        data: {
+            pageIndex: pageIndex,
+            pageSize: pageSize
+        },
+        dataType: "json",
+        success: function (data) {
+            isSuccess = data.success;
+            alertLayer(data.msg);
+
+            totalCount = data.data.totalCount;
+            new Vue({
+                el: '#room_table_div',
+                data: {
+                    dataList: data.data.data
+                }
+            });
+
+        },
+        error: function () {
+            alert("系统繁忙");
+        }
+    });
+    return totalCount;
 }
 
-/**
- * 计划不用
- */
-function useLayuiTable() {
-    layui.use('table', function () {
-        var table = layui.table;
-
-        //第一个实例
-        table.render({
-            elem: '#demo'
-            , height: 312
-            , url: '/demo/table/user/' //数据接口
-            , page: true //开启分页
-            , cols: [[ //表头
-                {field: 'id', title: 'ID', width: 80, sort: true, fixed: 'left'}
-                , {field: 'username', title: '用户名', width: 80}
-                , {field: 'sex', title: '性别', width: 80, sort: true}
-                , {field: 'city', title: '城市', width: 80}
-                , {field: 'sign', title: '签名', width: 177}
-                , {field: 'experience', title: '积分', width: 80, sort: true}
-                , {field: 'score', title: '评分', width: 80, sort: true}
-                , {field: 'classify', title: '职业', width: 80}
-                , {field: 'wealth', title: '财富', width: 135, sort: true}
-            ]]
+function roomUseLayuiPage() {
+    layui.use('laypage', function () {
+        var laypage = layui.laypage;
+        let count = queryRoomRequest(1, 10);
+        //执行一个laypage实例
+        laypage.render({
+            elem: "room_page_div" //注意，这里的 test1 是 ID，不用加 # 号
+            , count: count //数据总数，从服务端得到
+            , layout: ['count', 'prev', 'page', 'next', 'limit', 'skip'] //refresh
+            , jump: function (obj, first) {
+                //obj包含了当前分页的所有参数，比如：
+                console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                console.log(obj.limit); //得到每页显示的条数
+                // //首次不执行
+                if (!first) {
+                    queryRoomRequest(obj.curr, obj.limit);
+                }
+            }
         });
-
     });
+
 }
 
 function useLayuiPage(page_id) {

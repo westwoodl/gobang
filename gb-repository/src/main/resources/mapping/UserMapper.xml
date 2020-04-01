@@ -13,6 +13,22 @@
   <sql id="Base_Column_List" >
     user_id, user_name, user_account, user_password, user_power, create_time, modify_time
   </sql>
+
+  <select id="queryByUserName" resultMap="BaseResultMap" >
+    select <include refid="Base_Column_List" />
+    from gb_user
+    where user_name=#{account}
+  </select>
+  <select id="queryByAccountAndPwd" resultMap="BaseResultMap" >
+    select <include refid="Base_Column_List" />
+    from gb_user
+    where user_account=#{account} and user_password=#{pwd}
+  </select>
+  <select id="queryByAccount" resultMap="BaseResultMap" >
+    select <include refid="Base_Column_List" />
+    from gb_user
+    where user_account=#{account}
+  </select>
   <select id="queryById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
@@ -27,8 +43,8 @@
     insert into gb_user ( user_name, user_account,
       user_password, user_power, create_time,
       modify_time)
-    values ( #{userName,jdbcType=VARCHAR}, #{userAccount,jdbcType=VARCHAR},
-      #{userPassword,jdbcType=VARCHAR}, #{userPower,jdbcType=INTEGER}, now(),
+    values ( #{userName,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR},
+      #{password,jdbcType=VARCHAR}, #{userPower,jdbcType=INTEGER}, now(),
       now())
   </insert>
   <update id="update" parameterType="com.xrc.gb.repository.domain.user.UserDO" >
@@ -37,11 +53,11 @@
       <if test="userName != null" >
         user_name = #{userName,jdbcType=VARCHAR},
       </if>
-      <if test="userAccount != null" >
-        user_account = #{userAccount,jdbcType=VARCHAR},
+      <if test="account != null" >
+        user_account = #{account,jdbcType=VARCHAR},
       </if>
-      <if test="userPassword != null" >
-        user_password = #{userPassword,jdbcType=VARCHAR},
+      <if test="password != null" >
+        user_password = #{password,jdbcType=VARCHAR},
       </if>
       <if test="userPower != null" >
         user_power = #{userPower,jdbcType=INTEGER},

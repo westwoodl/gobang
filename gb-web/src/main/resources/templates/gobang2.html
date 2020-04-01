@@ -42,6 +42,7 @@
             display: flex;
             justify-content: space-between;
         }
+
         table {
             box-shadow: 1px 1px 3px gray;
         }
@@ -55,9 +56,9 @@
     <div style="background: #2B2B2B;width:250px">
 
         <ul class="layui-nav layui-nav-tree  layui-nav-side" lay-filter="demo" style="margin-right: 10px;width: 250px">
-            <li class="layui-nav-item"><a href="javascript:;">
+            <li class="layui-nav-item"><a href="javascript:;" id="user_a">
                 <img src="http://pic4.zhimg.com/50/v2-7fece9a613445edb78271216c8c20c6d_hd.jpg" class="layui-nav-img">
-                &nbsp;西部木头</a>
+                &nbsp;请登录</a>
             </li>
             <li class="layui-nav-item"><a href="javascript:;">
                 <i class="layui-icon layui-icon-user" style="font-size: 18px; color: gray;"></i>
@@ -174,81 +175,18 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>1</td>
+                <tr v-for="data in dataList">
+                    <td>{{data.id}}</td>
                     <td>
-                        贤心的房间&nbsp;<i class="layui-icon layui-icon-password" style="font-size: 15px; color: gray;"></i>
+                        &nbsp; {{data.roomName}}
+                        <i class="layui-icon layui-icon-password" style="font-size: 15px; color: gray;"></i>
                     </td>
-                    <td>贤心222</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
+                    <td>{{data.createUser}}</td>
+                    <td>{{data.createTime}}</td>
+                    <td><span class="layui-badge layui-bg-green">{{data.roomStatus}}</span></td>
                     <td>2/2</td>
                 </tr>
 
-                <tr>
-                    <td>2</td>
-                    <td>木头的房间</td>
-                    <td>木头</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>木头的房间</td>
-                    <td>木头</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>木头的房间</td>
-                    <td>木头</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>木头的房间</td>
-                    <td>木头</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>木头的房间</td>
-                    <td>木头</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>木头的房间</td>
-                    <td>木头</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>木头的房间</td>
-                    <td>木头</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>木头的房间</td>
-                    <td>木头</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
 
                 <tr>
                     <td>3</td>
@@ -563,9 +501,10 @@
 <script type="text/javascript" src="../static/js/myjs/gobangLoad.js"></script>
 <!--laiui-->
 <script src="https://www.layuicdn.com/layui-v2.5.6/layui.js" charset="utf-8"></script>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
 <script type="text/javascript" charset="utf-8">
 
-    var base_gobang_url = "127.0.0.1:8080";
+    var base_gobang_url = "http://localhost:8080";
     //导航 依赖 element 模块，否则无法进行功能性操作
     layui.use('element', function () {
         var element = layui.element;

@@ -1,6 +1,7 @@
 package com.xrc.gb.service;
 
 import com.xrc.gb.consts.ErrorInfoConstants;
+import com.xrc.gb.exception.BusinessException;
 import com.xrc.gb.util.ExceptionHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -26,11 +27,15 @@ public class ServiceAspect {
         Object obj = null;
         try {
             obj = pjp.proceed();
+        } catch (BusinessException b) {
+            b.printStackTrace();
+            throw b;
         } catch (IllegalArgumentException e) {
             log.info("Service{}", e.getMessage());
-            throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_PARAMETER_ERROR + e.getMessage());
+            throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_PARAMETER_ERROR);
         } catch (RuntimeException e) {
-            throw ExceptionHelper.newSysException(ErrorInfoConstants.BIZ_SYSTEM_BUSY, e);
+            e.printStackTrace();
+            throw ExceptionHelper.newSysException(ErrorInfoConstants.BIZ_SYSTEM_BUSY);
         }
         return obj;
     }

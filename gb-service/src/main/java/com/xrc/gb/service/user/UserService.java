@@ -10,4 +10,6 @@ public interface UserService {
     boolean add(String username, String account, String password);
 
     UserDO find(Integer id);
+
+    UserDO login(String account, String pwd);
 }

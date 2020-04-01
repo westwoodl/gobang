@@ -192,41 +192,49 @@ function loginOrRegister() {
                 if ($dom.find(".layui-this").html() === "登录") {
                     console.log(account_input);
                     console.log(pwd_input);
-                    if (checkLoginParameter(account_input, pwd_input, $dom) && userLoginRequest(account_input, pwd_input)) {
+                    if (checkLoginParameter(account_input, pwd_input, $dom) && userLoginRequest(account_input, pwd_input, $dom)) {
                         layer.close(index); //如果设定了yes回调，需进行手工关闭
+                        alertLayer("登录成功");
                     }
                 } else {
                     //注册亲求
                     console.log(reg_name_input);
                     console.log(reg_account_input);
                     console.log(reg_pwd_input);
-                    if (checkRegParameter(reg_name_input, reg_account_input, reg_pwd_input, $dom) && userRegisterRequest(reg_name_input, reg_account_input, reg_pwd_input)) {
+                    if (checkRegParameter(reg_name_input, reg_account_input, reg_pwd_input, $dom) && userRegisterRequest(reg_name_input, reg_account_input, reg_pwd_input, $dom)) {
                         layer.close(index); //如果设定了yes回调，需进行手工关闭
+                        alertLayer("注册成功");
                     }
                 }
             }
         });
     });
     return false;
-    //todo
-    return false;
 }
 
 //登录亲求
-function userLoginRequest(account_input, pwd_input) {
+function userLoginRequest(account_input, pwd_input, $dom) {
     let isSuccess = false;
     $.ajax({
         async: false,
         type: "GET",
         url: base_gobang_url + "/user/login",
+        xhrFields: {withCredentials:true},	//前端适配：允许session跨域
+        crossDomain: true,
         data: {
             account: account_input,
             password: pwd_input
         },
         dataType: "json",
         success: function (data) {
-            console.log(data);
-            isSuccess = false;
+            domTipsShow($dom, data.msg);
+            isSuccess = data.success;
+            if(isSuccess) {
+                $("#user_a").html(
+                    '<img src="http://pic4.zhimg.com/50/v2-7fece9a613445edb78271216c8c20c6d_hd.jpg" class="layui-nav-img">\n' +
+                    '&nbsp;' + data.data.userName
+                );
+            }
         },
         error: function () {
             alert("系统繁忙");
@@ -236,8 +244,29 @@ function userLoginRequest(account_input, pwd_input) {
 }
 
 //注册亲求
-function userRegisterRequest(reg_name_input, reg_account_input, reg_pwd_input) {
-    return false;
+function userRegisterRequest(reg_name_input, reg_account_input, reg_pwd_input, $dom) {
+    let isSuccess = false;
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: base_gobang_url + "/user",
+        xhrFields: {withCredentials:true},	//前端适配：允许session跨域
+        crossDomain: true,
+        data: {
+            userName: reg_name_input,
+            account: reg_account_input,
+            password: reg_pwd_input
+        },
+        dataType: "json",
+        success: function (data) {
+            domTipsShow($dom, data.msg);
+            isSuccess = data.success;
+        },
+        error: function () {
+            alert("系统繁忙");
+        }
+    });
+    return isSuccess;
 }
 
 function queryUserRequest(user_name) {
@@ -259,10 +288,14 @@ function checkRegParameter(reg_name_input, reg_account_input, reg_pwd_input, $do
     if (reg_name_input.length > 1 && reg_name_input.length < 6) {
         return checkLoginParameter(reg_account_input, reg_pwd_input, $dom);
     } else {
-        $dom.find("#span").html("昵称只能是1-5位");
-        $dom.find("#span").attr("style", "font-size: 10px;color: red;margin-top: 20px;");
+        domTipsShow($dom, "昵称只能是1-5位");
         return false;
     }
+}
+
+function domTipsShow($dom, msg) {
+    $dom.find("#span").html(msg);
+    $dom.find("#span").attr("style", "font-size: 10px;color: red;margin-top: 20px;");
 }
 
 function checkLoginParameter(account_input, pwd_input, $dom) {
@@ -270,13 +303,11 @@ function checkLoginParameter(account_input, pwd_input, $dom) {
         if (checkOneParameter(pwd_input)) {
             return true;
         } else {
-            $dom.find("#span").html("密码只能是4-10位的数字和字母");
-            $dom.find("#span").attr("style", "font-size: 10px;color: red;margin-top: 20px;");
+            domTipsShow($dom, "密码只能是3-10位的数字和字母");
             return false;
         }
     } else {
-        $dom.find("#span").html("账号只能是4-10位的数字和字母");
-        $dom.find("#span").attr("style", "font-size: 10px;color: red;margin-top: 20px;");
+        domTipsShow($dom, "账号只能是3-10位的数字和字母");
         return false;
     }
 }
@@ -285,7 +316,7 @@ function checkOneParameter(one_str) {
     if (one_str.length < 1) {
         return false;
     }
-    if (one_str.length < 4) {
+    if (one_str.length < 3) {
         return false;
     }
     if (one_str.length > 10) {

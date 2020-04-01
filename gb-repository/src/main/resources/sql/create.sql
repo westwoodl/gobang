@@ -8,7 +8,7 @@ create table gb_user (
     user_name varchar(20) not null ,
     user_account varchar(20) unique not null ,
     user_password varchar(20) not null ,
-    user_power int not null default 0,
+    user_power int default 0,
     create_time timestamp not null ,
     modify_time timestamp
 );

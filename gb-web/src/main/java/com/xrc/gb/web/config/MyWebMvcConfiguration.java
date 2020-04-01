@@ -3,10 +3,7 @@ package com.xrc.gb.web.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -39,10 +36,23 @@ public class MyWebMvcConfiguration implements WebMvcConfigurer {
         loginRegistry.addPathPatterns("/**")
                 .excludePathPatterns("/error")
                 .excludePathPatterns("/user/login")
-                .excludePathPatterns("/login", "/register")
-                .excludePathPatterns("/room", "/room/*").addPathPatterns("/room/create")
+                .excludePathPatterns("/user")
+                .excludePathPatterns("/room").addPathPatterns("/room/create")
                 .excludePathPatterns("/gobang/query")
                 .excludePathPatterns("/static/**");
+    }
+
+    /**
+     * 允许跨域请求 todo 减少允许范围
+     */
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+
+        registry.addMapping("/**")
+                .allowCredentials(true)
+                .allowedHeaders("*")
+                .allowedOrigins("*")
+                .allowedMethods("*");
     }
 
 }

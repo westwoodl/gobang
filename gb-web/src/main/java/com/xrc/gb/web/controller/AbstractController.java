@@ -1,10 +1,13 @@
 package com.xrc.gb.web.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.xrc.gb.consts.CommonConst;
+import com.xrc.gb.repository.domain.user.UserDO;
 import com.xrc.gb.util.ExceptionHelper;
 import com.xrc.gb.util.PageQueryReq;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -26,15 +29,38 @@ public abstract class AbstractController {
         return pageQueryReq;
     }
 
+    /**
+     * 一天的session
+     */
+    protected void addUserSession(UserDO userDO) {
+        HttpSession session = getRequest().getSession();
+        session.setAttribute("user", JSONObject.toJSONString(userDO));
+        session.setMaxInactiveInterval(60 * 60 * 24); //单位为秒
+    }
+
     protected void hasError(@NonNull BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw ExceptionHelper.newBusinessException(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
     }
 
+    @Nullable
     protected Integer getUserId() {
+        UserDO userDO = getUserDO();
+        if (userDO != null) {
+            return userDO.getUserId();
+        }
+        return null;
+    }
+
+    @Nullable
+    protected UserDO getUserDO() {
         HttpSession session = getRequest().getSession();
-        return (Integer) session.getAttribute("user");
+        String s = String.valueOf(session.getAttribute("user"));
+        if (StringUtils.isNotBlank(s)) {
+            return JSONObject.parseObject(s, UserDO.class);
+        }
+        return null;
     }
 
 //    protected UserInfoResp getUserInfo() {

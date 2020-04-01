@@ -1,10 +1,15 @@
 package com.xrc.gb.web.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.xrc.gb.repository.domain.user.UserDO;
 import com.xrc.gb.service.user.UserService;
 import com.xrc.gb.web.common.JSONObjectResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author xu rongchao
@@ -12,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class UserController extends AbstractController {
     @Autowired
     UserService userService;
 
@@ -23,9 +28,16 @@ public class UserController {
 
 
     @GetMapping("/login")
-    public JSONObject login(@RequestParam(required = false) String account,
-                            @RequestParam(required = false) String password) {
-        return JSONObjectResult.create().success();
+    public JSONObject login(@RequestParam String account,
+                            @RequestParam String password, HttpServletRequest httpServletRequest) {
+        UserDO userDO = userService.login(account, password);
+        HttpSession httpSession = httpServletRequest.getSession();
+        boolean ise = httpServletRequest == RequestContextHolder.getRequestAttributes();
+        if (userDO != null) {
+            addUserSession(userDO);
+            return JSONObjectResult.create().success("登录成功", userDO);
+        }
+        return JSONObjectResult.create().fail("用户名或密码错误");
     }
 
     @PostMapping

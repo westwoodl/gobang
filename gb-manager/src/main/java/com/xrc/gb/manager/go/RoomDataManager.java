@@ -72,7 +72,7 @@ public class RoomDataManager {
 
     public boolean createRoom(@NonNull RoomDO roomDO) {
         if (roomDAO.insert(roomDO) > 0) {
-            roomTypeRedisCache.zSetAdd(ROOM_SET_CACHE_KEY, roomDO, roomDO.getId());
+            roomTypeRedisCache.zSetAdd(ROOM_SET_CACHE_KEY, roomDAO.queryById(roomDO.getGoId()),  roomDO.getId());
             return true;
         }
         return false;
