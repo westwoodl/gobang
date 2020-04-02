@@ -12,6 +12,10 @@ public class JSONObjectResult extends JSONObject{
     private JSONObjectResult() {
     }
 
+    public JSONObjectResult isSuccess(boolean isSuccess) {
+        return isSuccess ? this.success() : this.fail();
+    }
+
     public static JSONObjectResult create() {
         return new JSONObjectResult();
     }
@@ -24,6 +28,9 @@ public class JSONObjectResult extends JSONObject{
     }
 
     public JSONObjectResult success(String msg, Object obj) {
+        if (obj == null) {
+            return fail("没有数据");
+        }
         success("200", msg);
         this.put("data", obj);
         return this;
@@ -34,6 +41,9 @@ public class JSONObjectResult extends JSONObject{
     }
 
     public JSONObjectResult success(Object obj) {
+        if (obj == null) {
+            return fail("没有数据");
+        }
         success();
         this.put("data", obj);
         return this;

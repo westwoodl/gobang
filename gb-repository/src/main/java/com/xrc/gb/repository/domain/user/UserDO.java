@@ -20,4 +20,10 @@ public class UserDO extends BaseDO {
 
     private Integer userPower;
 
+    private String img;
+    private String autograph;
+    private String friend;
+
+    private Integer status;
+
 }

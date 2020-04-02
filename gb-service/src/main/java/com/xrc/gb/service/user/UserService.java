@@ -12,4 +12,6 @@ public interface UserService {
     UserDO find(Integer id);
 
     UserDO login(String account, String pwd);
+
+    boolean update(UserDO userDO);
 }

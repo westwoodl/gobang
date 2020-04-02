@@ -91,6 +91,17 @@ public class TypeRedisCache<T> {
         return boo(redisTemplate.opsForZSet().add(key, value, score));
     }
 
+    public T zSetGet(String key, double score) {
+        Set<T> set = redisTemplate.opsForZSet().rangeByScore(key, score, score);
+        if (set == null) {
+            return null;
+        }
+        for(T t : set) {
+            return t;
+        }
+        return null;
+    }
+
     public int zSetCount(final String key) {
         return longToInt(redisTemplate.opsForZSet().size(key));
     }

@@ -44,4 +44,9 @@ public class RoomServiceImpl {
     public boolean delete(int roomId) {
         return roomManager.deleteById(roomId);
     }
+
+    public RoomDO queryById(Integer id) {
+        CheckParameter.isNotNull(id);
+        return roomManager.queryById(id);
+    }
 }

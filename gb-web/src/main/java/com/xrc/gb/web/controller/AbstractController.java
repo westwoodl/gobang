@@ -3,6 +3,7 @@ package com.xrc.gb.web.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.xrc.gb.consts.CommonConst;
 import com.xrc.gb.repository.domain.user.UserDO;
+import com.xrc.gb.service.user.UserServiceImpl;
 import com.xrc.gb.util.ExceptionHelper;
 import com.xrc.gb.util.PageQueryReq;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +37,11 @@ public abstract class AbstractController {
         HttpSession session = getRequest().getSession();
         session.setAttribute("user", JSONObject.toJSONString(userDO));
         session.setMaxInactiveInterval(60 * 60 * 24); //单位为秒
+    }
+
+    protected void deleteUserSession() {
+        HttpSession session = getRequest().getSession();
+        session.removeAttribute("user");
     }
 
     protected void hasError(@NonNull BindingResult bindingResult) {

@@ -10,13 +10,17 @@ create table gb_user (
     user_password varchar(20) not null ,
     user_power int default 0,
     create_time timestamp not null ,
-    modify_time timestamp
+    modify_time timestamp,
+    img varchar(100),
+    autograph varchar(50),
+    friend varchar(50),
+    status int default 0
 );
 -- 创建用户昵称index
 create index user_name_index on gb_user(user_name);
 insert into gb_user
-values (1, 'xrc', 'xrc', '123', 1, now(), now()),
-       (2, 'xrc1', 'xrc1', '123', 1, now(), now());
+values (1, 'xrc', 'xrc', '123', 1, now(), now(), null, null, null, null),
+       (2, 'xrc1', 'xrc1', '123', 1, now(), now(), null, null, null, null);
 
 drop table if exists gb_go;
 -- 创建棋盘记录表

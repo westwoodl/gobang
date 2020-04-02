@@ -6,6 +6,7 @@ import com.xrc.gb.repository.dao.RoomDAO;
 import com.xrc.gb.repository.domain.go.RoomDO;
 import com.xrc.gb.util.PageQueryReq;
 import com.xrc.gb.util.PageQueryResultResp;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,7 @@ import java.util.Set;
  */
 @Component
 @Transactional
+@Slf4j
 public class RoomDataManager {
 
     @Resource
@@ -65,6 +67,7 @@ public class RoomDataManager {
                         roomTypeRedisCache.zSetAdd(ROOM_SET_CACHE_KEY, roomDO, roomDO.getId());
                     }
                 }
+                System.out.println("缓存穿透：" + roomDOList);
             }
         }
         return resultResp;
@@ -72,7 +75,7 @@ public class RoomDataManager {
 
     public boolean createRoom(@NonNull RoomDO roomDO) {
         if (roomDAO.insert(roomDO) > 0) {
-            roomTypeRedisCache.zSetAdd(ROOM_SET_CACHE_KEY, roomDAO.queryById(roomDO.getGoId()),  roomDO.getId());
+            roomTypeRedisCache.zSetAdd(ROOM_SET_CACHE_KEY, roomDAO.queryById(roomDO.getId()), roomDO.getId());
             return true;
         }
         return false;
@@ -91,5 +94,19 @@ public class RoomDataManager {
             roomTypeRedisCache.zSetAdd(ROOM_SET_CACHE_KEY, roomDO, roomDO.getId());
         }
         return false;
+    }
+
+    public RoomDO queryById(@NonNull Integer roomId) {
+        RoomDO roomDO = roomTypeRedisCache.zSetGet(ROOM_SET_CACHE_KEY, roomId);
+        if (roomDO != null && roomId.equals(roomDO.getId())) {
+            return roomDO;
+        }
+        RoomDO daoRoomDO = roomDAO.queryById(roomId);
+        if (daoRoomDO == null) {
+            return null;
+        }
+        log.info("RoomDO缓存穿透" + daoRoomDO);
+        roomTypeRedisCache.zSetAdd(ROOM_SET_CACHE_KEY, daoRoomDO, daoRoomDO.getId());
+        return daoRoomDO;
     }
 }

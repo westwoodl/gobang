@@ -1,4 +1,85 @@
+var user_vue; //当前用户信息
+var user_detail_vue;//查询用户信息详情显示信息
+var user_my_friend_vue;
+
+//用户信息初始化加载
+$(function () {
+    user_vue = new Vue({
+        el: "#user_a",
+        data: {
+            isSuccess: false,
+            user: null
+        }
+    });
+
+    user_detail_vue = new Vue({
+        el: "#user_detail_div",
+        data: {
+            isSuccess: user_vue.isSuccess,
+            user: user_vue.user
+        }
+    });
+
+    user_my_friend_vue = new Vue({
+        el: "#my_friend_li",
+        data: {
+            isSuccess: false,
+            dataList: []
+        }
+    });
+
+    let isSuccess = false;
+    $.ajax({
+        async: true,
+        type: "GET",
+        url: base_gobang_url + "/user/load",
+        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+        crossDomain: true,
+        data: {},
+        dataType: "json",
+        success: function (data) {
+            alertLayer(data.msg);
+            isSuccess = data.success;
+            if (isSuccess) {
+                user_vue.user = data.data;
+                user_vue.isSuccess = isSuccess;
+            }
+
+        },
+        error: function () {
+            alert("系统繁忙");
+        }
+    });
+});
+
+
+function checkIsLogin() {
+    isLogin();
+    return false;
+}
+
+function isLogin() {
+    if (user_vue == null || user_vue.isSuccess === false) {
+        alertLayer("请登录");
+        return false;
+    } else {
+        return true;
+    }
+
+}
+
+function myFriendShow() {
+    if(!isLogin()) {
+        return false;
+    }
+    userQueryMyFriendRequest();
+    return false;
+}
+
 function recordListShow() {
+    if(!isLogin()) {
+        return false;
+    }
     displayWhat("record_div");
 
     $("#record_page_tr").hover(function () {
@@ -8,16 +89,23 @@ function recordListShow() {
     });
     $("body").css("background", "#F8F9FA");
 
-    useLayuiPage('record_page_div');
+    comingSoon();
+    // useLayuiPage('record_page_div');
 
     console.log("record");
     return false;
 }
 
 function userDetailShow() {
+    if (!isLogin()) {
+        return false;
+    }
     displayWhat("user_detail_div");
     $("body").css("background", "#F8F9FA");
     userStartShow(3.5);
+
+    user_detail_vue.isSuccess = user_vue.isSuccess;
+    user_detail_vue.user = user_vue.user;
     return false;
 }
 
@@ -78,6 +166,9 @@ function updateUserDetail(obj) {
     });
 }
 
+/**
+ * 用户信息查询弹出层
+ */
 function searchUser() {
     var search_user_html =
         '<input type="text" id="search_user_input" name="title" required lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">' +
@@ -120,13 +211,22 @@ function searchUser() {
 }
 
 function loginOut() {
-    //todo
+    if (isLogin()) {
+        userLoginOutRequest();
+    }
     return false;
 }
 
+function clickMyself() {
+    if (!isLogin()) {
+        loginOrRegister();
+    } else {
+        alertLayer("小兔崽子，欢迎您！");
+    }
+    return false;
+}
 
 function loginOrRegister() {
-
 
     let login_user_html =
         '<div style="display: flex">' +
@@ -212,6 +312,63 @@ function loginOrRegister() {
     return false;
 }
 
+function userQueryMyFriendRequest() {
+    $.ajax({
+        async: false,
+        type: "GET",
+        url: base_gobang_url + "/user/friend",
+        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+        crossDomain: true,
+        data: {},
+        dataType: "json",
+        success: function (data) {
+            user_my_friend_vue.isSuccess = data.success;
+            user_my_friend_vue.dataList = data.data;
+            if (data.data.length < 1) {
+                alertLayer("您还没有好友哦");
+            }
+            if (!data.success) {
+                alertLayer(data.msg);
+            } else {
+                layui.use('element', function () {
+                    var element = layui.element;
+
+                    //…
+                });
+            }
+        },
+        error: function () {
+            alert("系统繁忙");
+        }
+    });
+}
+
+function userLoginOutRequest() {
+    $.ajax({
+        async: true,
+        type: "GET",
+        url: base_gobang_url + "/user/out",
+        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+        crossDomain: true,
+        data: {},
+        dataType: "json",
+        success: function (data) {
+            alertLayer(data.msg);
+            if (data.success) {
+                user_vue.isSuccess = false;
+                user_vue.user = null;
+                user_detail_vue.isSuccess = false;
+                user_detail_vue.user = null;
+                user_my_friend_vue.isSuccess = false;
+                user_my_friend_vue.dataList = [];
+            }
+        },
+        error: function () {
+            alert("系统繁忙");
+        }
+    });
+}
+
 //登录亲求
 function userLoginRequest(account_input, pwd_input, $dom) {
     let isSuccess = false;
@@ -219,7 +376,7 @@ function userLoginRequest(account_input, pwd_input, $dom) {
         async: false,
         type: "GET",
         url: base_gobang_url + "/user/login",
-        xhrFields: {withCredentials:true},	//前端适配：允许session跨域
+        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
         crossDomain: true,
         data: {
             account: account_input,
@@ -229,11 +386,13 @@ function userLoginRequest(account_input, pwd_input, $dom) {
         success: function (data) {
             domTipsShow($dom, data.msg);
             isSuccess = data.success;
-            if(isSuccess) {
-                $("#user_a").html(
-                    '<img src="http://pic4.zhimg.com/50/v2-7fece9a613445edb78271216c8c20c6d_hd.jpg" class="layui-nav-img">\n' +
-                    '&nbsp;' + data.data.userName
-                );
+            if (isSuccess) {
+                // $("#user_a").html(
+                //     '<img src="http://pic4.zhimg.com/50/v2-7fece9a613445edb78271216c8c20c6d_hd.jpg" class="layui-nav-img">\n' +
+                //     '&nbsp;' + data.data.userName
+                // );
+                user_vue.isSuccess = isSuccess;
+                user_vue.user = data.data;
             }
         },
         error: function () {
@@ -250,7 +409,7 @@ function userRegisterRequest(reg_name_input, reg_account_input, reg_pwd_input, $
         async: false,
         type: "POST",
         url: base_gobang_url + "/user",
-        xhrFields: {withCredentials:true},	//前端适配：允许session跨域
+        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
         crossDomain: true,
         data: {
             userName: reg_name_input,
@@ -325,7 +484,7 @@ function checkOneParameter(one_str) {
     return checkS(one_str);
 }
 
-checkS = function(str){
+checkS = function (str) {
     // 判断字符串是否为数字和字母组合
     let zg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]*$/;
 

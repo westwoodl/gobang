@@ -30,6 +30,7 @@ public class UserDAOTest {
     @Test
     public void test_query(){
         UserDO userDO = userDAO.queryById(1);
+        System.out.println(userDO);
     }
 
     @Test

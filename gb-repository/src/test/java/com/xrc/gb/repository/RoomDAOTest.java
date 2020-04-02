@@ -40,7 +40,6 @@ public class RoomDAOTest {
     public void test_insert() {
         RoomDO roomDO = new RoomDO();
         roomDO.setCreateUser(1);
-        roomDO.setGoId(1);
         roomDO.setOpponents(1);
         roomDO.setRoomNumber(1);
         roomDO.setRoomStatus(1);

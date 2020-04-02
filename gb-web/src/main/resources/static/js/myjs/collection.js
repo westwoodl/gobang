@@ -1,4 +1,7 @@
 function collectionListShow() {
+    if(!isLogin()) {
+        return false;
+    }
     displayWhat("collection_div");
 
     $("#collection_page_tr").hover(function () {
@@ -8,9 +11,7 @@ function collectionListShow() {
     });
     $("body").css("background", "#F8F9FA");
 
-    useLayuiPage('collection_page_div');
-
-    console.log("collection");
+    comingSoon();
     return false;
 }
 

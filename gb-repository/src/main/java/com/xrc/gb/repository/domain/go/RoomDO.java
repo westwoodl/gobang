@@ -27,9 +27,19 @@ public class RoomDO extends BaseDO implements Serializable {
      */
     private Integer createUser;
     /**
+     * 房间创造者
+     */
+    private String createUserName;
+
+    private String createUserImg;
+
+    private String createTimeStr;
+    /**
      * 对手
      */
     private Integer opponents;
+    private String opponentsName;
+    private String opponentsImg;
     /**
      * 观战者
      */

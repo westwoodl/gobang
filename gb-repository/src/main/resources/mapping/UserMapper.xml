@@ -9,9 +9,14 @@
     <result column="user_power" property="userPower" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP" />
+
+    <result column="img" property="img" jdbcType="VARCHAR" />
+    <result column="autograph" property="autograph" jdbcType="VARCHAR" />
+    <result column="friend" property="friend" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
-    user_id, user_name, user_account, user_password, user_power, create_time, modify_time
+    user_id, user_name, user_account, user_password, user_power, create_time, modify_time, img, autograph, friend, `status`
   </sql>
 
   <select id="queryByUserName" resultMap="BaseResultMap" >
@@ -42,10 +47,10 @@
   <insert id="insert" parameterType="com.xrc.gb.repository.domain.user.UserDO" >
     insert into gb_user ( user_name, user_account,
       user_password, user_power, create_time,
-      modify_time)
+      modify_time, img, autograph, friend, `status`)
     values ( #{userName,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR},
       #{password,jdbcType=VARCHAR}, #{userPower,jdbcType=INTEGER}, now(),
-      now())
+      now(), #{img,jdbcType=VARCHAR}, #{autograph,jdbcType=VARCHAR}, #{friend,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER})
   </insert>
   <update id="update" parameterType="com.xrc.gb.repository.domain.user.UserDO" >
     update gb_user
@@ -61,6 +66,18 @@
       </if>
       <if test="userPower != null" >
         user_power = #{userPower,jdbcType=INTEGER},
+      </if>
+      <if test="img != null" >
+        img = #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="autograph != null" >
+        autograph = #{autograph,jdbcType=VARCHAR},
+      </if>
+      <if test="friend != null" >
+        friend = #{friend,jdbcType=VARCHAR},
+      </if>
+      <if test=" status!= null" >
+        `status` = #{status,jdbcType=INTEGER},
       </if>
         modify_time = now(),
     </set>

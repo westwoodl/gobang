@@ -1,3 +1,14 @@
+var room_list_vue;
+$(function () {
+    room_list_vue = new Vue({
+        el: '#room_table_div',
+        data: {
+            dataList: null,
+            totalCount: 0
+        }
+    });
+});
+
 function roomListShow() {
     displayWhat("room_div");
 
@@ -22,8 +33,14 @@ function alertLayer(msg) {
 }
 
 function creatRoom() {
+    if (!isLogin()) {
+        return false;
+    }
     var create_room_html =
-        '<input type="text" id="room_create_name_input" name="title" required lay-verify="required" placeholder="请输入房间名" autocomplete="off" class="layui-input" value="木头的房间">' +
+        '<input type="text" id="room_create_name_input" name="title" required lay-verify="required" placeholder="请输入房间名" autocomplete="off" class="layui-input" ' +
+        'value="' +
+        user_vue.user.userName + '的房间' +
+        '">' +
         '<input type="password" id="room_create_pwd_input" name="password" style="margin-top: 10px" required lay-verify="required" placeholder="请输入房间密码（可以不输哦！）" autocomplete="off" class="layui-input">' +
         '<span id="span"></span>';
     layui.use('layer', function () {
@@ -72,6 +89,7 @@ function creatRoomRequest(room_name, room_password, $dom) {
         success: function (data) {
             domTipsShow($dom, data.msg);
             isSuccess = data.success;
+            window
         },
         error: function () {
             alert("系统繁忙");
@@ -80,10 +98,10 @@ function creatRoomRequest(room_name, room_password, $dom) {
     return isSuccess;
 }
 
-function queryRoomRequest(pageIndex, pageSize) {
+function queryRoomRequest(pageIndex, pageSize, sync) {
     let totalCount = 0;
     $.ajax({
-        async: false,
+        async: sync,
         type: "GET",
         url: base_gobang_url + "/room",
         xhrFields: {withCredentials:true},	//前端适配：允许session跨域
@@ -98,12 +116,8 @@ function queryRoomRequest(pageIndex, pageSize) {
             alertLayer(data.msg);
 
             totalCount = data.data.totalCount;
-            new Vue({
-                el: '#room_table_div',
-                data: {
-                    dataList: data.data.data
-                }
-            });
+            room_list_vue.dataList = data.data.data;
+            room_list_vue.totalCount = totalCount;
 
         },
         error: function () {
@@ -116,11 +130,11 @@ function queryRoomRequest(pageIndex, pageSize) {
 function roomUseLayuiPage() {
     layui.use('laypage', function () {
         var laypage = layui.laypage;
-        let count = queryRoomRequest(1, 10);
+        let count = queryRoomRequest(1, 10, false);
         //执行一个laypage实例
         laypage.render({
             elem: "room_page_div" //注意，这里的 test1 是 ID，不用加 # 号
-            , count: count //数据总数，从服务端得到
+            , count: room_list_vue.totalCount //数据总数，从服务端得到
             , layout: ['count', 'prev', 'page', 'next', 'limit', 'skip'] //refresh
             , jump: function (obj, first) {
                 //obj包含了当前分页的所有参数，比如：
@@ -128,7 +142,7 @@ function roomUseLayuiPage() {
                 console.log(obj.limit); //得到每页显示的条数
                 // //首次不执行
                 if (!first) {
-                    queryRoomRequest(obj.curr, obj.limit);
+                    queryRoomRequest(obj.curr, obj.limit, true);
                 }
             }
         });
