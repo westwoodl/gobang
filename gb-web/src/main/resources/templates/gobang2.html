@@ -214,7 +214,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="data in dataList" onclick="joinRoom()" v-on:click="joinRoom(data)">
+                <tr v-for="data in dataList" v-on:click="joinRoom(data)">
                     <td>{{data.id}}</td>
                     <td>
                         &nbsp; {{data.roomName}}
@@ -230,16 +230,6 @@
                         <span class="layui-badge layui-bg-gray" v-else="data.roomStatus==3">已结束</span>
                     </td>
                     <td>{{data.roomNumber}}/2</td>
-                </tr>
-
-
-                <tr>
-                    <td>3</td>
-                    <td>3</td>
-                    <td>贤心</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-orange">游戏中</span></td>
-                    <td>11/2</td>
                 </tr>
                 <tr id="room_page_tr" disabled="true" style="">
                     <td colspan="6">
@@ -500,7 +490,7 @@
     </div>
 
     <!--用户信息div-->
-    <div id="user_detail_div" class="layui-anim layui-anim-scale" style="display: none;margin-top: 40px;">
+    <div id="user_detail_div" class="layui-anim layui-anim-scale" style="display: none;margin-top: 40px;" v-if="user!=null">
         <div class="layui-card" style="box-shadow: 1px 1px 2px gray;width: 700px">
             <div class="layui-card-header" style="height: 70px;display: flex;justify-content: space-between;">
                 <div style="margin-top: 10px">
@@ -538,8 +528,8 @@
     <div id="chess_config_div" class="layui-anim" data-anim="layui-anim-fadein"
          style="width: 300px;height: 700px;margin-top: 20px;margin-right: 20px">
         <!--        -->
-        <div id="chess_config_card_div" style="background: #333D49">
-            <div class="layui-card-body">{{room.roomName}}</div>
+        <div id="chess_config_card_div" style="background: #333D49;" v-if="room!=null">
+            <div class="layui-card-body">当前位置：{{room.roomName}}</div>
             <div class="layui-card-body">
                 <span style="margin-right: 10px">黑棋</span>
 
@@ -599,8 +589,6 @@
 <script type="text/javascript" src="../static/js/myjs/gobang.js"></script>
 <!--房间-->
 <script type="text/javascript" src="../static/js/myjs/room.js"></script>
-<!--对战-->
-<script type="text/javascript" src="../static/js/myjs/room_paly.js"></script>
 <!--收藏-->
 <script type="text/javascript" src="../static/js/myjs/collection.js"></script>
 <!--记录，用户-->

@@ -1,21 +1,20 @@
 package com.xrc.gb.manager.go;
 
-import com.xrc.gb.repository.cache.RedisCache;
+import com.xrc.gb.consts.CommonConst;
+import com.xrc.gb.repository.cache.CacheKeyUtils;
 import com.xrc.gb.repository.cache.TypeRedisCache;
 import com.xrc.gb.repository.dao.RoomDAO;
+import com.xrc.gb.repository.domain.go.GoDO;
 import com.xrc.gb.repository.domain.go.RoomDO;
 import com.xrc.gb.util.PageQueryReq;
 import com.xrc.gb.util.PageQueryResultResp;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 // 查询常有，而修改不常有，
 
 /**
@@ -39,74 +38,87 @@ public class RoomDataManager {
     public final static String ROOM_CACHE_KEY_PRE = "room_key_";
 
     /**
-     * 保存的是room_id
+     * 实时性问题非常严重
+     * @param pageQuery
+     * @return
      */
-    public final static String ROOM_SET_CACHE_KEY = "room_set_key";
+//    @Deprecated
+//    public PageQueryResultResp<List<RoomDO>> queryPageCache(@NonNull final PageQueryReq<RoomDO> pageQuery) {
+//        PageQueryResultResp<List<RoomDO>> cacheResp = pageTypeRedisCache.get(CacheKeyUtils.getPageKey(pageQuery));
+//        if (cacheResp != null && cacheResp.getTotalCount() > 0) {
+//            return cacheResp;
+//        }
+//        int daoCount = roomDAO.countAll(pageQuery.getData());
+//        PageQueryResultResp<List<RoomDO>> pageQueryResultResp = pageQuery.getQueryResult(daoCount);
+//        if (daoCount > 0) {
+//            pageQueryResultResp.getData().addAll(roomDAO.queryAllByLimit(pageQuery.getData(), pageQuery.getOffSet(), pageQuery.getPageSize()));
+//            pageTypeRedisCache.set(CacheKeyUtils.getPageKey(pageQuery), pageQueryResultResp, CommonConst.CACHE_STORE_MINUTES);
+//            log.info("缓存击穿查询条件：" + pageQuery);
+//            return pageQueryResultResp;
+//        }
+//        pageTypeRedisCache.set(CacheKeyUtils.getPageKey(pageQuery), pageQueryResultResp, CommonConst.NULL_CACHE_STORE_MINUTES);
+//        return pageQueryResultResp;
+//    }
 
     public PageQueryResultResp<List<RoomDO>> queryPage(@NonNull final PageQueryReq<RoomDO> pageQuery) {
-        int start = pageQuery.getStart();
-        int stop = pageQuery.getRedisStop();
-        long totalCount = roomTypeRedisCache.zSetCount(ROOM_SET_CACHE_KEY);
-        List<RoomDO> roomDOList = new ArrayList<>();
-        PageQueryResultResp<List<RoomDO>> resultResp = new PageQueryResultResp<>();
-        resultResp.setData(roomDOList);
-        resultResp.setPageIndex(pageQuery.getPageIndex());
-        resultResp.setPageSize(pageQuery.getPageIndex());
-
-        if (totalCount > 0) {
-            resultResp.setTotalCount((int) totalCount);
-            roomDOList.addAll(roomTypeRedisCache.zSetRang(ROOM_SET_CACHE_KEY, start, stop));
-        } else {
-            int dao_count = roomDAO.countAll(pageQuery.getData());
-            resultResp.setTotalCount(dao_count);
-            if (dao_count > 0) {
-                roomDOList.addAll(roomDAO.queryAllByLimit(pageQuery.getData(), start, pageQuery.getPageSize()));
-                if (CollectionUtils.isNotEmpty(roomDOList)) {
-                    roomTypeRedisCache.remove(ROOM_SET_CACHE_KEY);
-                    for (RoomDO roomDO : roomDOList) {
-                        roomTypeRedisCache.zSetAdd(ROOM_SET_CACHE_KEY, roomDO, roomDO.getId());
-                    }
-                }
-                System.out.println("缓存穿透：" + roomDOList);
-            }
+        int daoCount = roomDAO.countAll(pageQuery.getData());
+        PageQueryResultResp<List<RoomDO>> pageQueryResultResp = pageQuery.getQueryResult(daoCount);
+        if (daoCount > 0) {
+            pageQueryResultResp.getData().addAll(roomDAO.queryAllByLimit(pageQuery.getData(), pageQuery.getOffSet(), pageQuery.getPageSize()));
+            return pageQueryResultResp;
         }
-        return resultResp;
+        return pageQueryResultResp;
     }
 
     public boolean createRoom(@NonNull RoomDO roomDO) {
         if (roomDAO.insert(roomDO) > 0) {
-            roomTypeRedisCache.zSetAdd(ROOM_SET_CACHE_KEY, roomDAO.queryById(roomDO.getId()), roomDO.getId());
+            setCache(roomDAO.queryById(roomDO.getId()));
             return true;
         }
         return false;
     }
 
-    public boolean deleteById(@NonNull int roomId) {
-        if (roomDAO.deleteById(roomId) > 0) {
-            roomTypeRedisCache.zSetRemoveRangeByScore(ROOM_SET_CACHE_KEY, roomId, roomId);
-            return true;
-        }
-        return false;
+    public boolean deleteById(int roomId) {
+        roomTypeRedisCache.remove(CacheKeyUtils.getIdKey(roomId, RoomDO.class));
+        return roomDAO.deleteById(roomId) > 0;
+        // 删除失败 什么操蛋情况会删除失败？
+        // RoomDO roomDO = roomDAO.queryById(roomId);
+        //roomTypeRedisCache.set(CacheKeyUtils.getIdKey(roomDO), roomDO, CommonConst.CACHE_STORE_MINUTES);
     }
 
     public boolean update(@NonNull RoomDO roomDO) {
         if (roomDAO.update(roomDO) > 0) {
-            roomTypeRedisCache.zSetAdd(ROOM_SET_CACHE_KEY, roomDO, roomDO.getId());
+            setCache(roomDAO.queryById(roomDO.getId()));
+            return true;
         }
         return false;
     }
 
-    public RoomDO queryById(@NonNull Integer roomId) {
-        RoomDO roomDO = roomTypeRedisCache.zSetGet(ROOM_SET_CACHE_KEY, roomId);
-        if (roomDO != null && roomId.equals(roomDO.getId())) {
+    public RoomDO queryById(@NonNull int roomId) {
+        RoomDO roomDO = getCache(roomId);
+        if (roomDO != null && roomDO.getId() != null && roomDO.getId().equals(roomId)) {
             return roomDO;
         }
         RoomDO daoRoomDO = roomDAO.queryById(roomId);
         if (daoRoomDO == null) {
+            log.info("RoomDo缓存穿透：{}", roomId);
+            setNullCache(roomId);
             return null;
         }
-        log.info("RoomDO缓存穿透" + daoRoomDO);
-        roomTypeRedisCache.zSetAdd(ROOM_SET_CACHE_KEY, daoRoomDO, daoRoomDO.getId());
+        log.info("RoomDO缓存击穿" + daoRoomDO);
+        setCache(daoRoomDO);
         return daoRoomDO;
+    }
+
+    private void setCache(RoomDO roomDO) {
+        roomTypeRedisCache.set(CacheKeyUtils.getIdKey(roomDO), roomDO, CommonConst.CACHE_STORE_MINUTES);
+    }
+
+    private void setNullCache(Integer roomId) {
+        roomTypeRedisCache.set(CacheKeyUtils.getIdKey(roomId, RoomDO.class), null, CommonConst.NULL_CACHE_STORE_MINUTES);
+    }
+
+    private RoomDO getCache(Integer roomId) {
+        return roomTypeRedisCache.get(CacheKeyUtils.getIdKey(roomId, RoomDO.class));
     }
 }

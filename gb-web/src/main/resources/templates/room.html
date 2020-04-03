@@ -2,11 +2,151 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>游戏大厅</title>
-</head>
-<body>
+    <title>房间</title>
 
+    <style type='text/css'>
+        /** 滚动条 **/
+        ::-webkit-scrollbar {
+            width: 0px;
+            height: 5px;
+        }
+
+        ::-webkit-scrollbar-button:vertical {
+            display: none;
+        }
+
+        ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner {
+            background-color: #2B2B2B;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            border-radius: 0;
+            background-color: rgba(96, 98, 100, .3);
+        }
+
+        ::-webkit-scrollbar-thumb:vertical:hover {
+            background-color: rgba(0, 0, 0, .35);
+        }
+
+        ::-webkit-scrollbar-thumb:vertical:active {
+            background-color: rgba(0, 0, 0, .38);
+        }
+
+        canvas {
+            display: block;
+            margin: 20px auto;
+            /*box-shadow: -2px -2px 2px #efefef, 5px 5px 5px #b9b9b9;*/
+            cursor: pointer;
+        }
+
+        #wrap {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        table {
+            box-shadow: 1px 1px 3px gray;
+        }
+
+        /*棋盘配置字体颜色*/
+        #chess_config_div {
+            color: rgb(160, 189, 201);
+        }
+    </style>
+    <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.5.6/css/layui.css" media="all">
+</head>
+<body bgcolor="#2B2B2B">
+
+<div id="wrap">
+
+    <!--棋盘配置-->
+    <div id="chess_config_div" class="layui-anim" data-anim="layui-anim-fadein"
+         style="width: 300px;height: 700px;margin-top: 20px;margin-right: 20px">
+        <!--        -->
+        <div id="chess_config_card_div" style="background: #333D49;" v-if="room!=null">
+            <div class="layui-card-body">当前位置：{{room.roomName}}</div>
+            <div class="layui-card-body">
+                <span style="margin-right: 10px">黑棋</span>
+
+                <img v-if="!isSuccess || room.createUserImg==null"
+                     src="http://pic4.zhimg.com/50/v2-7fece9a613445edb78271216c8c20c6d_hd.jpg" class="layui-nav-img">
+                <img v-else v-bind:src="room.createUserImg" class="layui-nav-img">
+                {{room.createUserName}}
+                <!--                    <button type="button" class="layui-btn layui-btn-sm" style="float: right">添加好友</button>-->
+
+                <button type="button" class="layui-btn layui-btn-sm" style="float: right">
+                    <i class="layui-icon">&#xe654;</i>
+                </button>
+                <br>
+            </div>
+            <div class="layui-card-body">
+                <span style="margin-right: 10px">白棋</span>
+                <img v-if="!isSuccess || room.opponentsImg==null"
+                     src="http://pic4.zhimg.com/50/v2-7fece9a613445edb78271216c8c20c6d_hd.jpg" class="layui-nav-img">
+                <img v-else v-bind:src="room.opponentsImg" class="layui-nav-img">
+                {{room.opponentsName}}
+                <button type="button" class="layui-btn layui-btn-sm" style="float: right">
+                    <i class="layui-icon">&#xe65a;</i>
+                </button>
+                <br>
+            </div>
+            <div class="layui-card-body">
+                <span style="margin-right: 10px">观众</span>
+                <br>
+
+            </div>
+            <div class="layui-card-body">
+                <span style="margin-right: 10px">配置</span>
+                <form class="layui-form" action="">
+                    <div class="layui-form-item">
+                        <input type="radio" name="sex" value="nan" title="围棋" checked>
+                        <input type="radio" name="sex" value="nv" title="五子棋">
+                    </div>
+                </form>
+                <button type="button" class="layui-btn layui-btn-sm">开始游戏</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal">离开房间</button>
+            </div>
+            <div class="layui-card-body" style="display:none;">
+                <span style="margin-right: 10px">配置</span>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal">认输</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal">离开房间</button>
+            </div>
+            <div class="layui-card-body">
+                等待房主开始...
+            </div>
+        </div>
+
+    </div>
+
+    <div id="chess_div" class="layui-anim layui-anim-scale">
+        <canvas id="chess"></canvas>
+    </div>
+
+    <div style="width: 300px"></div>
 
 </div>
+
+<script type="text/javascript" src="../static/js/jQuery/jQuery.js"></script>
+<!--画棋盘和画棋子的方法-->
+<script type="text/javascript" src="../static/js/myjs/gobang.js"></script>
+<!--页面加载 用户事件-->
+<script type="text/javascript" src="../static/js/myjs/gobangLoad.js"></script>
+<!--对战-->
+<script type="text/javascript" src="../static/js/myjs/room_paly.js"></script>
+<!--layui-->
+<script src="https://www.layuicdn.com/layui-v2.5.6/layui.js" charset="utf-8"></script>
+<!--vue-->
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+
+<script type="text/javascript">
+
+    function alertLayer(msg) {
+        layui.use('layer', function () {
+            var layer = layui.layer;
+            layer.msg(msg);
+        });
+    }
+
+</script>
 </body>
 </html>

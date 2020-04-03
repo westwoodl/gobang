@@ -7,7 +7,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: xurongchao
     password: xrc@123456
-    url: jdbc:mysql://rm-bp13y3jj290u7hyqqyo.mysql.rds.aliyuncs.com/gobang?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT
+    url: jdbc:mysql://rm-bp13y3jj290u7hyqqyo.mysql.rds.aliyuncs.com/gobang?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
 
   redis:
     database: 0

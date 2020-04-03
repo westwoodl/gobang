@@ -61,6 +61,21 @@ public class RedisTest {
         System.out.println(roomDO.getRoomPassword());
         System.out.println(roomDO.getRoomName());
     }
+    public final static String ROOM_SET_CACHE_KEY = "room_set_key";
+
+    @Test
+    public void test_redis_room() {
+//        RoomDO roomDO = new RoomDO();
+//        roomDO.setRoomPassword("12345678");
+//        roomDO.setRoomName("xrc");
+        System.out.println(typeRedisCache.zSetRang(ROOM_SET_CACHE_KEY, 0, 6));
+        System.out.println(typeRedisCache.zSetGet(ROOM_SET_CACHE_KEY, 11));
+        typeRedisCache.zSetRemoveRangeByScore(ROOM_SET_CACHE_KEY, 16, 16);
+        System.out.println(typeRedisCache.zSetRang(ROOM_SET_CACHE_KEY, 0, 6));
+
+
+        GoDO goDO = new GoDO();
+    }
 
 
     @Test

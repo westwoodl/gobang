@@ -32,7 +32,20 @@ public class GameGoBangController extends AbstractController {
     @Resource
     private GoBangGameServiceImpl goBangGameService;
 
-    @GetMapping("/place")
+    /**
+     * 单一查询
+     */
+    @GetMapping("/query")
+    public JSONObject query(@RequestParam Integer goId) {
+        return JSONObjectResult.create().success(goBangGameService.queryGame(goId));
+    }
+
+    @GetMapping("/queryBlock")
+    public JSONObject queryBlock(@RequestParam Integer goId, @RequestParam(value = "placeTime") Long expectModifyTime) {
+        return JSONObjectResult.create().success(goBangGameService.queryGameBlock(goId, expectModifyTime));
+    }
+
+    @PutMapping("/place")
     public JSONObject place(@RequestParam Integer id, @RequestParam Integer x, @RequestParam Integer y) {
         GoPlaceReq goPlaceReq = new GoPlaceReq();
         goPlaceReq.setId(id);
@@ -42,7 +55,7 @@ public class GameGoBangController extends AbstractController {
         goPieces.setY(y);
         goPlaceReq.setGoPieces(goPieces);
         PlaceResultTypeEnum placeResultTypeEnum = goBangGameService.updateGameForPlace(goPlaceReq);
-        return JSONObjectResult.create().success(placeResultTypeEnum.getDesc());
+        return JSONObjectResult.create().success(placeResultTypeEnum.getDesc(), placeResultTypeEnum.getPlaceTime());
     }
 
     @GetMapping("/queryByUserId")
@@ -82,8 +95,4 @@ public class GameGoBangController extends AbstractController {
         return goQueryResp;
     }
 
-    @GetMapping("/query")
-    public JSONObject query(@RequestParam Integer goId) {
-        return JSONObjectResult.create().success(goBangGameService.queryGame(goId));
-    }
 }

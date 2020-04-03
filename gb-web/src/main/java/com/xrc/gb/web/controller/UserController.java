@@ -81,7 +81,7 @@ public class UserController extends AbstractController {
         if (CollectionUtils.isEmpty(friendList)) {
             friendList = new ArrayList<>();
         }
-        friendList.add(friendUserDO.getUserId());
+        friendList.add(friendUserDO.getId());
         userDO.setFriend(JSONObject.toJSONString(friendList));
         return JSONObjectResult.create().isSuccess(userService.update(userDO));
     }

@@ -1,5 +1,8 @@
 package com.xrc.gb.enums;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * @author xu rongchao
  * @date 2020/3/25 19:13
@@ -13,6 +16,10 @@ public enum PlaceResultTypeEnum {
     private int code;
 
     private String desc;
+
+    @Getter
+    @Setter
+    private Long placeTime;
 
     PlaceResultTypeEnum(int code, String desc) {
         this.code = code;

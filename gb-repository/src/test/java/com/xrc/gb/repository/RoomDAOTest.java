@@ -42,11 +42,21 @@ public class RoomDAOTest {
         roomDO.setCreateUser(1);
         roomDO.setOpponents(1);
         roomDO.setRoomNumber(1);
+        roomDO.setRoomName("粑粑");
         roomDO.setRoomStatus(1);
         roomDO.setWatchUser("3");
         System.out.println(roomDAO.insert(roomDO));
-        System.out.println(roomDO);
+        System.out.println(roomDO.getId());
 
+    }
+
+    @Test
+    public void test_update() {
+        RoomDO roomDO =new RoomDO();
+        roomDO.setId(1);
+        roomDO.setRoomNumber(1);
+        System.out.println(roomDAO.update(roomDO));
+        System.out.println(roomDO);
     }
 
 

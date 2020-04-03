@@ -17,14 +17,14 @@ public class MyWebMvcConfiguration implements WebMvcConfigurer {
     @Resource
     LoginHandlerInterceptor loginHandlerInterceptor;
 
-    /**
-     * 在这里添加 html请求
-     */
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/index").setViewName("/index");
-        registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
-    }
+//    /**
+//     * 在这里添加 html请求
+//     */
+//    @Override
+//    public void addViewControllers(ViewControllerRegistry registry) {
+//        registry.addViewController("/index").setViewName("/index");
+//        registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
+//    }
 
     /**
      * 注册拦截器
@@ -43,6 +43,7 @@ public class MyWebMvcConfiguration implements WebMvcConfigurer {
     }
 
     /**
+     * 被拦截器拦截的请求不会走这里
      * 允许跨域请求 todo 减少允许范围
      */
     @Override

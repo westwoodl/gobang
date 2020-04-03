@@ -1,3 +1,4 @@
+var game_mode = 1; // 1.五子棋打谱 2.围棋打谱 3. 五子棋对弈 4.围棋对弈
 var over = false;
 var me = true; //我
 var resultTxt = document.getElementById('result-wrap');

@@ -34,14 +34,7 @@ public class PageQueryReq<T> {
     private T data;
 
     public int getOffSet() {
-        return getStart();
-    }
-
-    public int getStart() {
         return (1-pageIndex) * pageSize;
     }
 
-    public int getRedisStop() {
-        return getStart() + pageSize - 1;
-    }
 }

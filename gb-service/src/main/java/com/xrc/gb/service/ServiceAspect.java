@@ -28,13 +28,14 @@ public class ServiceAspect {
         try {
             obj = pjp.proceed();
         } catch (BusinessException b) {
-            b.printStackTrace();
+            log.info("Service:business exception{}", b.getMessage());
             throw b;
         } catch (IllegalArgumentException e) {
             log.info("Service{}", e.getMessage());
             throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_PARAMETER_ERROR);
-        } catch (RuntimeException e) {
+        } catch (Throwable e) {
             e.printStackTrace();
+            log.info("Service Throwable{}", e.getMessage());
             throw ExceptionHelper.newSysException(ErrorInfoConstants.BIZ_SYSTEM_BUSY);
         }
         return obj;

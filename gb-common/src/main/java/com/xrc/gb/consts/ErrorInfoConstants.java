@@ -9,7 +9,18 @@ import com.xrc.gb.util.ExceptionHelper;
 public class ErrorInfoConstants {
     public static final String BIZ_SYSTEM_BUSY = "系统繁忙，请稍后重试";
 
+    public static final String DATA_FLASH_TIME_OUT = "数据刷新超时";
+
     public static final String BIZ_PARAMETER_ERROR = "参数不合法";
 
     public static final String BIZ_GAME_NOT_EXIST = "对局不存在";
+
+    public static final String BIZ_GAME_START_NOT_ALLOW = "对局无法开始";
+
+    public static final String BIZ_ROOM_NOT_EXIST = "房间不存在";
+
+
+    public static final String BOZ_PLACE_ERROR = "落子失败";
+
+    public static final String BIZ_OPERATE_NOT_ALLOW = "您无权操作";
 }

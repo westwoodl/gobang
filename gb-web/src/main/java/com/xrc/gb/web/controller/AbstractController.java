@@ -54,7 +54,7 @@ public abstract class AbstractController {
     protected Integer getUserId() {
         UserDO userDO = getUserDO();
         if (userDO != null) {
-            return userDO.getUserId();
+            return userDO.getId();
         }
         return null;
     }

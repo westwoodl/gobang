@@ -2,6 +2,7 @@ package com.xrc.gb.web.controller.game;
 
 import com.alibaba.fastjson.JSONObject;
 import com.xrc.gb.enums.DateFormatEnum;
+import com.xrc.gb.enums.JoinRoomResultEnum;
 import com.xrc.gb.enums.RoomStatusEnum;
 import com.xrc.gb.repository.domain.go.RoomDO;
 import com.xrc.gb.repository.domain.user.UserDO;
@@ -36,6 +37,9 @@ public class RoomController extends AbstractController {
     @Resource
     private UserService userService;
 
+    /**
+     * 创建房间
+     */
     @PostMapping("/create")
     public JSONObject createRoom(@RequestBody @Validated RoomCreateVO roomVO, BindingResult bindingResult) {
         hasError(bindingResult);
@@ -65,6 +69,43 @@ public class RoomController extends AbstractController {
     @GetMapping("/{id}")
     public JSONObject queryBuId(@PathVariable Integer id) {
         RoomDO roomDO = roomService.queryById(id);
+        buildRoomDO(roomDO);
+        return JSONObjectResult.create().success(roomDO);
+    }
+
+    /**
+     * 加入房间
+     */
+    @PutMapping("/join")
+    public JSONObject joinRoom(@RequestParam Integer roomId) {
+        UserDO joinUserDO = getUserDO();
+        JoinRoomResultEnum joinRoomResultEnum = roomService.joinRoom(roomId, joinUserDO);
+        return JSONObjectResult.create().success(joinRoomResultEnum.getDesc(), joinRoomResultEnum.getExpectModifyTime());
+    }
+
+    /**
+     * 阻塞查询
+     */
+    @GetMapping("/queryBlock")
+    public JSONObject queryBlock(@RequestParam Integer roomId, @RequestParam Long expectTime) {
+        RoomDO roomDO = roomService.queryBlock(roomId, expectTime);
+        buildRoomDO(roomDO);
+        return JSONObjectResult.create().success(roomDO);
+    }
+
+    /**
+     * 开始游戏
+     */
+    @GetMapping("start")
+    public JSONObject startGame(@RequestParam Integer roomId) {
+        roomService.startGame(roomId, getUserId());
+        return JSONObjectResult.create().success();
+    }
+
+    /**
+     * 查询room的创建者和对手的人物名称
+     */
+    private RoomDO buildRoomDO(RoomDO roomDO) {
         UserDO create = userService.find(roomDO.getCreateUser());
         roomDO.setCreateUserName(create.getUserName());
         roomDO.setCreateUserImg(create.getImg());
@@ -73,13 +114,7 @@ public class RoomController extends AbstractController {
             roomDO.setOpponentsName(opUser.getUserName());
             roomDO.setOpponentsImg(opUser.getImg());
         }
-        return JSONObjectResult.create().success(roomDO);
-    }
-
-    @PutMapping
-    public JSONObject update() {
-        roomService.update(new RoomDO());
-        return JSONObjectResult.create().success();
+        return roomDO;
     }
 
 }

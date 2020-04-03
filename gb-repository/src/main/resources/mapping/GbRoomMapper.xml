@@ -136,7 +136,7 @@
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into gobang.gb_room(create_time, modify_time, room_number, create_user, opponents, watch_user, go_id, room_status, room_name, room_password)
-        values (now(), now(), #{roomNumber}, #{createUser}, #{opponents}, #{watchUser}, #{goId}, #{roomStatus}, #{roomName}, #{roomPassword})
+        values (now(), now(), 1, #{createUser}, #{opponents}, #{watchUser}, #{goId}, #{roomStatus}, #{roomName}, #{roomPassword})
     </insert>
 
     <!--通过主键修改数据-->
@@ -147,25 +147,19 @@
                 modify_time = now(),
             </if>
             <if test="roomNumber != null">
-                room_number = #{roomNumber},
+                room_number = room_number + #{roomNumber},
             </if>
             <if test="opponents != null">
                 opponents = #{opponents},
             </if>
             <if test="watchUser != null and watchUser != ''">
-                watch_user = #{watchUser},
+                watch_user = concat(watch_user, ',', #{watchUser}),
             </if>
             <if test="goId != null">
                 go_id = #{goId},
             </if>
             <if test="roomStatus != null">
                 room_status = #{roomStatus},
-            </if>
-            <if test="roomName != null and roomName !=''">
-                and room_name = #{roomName}
-            </if>
-            <if test="roomPassword != null and roomPassword !=''">
-                and room_password = #{roomPassword}
             </if>
         </set>
         where room_id = #{id}

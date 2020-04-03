@@ -1,6 +1,7 @@
 package com.xrc.gb.service.game;
 
 import com.alibaba.fastjson.JSONObject;
+import com.xrc.gb.consts.CommonConst;
 import com.xrc.gb.consts.ErrorInfoConstants;
 import com.xrc.gb.consts.GoGameConst;
 import com.xrc.gb.enums.GameTypeEnum;
@@ -50,8 +51,7 @@ public class GoBangGameServiceImpl implements GoService {
         }
         goQueryResp.getGoContext().setPlaceArrays(new ArrayList<>());
         goQueryResp.setIsEnd(0);
-        GoDO goDO = goDataManager.createGo(buildGoDO(goQueryResp));
-        return goDO != null;
+        return goDataManager.createGo(buildGoDO(goQueryResp));
     }
 
     private GoDO buildGoDO(GoQueryResp goQueryResp) {
@@ -76,6 +76,7 @@ public class GoBangGameServiceImpl implements GoService {
     private GoQueryResp buildGoQueryResp(GoDO queryGo) {
         GoQueryResp goQuery = new GoQueryResp();
 
+        goQuery.setId(queryGo.getId());
         goQuery.setBlackUserId(queryGo.getBlackUserId());
         goQuery.setWhiteUserId(queryGo.getWhiteUserId());
         goQuery.setGoContext(JSONObject.parseObject(queryGo.getGoContext(), GoContext.class));
@@ -104,7 +105,35 @@ public class GoBangGameServiceImpl implements GoService {
     }
 
     /**
-     *
+     * 通过修改时间判断数据是否被变更
+     */
+    public GoQueryResp queryGameBlock(Integer goId, Long expectModifyTime) {
+        CheckParameter.isNotNull(goId);
+        CheckParameter.isNotNull(expectModifyTime);
+
+        long deadLine = System.currentTimeMillis() + CommonConst.GO_BANG_REQUEST_BLOCK_TIMES;
+        for (;;) {
+            if (System.currentTimeMillis() > deadLine) {
+                throw ExceptionHelper.newBusinessException(ErrorInfoConstants.DATA_FLASH_TIME_OUT);
+            }
+            GoDO goDO = goDataManager.queryGo(goId);
+            if (goDO == null) {
+                throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_GAME_NOT_EXIST);
+            }
+            if (goDO.getModifyTime().getTime() > expectModifyTime) {
+                return buildGoQueryResp(goDO);
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    /**
+     * 落子修改
      */
     @Override
     public PlaceResultTypeEnum updateGameForPlace(GoPlaceReq goPlaceReq) {
@@ -133,9 +162,10 @@ public class GoBangGameServiceImpl implements GoService {
 
         PlaceResultTypeEnum resultTypeEnum = GoGameFactory.subscribe(GameTypeEnum.GO_BANG).place(goQueryResp.getGoContext());
         if (goDataManager.updateGo(buildGoDO(goQueryResp))) {
+            resultTypeEnum.setPlaceTime(goDataManager.queryGo(goPlaceReq.getId()).getModifyTime().getTime());
             return resultTypeEnum;
         } else {
-            throw ExceptionHelper.newSysException(ErrorInfoConstants.BIZ_SYSTEM_BUSY);
+            throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BOZ_PLACE_ERROR);
         }
     }
 }

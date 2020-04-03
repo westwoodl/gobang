@@ -10,7 +10,9 @@ import java.util.List;
  * @date 2020/3/4 10:35
  */
 public interface BaseDAO<T extends BaseDO> {
-
+    /**
+     * @return 返回的不是id，是变更行数
+     */
     int insert(T domain);
 
     T queryById(int id);
@@ -20,7 +22,9 @@ public interface BaseDAO<T extends BaseDO> {
     int countAll(@Param("t") T t);
 
     int deleteById(int id);
-
+    /**
+     * @return 返回的不是id，是变更行数
+     */
     int update(T domain);
 
 }

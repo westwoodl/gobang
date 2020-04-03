@@ -1,5 +1,7 @@
 package com.xrc.gb.util;
 
+import com.xrc.gb.consts.CommonConst;
+import com.xrc.gb.consts.ErrorInfoConstants;
 import com.xrc.gb.exception.BusinessException;
 import com.xrc.gb.exception.SystemBusyException;
 import lombok.AllArgsConstructor;
@@ -23,8 +25,8 @@ public class ExceptionHelper {
         return new BusinessException(info);
     }
 
-    public static SystemBusyException newSysException(String exceptionInfo, Throwable e) {
-        return new SystemBusyException(exceptionInfo + ":" + e.getMessage());
+    public static SystemBusyException newSysException() {
+        return newSysException(ErrorInfoConstants.BIZ_SYSTEM_BUSY);
     }
 
     public static SystemBusyException newSysException(String exceptionInfo) {

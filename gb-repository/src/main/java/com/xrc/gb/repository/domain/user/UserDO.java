@@ -10,8 +10,6 @@ import lombok.Data;
 @Data
 public class UserDO extends BaseDO {
 
-    private Integer userId;
-
     private String userName;
 
     private String account;

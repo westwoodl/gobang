@@ -1,58 +1,16 @@
-//点击房间进入
-function joinRoom(data) {
-    if (!isLogin()) {
-        return;
-    }
-    if (data == null) {
-        return;
-    }
-    if (data.roomPassword == null || data.roomPassword === "") {
-        alertLayer(data.roomName);
-        gameRoomShow(data.id);
-        return;
-    }
+/*
+    进入房间后-游戏开始前的的数据获取
 
-    var join_room_html =
-        '<input type="text" id="join_room_input" name="title" required lay-verify="required" placeholder="请输入房间密码" autocomplete="off" class="layui-input">' +
-        '<span id="span"></span>';
-    layui.use('layer', function () {
-        var layer = layui.layer;
-        layer.open({
-            title: '进入房间'
-            , resize: false
-            , content: join_room_html
-            , yes: function (index, layero) {
-                var $dom = $(layero);
-                var user_name = $dom.find("#join_room_input").val();
+ */
 
-                if (user_name.length < 1) {
-                    $dom.find("#span").html("请输密码");
-                    $dom.find("#span").attr("style", "font-size: 10px;color: red;margin-top: 20px;");
-                    return;
-                }
-
-                if (user_name.length > 10) {
-                    $dom.find("#span").html("密码长度不会大于10");
-                    $dom.find("#span").attr("style", "font-size: 10px;color: red;margin-top: 20px;");
-                    return;
-                }
-                if ($dom.find("#join_room_input").val() === data.roomPassword) {
-                    layer.close(index); //如果设定了yes回调，需进行手工关闭
-                    alertLayer(data.roomName);
-                    if (data.id != null && data.id !== "") {
-                        gameRoomShow(data.id);
-                    }
-                } else {
-                    $dom.find("#span").html("密码错误");
-                    $dom.find("#span").attr("style", "font-size: 10px;color: red;margin-top: 20px;");
-                }
-            }
-        });
-    });
-    return false;
-}
-
+// 游戏是否开始标识
+var is_game_start_for_room = false;
+// 用户是否进入房间标识
+var is_user_join_room = false;
+// 房间数据呈现
 var join_room_data_vue;
+
+// vue数据初始化
 $(function () {
     join_room_data_vue = new Vue({
         el: "#chess_config_card_div",
@@ -63,16 +21,66 @@ $(function () {
     });
 });
 
-//进入房间数据加载
-function gameRoomShow(go_id) {
+
+//房间进入事件
+function joinRoom() {
+    let url = document.location.toString();
+    let arrUrl = url.split("?");
+    let roomId;
+    if (arrUrl.length > 1 && arrUrl[1] != null && arrUrl[1].split("=").length > 1
+        && arrUrl[1].split("=")[0] === "roomId"
+        && arrUrl[1].split("=")[1] !== ''
+        && arrUrl[1].split("=")[1] != null) {
+        roomId = arrUrl[1].split("=")[1];
+    } else {
+        alertLayer("房间不存在");
+        window.location.href="/";
+        return;
+    }
+    joinRoomRequest(roomId);
+    return false;
+}
+
+
+/*
+    先加入房间 -> 首次加载数据 -> 持续更新房间数据
+ */
+
+// 加入房间
+function joinRoomRequest(roomId) {
+    $.ajax({
+        type: "PUT",
+        url: base_gobang_url + "/room/join",
+        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+        crossDomain: true,
+        data: {
+            roomId: roomId,
+        },
+        dataType: "json",
+        success: function (data) {
+            alertLayer(data.msg);
+            if (data.success) {
+                firstLoadRoomRequest(roomId, data.data);
+            } else {
+                window.location.href="/";
+            }
+        },
+        error: function () {
+            alert("系统繁忙");
+        }
+    });
+}
+
+// 进入房间加载数据 加载成功后 循环获取数据
+function firstLoadRoomRequest(roomId, expectTime) {
     displayWhat('chess_div');
     $("body").css("background", "#2B2B2B");
+    $("#chess_config_card_div").show();
     // $("#chess_config_div").css("background", "#333D49");
 
     $.ajax({
-        async: true,
         type: "GET",
-        url: base_gobang_url + "/room/" + go_id,
+        url: base_gobang_url + "/room/" + roomId,
         xhrFields: {withCredentials: true},	//前端适配：允许session跨域
         crossDomain: true,
         data: {},
@@ -82,10 +90,82 @@ function gameRoomShow(go_id) {
             join_room_data_vue.room = res.data;
             if (!res.success) {
                 alertLayer(res.msg);
+            } else {
+                is_user_join_room = true;
+                queryRoomBlockRequest(roomId, expectTime);
             }
-            if (res.data == null || res.data === "") {
-                alertLayer("房间不存在");
-                return;
+        },
+        error: function () {
+            alert("系统繁忙");
+        }
+    });
+
+}
+
+
+// 查询数据 20s超时
+function queryRoomBlockRequest(roomId, room_expect_time) {
+    $.ajax({
+        type: "get",
+        url: base_gobang_url + "/room/queryBlock",
+        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+        crossDomain: true,
+        data: {
+            roomId: roomId,
+            expectTime: room_expect_time
+        },
+        timeout: 25000,
+        dataType: "json",
+        success: function (data) {
+            if (data.success) {
+                join_room_data_vue.isSuccess = data.success;
+                join_room_data_vue.room = data.data;
+                if (!is_game_start_for_room && is_user_join_room) {
+                    console.log("游戏未开始：" + roomId + ";" + new Date(join_room_data_vue.room.modifyTime).getTime());
+                    queryRoomBlockRequest(roomId, new Date(join_room_data_vue.room.modifyTime).getTime());
+                }
+            } else {
+                if (!is_game_start_for_room && is_user_join_room) {
+                    queryRoomBlockRequest(roomId, room_expect_time);
+                }
+            }
+        },
+        complete: function (XMLHttpRequest, textStatus) {
+            if (textStatus === 'timeout' && !is_game_start_for_room && is_user_join_room) {
+                console.log("请求房间超时，正在重试");
+                queryRoomBlockRequest(roomId, room_expect_time);
+            }
+        },
+        error: function () {
+            alert("系统繁忙");
+        }
+    });
+}
+
+function startGameRequest() {
+
+    $.ajax({
+        async: false,
+        type: "GET",
+        url: base_gobang_url + "/user/friend",
+        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+        crossDomain: true,
+        data: {},
+        dataType: "json",
+        success: function (data) {
+            user_my_friend_vue.isSuccess = data.success;
+            user_my_friend_vue.dataList = data.data;
+            if (data.data.length < 1) {
+                alertLayer("您还没有好友哦");
+            }
+            if (!data.success) {
+                alertLayer(data.msg);
+            } else {
+                layui.use('element', function () {
+                    var element = layui.element;
+
+                    //…
+                });
             }
         },
         error: function () {
