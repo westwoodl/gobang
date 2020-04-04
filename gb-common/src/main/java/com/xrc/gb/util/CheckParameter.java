@@ -14,6 +14,12 @@ public class CheckParameter {
         }
     }
 
+    public static void isNotNull(Object o, String errorMsg) {
+        if (o == null) {
+            throw new IllegalArgumentException(errorMsg);
+        }
+    }
+
     public static void assertTrue(boolean s) {
         if (!s) {
             throw new IllegalArgumentException();

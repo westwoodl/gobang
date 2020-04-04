@@ -10,10 +10,8 @@ import org.apache.ibatis.annotations.Param;
  */
 @Mapper
 public interface UserDAO extends BaseDAO<UserDO> {
-
+    @Deprecated
     int insertSelective(UserDO userDO);
-
-    int updateByPrimaryKeySelective(UserDO userDO);
 
     UserDO queryByAccountAndPwd(@Param("account") String account, @Param("pwd") String pwd);
 

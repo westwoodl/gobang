@@ -40,7 +40,7 @@ public class GoBangGameServiceImpl implements GoService {
     private GoDAO goDAO;
 
     @Override
-    public boolean createGame(GoQueryResp goQueryResp) {
+    public Integer createGame(GoQueryResp goQueryResp) {
         CheckParameter.isNotNull(goQueryResp.getBlackUserId());
         CheckParameter.isNotNull(goQueryResp.getWhiteUserId());
         CheckParameter.isNotNull(goQueryResp.getGoContext());
@@ -51,7 +51,12 @@ public class GoBangGameServiceImpl implements GoService {
         }
         goQueryResp.getGoContext().setPlaceArrays(new ArrayList<>());
         goQueryResp.setIsEnd(0);
-        return goDataManager.createGo(buildGoDO(goQueryResp));
+
+        GoDO goDO = buildGoDO(goQueryResp);
+        if(goDataManager.createGo(goDO)) {
+            return goDO.getId();
+        }
+        return null;
     }
 
     private GoDO buildGoDO(GoQueryResp goQueryResp) {

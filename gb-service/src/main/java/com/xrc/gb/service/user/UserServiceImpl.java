@@ -1,13 +1,19 @@
 package com.xrc.gb.service.user;
 
+import com.alibaba.fastjson.JSONObject;
+import com.xrc.gb.consts.ErrorInfoConstants;
+import com.xrc.gb.manager.go.UserDataManager;
 import com.xrc.gb.repository.dao.UserDAO;
 import com.xrc.gb.repository.domain.user.UserDO;
 import com.xrc.gb.util.CheckParameter;
 import com.xrc.gb.util.ExceptionHelper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author xu rongchao
@@ -19,7 +25,13 @@ public class UserServiceImpl implements UserService {
     @Resource
     private UserDAO userDAO;
 
+    @Resource
+    private UserDataManager userDataManager;
+
     public boolean add(String username, String account, String password) {
+        CheckParameter.assertTrue(StringUtils.isNotBlank(username));
+        CheckParameter.assertTrue(StringUtils.isNotBlank(account));
+        CheckParameter.assertTrue(StringUtils.isNotBlank(password));
         if (userDAO.queryByUserName(username) != null) {
             throw ExceptionHelper.newBusinessException("昵称已存在");
         }
@@ -31,14 +43,13 @@ public class UserServiceImpl implements UserService {
         userDO.setUserName(username);
         userDO.setAccount(account);
         userDO.setPassword(password);
-        int id = userDAO.insert(userDO);
-        return id > 0;
+        return userDataManager.insert(userDO);
     }
 
     @Override
     public UserDO find(Integer id) {
         CheckParameter.isNotNull(id);
-        return userDAO.queryById(id);
+        return userDataManager.queryById(id);
     }
 
     @Override
@@ -48,7 +59,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean update(UserDO userDO) {
-        return userDAO.update(userDO) == 1;
+        return userDataManager.update(userDO);
+    }
+
+    @Override
+    public boolean addFriend(int friendId, Integer userId) {
+        CheckParameter.isNotNull(userId, ErrorInfoConstants.BIZ_PLEASE_LOGIN);
+        UserDO friendUserDO = userDataManager.queryById(friendId);
+        if (friendUserDO==null) {
+            throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_USER_NOT_EXIST);
+        }
+
+        UserDO userDO = userDataManager.queryById(userId);
+        List<Integer> friendList = JSONObject.parseArray(userDO.getFriend(), Integer.class);
+        if (CollectionUtils.isEmpty(friendList)) {
+            friendList = new ArrayList<>();
+        }
+        friendList.add(friendUserDO.getId());
+
+        UserDO userUpdateDO = new UserDO();
+        userUpdateDO.setId(userId);
+        userUpdateDO.setFriend(JSONObject.toJSONString(friendList));
+        return userDataManager.update(userUpdateDO);
     }
 
 

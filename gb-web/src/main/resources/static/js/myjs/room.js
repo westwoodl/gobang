@@ -63,7 +63,7 @@ function creatRoom() {
                     $dom.find("#span").attr("style", "font-size: 10px;color: red;margin-top: 20px;");
                     return;
                 }
-                if(creatRoomRequest(room_name, room_pwd, $dom) === true) {
+                if (creatRoomRequest(room_name, room_pwd, $dom) === true) {
                     layer.close(index); //如果设定了yes回调，需进行手工关闭
                 }
             }
@@ -78,18 +78,19 @@ function creatRoomRequest(room_name, room_password, $dom) {
         async: false,
         type: "POST",
         url: base_gobang_url + "/room/create",
-        xhrFields: {withCredentials:true},	//前端适配：允许session跨域
+        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
         crossDomain: true,
         contentType: "application/json",
-        data:JSON.stringify( {
+        data: JSON.stringify({
             "roomName": room_name,
             "roomPassword": room_password
         }),
         dataType: "json",
         success: function (data) {
             domTipsShow($dom, data.msg);
-            isSuccess = data.success;
-            window
+            if (data.success) {
+                window.location.href = "/templates/room.html?roomId=" + data.data;
+            }
         },
         error: function () {
             alert("系统繁忙");
@@ -100,29 +101,35 @@ function creatRoomRequest(room_name, room_password, $dom) {
 
 function queryRoomRequest(pageIndex, pageSize, sync) {
     let totalCount = 0;
-    $.ajax({
-        async: sync,
-        type: "GET",
-        url: base_gobang_url + "/room",
-        xhrFields: {withCredentials:true},	//前端适配：允许session跨域
-        crossDomain: true,
-        data: {
-            pageIndex: pageIndex,
-            pageSize: pageSize
-        },
-        dataType: "json",
-        success: function (data) {
-            isSuccess = data.success;
-            alertLayer(data.msg);
-
-            totalCount = data.data.totalCount;
-            room_list_vue.dataList = data.data.data;
-            room_list_vue.totalCount = totalCount;
-
-        },
-        error: function () {
-            alert("系统繁忙");
-        }
+    layui.use('layer', function () {
+        let index = layer.load(1, {
+            shade: [0.1, '#fff'] //0.1透明度的白色背景
+        });
+        $.ajax({
+            async: sync,
+            type: "GET",
+            url: base_gobang_url + "/room",
+            xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+            crossDomain: true,
+            data: {
+                pageIndex: pageIndex,
+                pageSize: pageSize
+            },
+            dataType: "json",
+            success: function (data) {
+                isSuccess = data.success;
+                if (!isSuccess) {
+                    alertLayer(data.msg);
+                }
+                totalCount = data.data.totalCount;
+                room_list_vue.dataList = data.data.data;
+                room_list_vue.totalCount = totalCount;
+                layer.close(index);
+            },
+            error: function () {
+                alert("系统繁忙");
+            }
+        });
     });
     return totalCount;
 }
@@ -150,29 +157,56 @@ function roomUseLayuiPage() {
 
 }
 
-function useLayuiPage(page_id) {
+// 加入房间弹出层
+function joinRoom(data) {
+    if (!isLogin()) {
+        return;
+    }
+    if (data == null) {
+        return;
+    }
+    if (data.roomPassword == null || data.roomPassword === "") {
+        alertLayer(data.roomName);
+        window.location.href = "/templates/room.html?roomId=" + data.id;
+        return;
+    }
 
-    layui.use('laypage', function () {
-        var laypage = layui.laypage;
+    var join_room_html =
+        '<input type="text" id="join_room_input" name="title" required lay-verify="required" placeholder="请输入房间密码" autocomplete="off" class="layui-input">' +
+        '<span id="span"></span>';
+    layui.use('layer', function () {
+        var layer = layui.layer;
+        layer.open({
+            title: '进入房间'
+            , resize: false
+            , content: join_room_html
+            , yes: function (index, layero) {
+                var $dom = $(layero);
+                var user_name = $dom.find("#join_room_input").val();
 
-        //执行一个laypage实例
-        laypage.render({
-            elem: page_id //注意，这里的 test1 是 ID，不用加 # 号
-            , count: 3 //数据总数，从服务端得到
-            , layout: ['count', 'prev', 'page', 'next', 'limit', 'skip'] //refresh
-            , jump: function (obj, first) {
-                //obj包含了当前分页的所有参数，比如：
-                console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
-                console.log(obj.limit); //得到每页显示的条数
-                //
-                // //首次不执行
-                // if (!first) {
-                //     //do something
-                // }
-                queryRoomRequest(obj.curr, obj.limit);
+                if (user_name.length < 1) {
+                    $dom.find("#span").html("请输密码");
+                    $dom.find("#span").attr("style", "font-size: 10px;color: red;margin-top: 20px;");
+                    return;
+                }
 
+                if (user_name.length > 10) {
+                    $dom.find("#span").html("密码长度不会大于10");
+                    $dom.find("#span").attr("style", "font-size: 10px;color: red;margin-top: 20px;");
+                    return;
+                }
+                if ($dom.find("#join_room_input").val() === data.roomPassword) {
+                    layer.close(index); //如果设定了yes回调，需进行手工关闭
+                    alertLayer(data.roomName);
+                    if (data.id != null && data.id !== "") {
+                        window.location.href = "/templates/room.html?roomId=" + data.id;
+                    }
+                } else {
+                    $dom.find("#span").html("密码错误");
+                    $dom.find("#span").attr("style", "font-size: 10px;color: red;margin-top: 20px;");
+                }
             }
         });
     });
-
+    return false;
 }

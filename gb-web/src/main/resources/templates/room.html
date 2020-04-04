@@ -103,8 +103,8 @@
                         <input type="radio" name="sex" value="nv" title="五子棋">
                     </div>
                 </form>
-                <button type="button" class="layui-btn layui-btn-sm">开始游戏</button>
-                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal">离开房间</button>
+                <button type="button" class="layui-btn layui-btn-sm" onclick="startGameRequest()">开始游戏</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="leaveRoomRequest()">离开房间</button>
             </div>
             <div class="layui-card-body" style="display:none;">
                 <span style="margin-right: 10px">配置</span>
@@ -127,24 +127,32 @@
 </div>
 
 <script type="text/javascript" src="../static/js/jQuery/jQuery.js"></script>
-<!--画棋盘和画棋子的方法-->
+<!--画棋盘和画棋子的方法 todo-->
 <script type="text/javascript" src="../static/js/myjs/gobang.js"></script>
-<!--页面加载 用户事件-->
+<!--页面加载 用户事件 todo-->
 <script type="text/javascript" src="../static/js/myjs/gobangLoad.js"></script>
 <!--对战-->
 <script type="text/javascript" src="../static/js/myjs/room_paly.js"></script>
+<!--棋子请求-->
+<script type="text/javascript" src="../static/js/myjs/go_req.js"></script>
 <!--layui-->
-<script src="https://www.layuicdn.com/layui-v2.5.6/layui.js" charset="utf-8"></script>
+<!--<script src="https://www.layuicdn.com/layui-v2.5.6/layui.js" charset="utf-8"></script>-->
+<script src="https://www.layuicdn.com/layer-v3.1.1/layer.js" charset="utf-8"></script>
+
 <!--vue-->
 <script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
 
 <script type="text/javascript">
+    var base_gobang_url = "http://localhost:8080";
+
 
     function alertLayer(msg) {
-        layui.use('layer', function () {
-            var layer = layui.layer;
-            layer.msg(msg);
-        });
+        layer.msg(msg);
+    }
+
+
+    function locationLeave() {
+        window.location.href = "/";
     }
 
 </script>

@@ -14,4 +14,7 @@ public interface UserService {
     UserDO login(String account, String pwd);
 
     boolean update(UserDO userDO);
+
+
+    boolean addFriend(int friendId, Integer userId);
 }

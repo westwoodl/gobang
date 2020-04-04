@@ -8,6 +8,7 @@ import com.xrc.gb.repository.domain.BaseDO;
 import com.xrc.gb.repository.domain.go.GoDO;
 import com.xrc.gb.repository.domain.user.UserDO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 
 import java.lang.reflect.ParameterizedType;
 
@@ -19,7 +20,9 @@ import java.lang.reflect.ParameterizedType;
  */
 public abstract class AbstractCacheManager<T extends BaseDO>{
 
-    //在Spring Boot2.0中可以直接在父类属性上加入注解
+    /**
+     * 在Spring Boot2.0中可以直接在父类属性上加入注解
+     */
     @Autowired
     protected TypeRedisCache<T> tTypeRedisCache;
     /**
@@ -38,15 +41,15 @@ public abstract class AbstractCacheManager<T extends BaseDO>{
     @SuppressWarnings("unchecked")
     private Class<T> clazz = (Class <T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
-    public abstract int insert(UserDO domain) ;
+    public abstract boolean insert(@NonNull final T domain) ;
 
-    public abstract UserDO queryById(int id) ;
+    public abstract T queryById(final int id) ;
 
-    public int deleteById(int id) {
+    public boolean deleteById(final int id) {
         throw new UnsupportedOperationException();
     }
-    public abstract int update(UserDO domain);
 
+    public abstract boolean update(@NonNull final T domain);
 
 
     protected void setCache(T t) {

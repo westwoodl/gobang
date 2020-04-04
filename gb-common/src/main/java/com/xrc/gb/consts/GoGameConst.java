@@ -7,4 +7,6 @@ package com.xrc.gb.consts;
 public class GoGameConst {
 
     public final static long DEFAULT_GAME_TIME_MILLIS = 60 * 30 * 1000;
+    public final static long DEFAULT_GAME_MIN_TIME_MILLIS = 60 * 10 * 1000;
+    public final static int DEFAULT_GAME_BROAD_SIZE = 19;
 }

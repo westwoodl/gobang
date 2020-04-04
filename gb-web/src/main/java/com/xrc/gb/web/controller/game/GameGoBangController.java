@@ -70,19 +70,19 @@ public class GameGoBangController extends AbstractController {
         return JSONObjectResult.create().success(goBangGameService.queryGameList(pageQueryReq));
     }
 
-
-    @PostMapping
-    public JSONObject create(@RequestBody @Validated GoBangGameVO goBangGameVO, BindingResult bindResult) {
-        if (bindResult.hasErrors()) {
-            JSONObjectResult.create().fail(bindResult.getAllErrors().get(0).getDefaultMessage());
-        }
-        GoQueryResp goQueryResp = buildGoQueryResp(goBangGameVO);
-        if (goBangGameService.createGame(goQueryResp)) {
-            return JSONObjectResult.create().success("创建成功");
-        } else {
-            return JSONObjectResult.create().fail("创建失败");
-        }
-    }
+//
+//    @PostMapping
+//    public JSONObject create(@RequestBody @Validated GoBangGameVO goBangGameVO, BindingResult bindResult) {
+////        if (bindResult.hasErrors()) {
+////            JSONObjectResult.create().fail(bindResult.getAllErrors().get(0).getDefaultMessage());
+////        }
+////        GoQueryResp goQueryResp = buildGoQueryResp(goBangGameVO);
+////        if (goBangGameService.createGame(goQueryResp)) {
+////            return JSONObjectResult.create().success("创建成功");
+////        } else {
+////            return JSONObjectResult.create().fail("创建失败");
+////        }
+//    }
 
     private GoQueryResp buildGoQueryResp(GoBangGameVO goBangGameVO) {
         GoQueryResp goQueryResp = new GoQueryResp();

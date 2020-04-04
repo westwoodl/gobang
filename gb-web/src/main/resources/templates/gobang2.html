@@ -214,7 +214,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="data in dataList" v-on:click="joinRoom(data)">
+                <tr v-for="data in dataList" onclick="joinRoom()"  v-on:click="joinRoom(data)">
                     <td>{{data.id}}</td>
                     <td>
                         &nbsp; {{data.roomName}}
@@ -528,7 +528,7 @@
     <div id="chess_config_div" class="layui-anim" data-anim="layui-anim-fadein"
          style="width: 300px;height: 700px;margin-top: 20px;margin-right: 20px">
         <!--        -->
-        <div id="chess_config_card_div" style="background: #333D49;" v-if="room!=null">
+        <div id="chess_config_card_div" style="background: #333D49;display: none" v-if="room!=null">
             <div class="layui-card-body">当前位置：{{room.roomName}}</div>
             <div class="layui-card-body">
                 <span style="margin-right: 10px">黑棋</span>
@@ -629,6 +629,10 @@
     function comingSoon() {
         alertLayer("敬请期待");
         return false;
+    }
+
+    function windowLeave() {
+        window.location.href = "/templates/room.html";
     }
 </script>
 </body>

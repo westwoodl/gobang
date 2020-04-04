@@ -53,11 +53,14 @@ public class RoomDAOTest {
     @Test
     public void test_update() {
         RoomDO roomDO =new RoomDO();
-        roomDO.setId(1);
-        roomDO.setRoomNumber(1);
+        roomDO.setId(18);
+        roomDO.setRoomNumber(-1);
+        roomDO.setOpponents(0);
         System.out.println(roomDAO.update(roomDO));
         System.out.println(roomDO);
     }
+
+
 
 
 }

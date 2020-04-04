@@ -18,8 +18,17 @@
 
     <!--查询单个-->
     <select id="queryById" resultMap="GbRoomMap">
-        select
-          room_id, create_time, modify_time, room_number, create_user, opponents, watch_user, go_id, room_status, room_name, room_password
+        select room_id,
+               create_time,
+               modify_time,
+               room_number,
+               create_user,
+               opponents,
+               watch_user,
+               go_id,
+               room_status,
+               room_name,
+               room_password
         from gobang.gb_room
         where room_id = #{id}
     </select>
@@ -27,7 +36,8 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="GbRoomMap">
         select
-          room_id, create_time, modify_time, room_number, create_user, opponents, watch_user, go_id, room_status, room_name, room_password
+        room_id, create_time, modify_time, room_number, create_user, opponents, watch_user, go_id, room_status,
+        room_name, room_password
         from gobang.gb_room
         <where>
             <if test="t.createTime != null">
@@ -64,7 +74,7 @@
 
     <select id="countAll" resultType="int">
         select
-            count(1)
+        count(1)
         from gobang.gb_room
         <where>
             <if test="t.createTime != null">
@@ -100,7 +110,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="GbRoomMap">
         select
-          room_id, create_time, modify_time, room_number, create_user, opponents, watch_user, go_id, room_status
+        room_id, create_time, modify_time, room_number, create_user, opponents, watch_user, go_id, room_status
         from gobang.gb_room
         <where>
             <if test="createTime != null">
@@ -135,22 +145,27 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into gobang.gb_room(create_time, modify_time, room_number, create_user, opponents, watch_user, go_id, room_status, room_name, room_password)
-        values (now(), now(), 1, #{createUser}, #{opponents}, #{watchUser}, #{goId}, #{roomStatus}, #{roomName}, #{roomPassword})
+        insert into gobang.gb_room(create_time, modify_time, room_number, create_user, opponents, watch_user, go_id,
+                                   room_status, room_name, room_password)
+        values (now(), now(), 1, #{createUser}, #{opponents}, #{watchUser}, #{goId}, #{roomStatus}, #{roomName},
+                #{roomPassword})
     </insert>
 
     <!--通过主键修改数据-->
     <update id="update">
         update gobang.gb_room
         <set>
-            <if test="modifyTime != null">
-                modify_time = now(),
-            </if>
+            modify_time = now(),
             <if test="roomNumber != null">
                 room_number = room_number + #{roomNumber},
             </if>
             <if test="opponents != null">
-                opponents = #{opponents},
+                <if test="opponents == 0">
+                    opponents = null,
+                </if>
+                <if test="opponents != 0">
+                    opponents = #{opponents},
+                </if>
             </if>
             <if test="watchUser != null and watchUser != ''">
                 watch_user = concat(watch_user, ',', #{watchUser}),
@@ -167,7 +182,9 @@
 
     <!--通过主键删除-->
     <delete id="deleteById">
-        delete from gobang.gb_room where room_id = #{id}
+        delete
+        from gobang.gb_room
+        where room_id = #{id}
     </delete>
 
 </mapper>

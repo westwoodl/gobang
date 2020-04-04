@@ -33,6 +33,9 @@ public class CacheKeyUtils {
         return key.toString().toUpperCase();
     }
 
+    /**
+     * 以实体类的类名和实体的id构建唯一标识
+     */
     public static <T extends BaseDO> String getIdKey(T t) {
         return (getShortClassName(t) + "_" + t.getId()).toUpperCase();
     }

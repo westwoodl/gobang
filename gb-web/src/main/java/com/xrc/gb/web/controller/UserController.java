@@ -68,22 +68,12 @@ public class UserController extends AbstractController {
         return JSONObjectResult.create().success(friendDOList);
     }
 
+    /**
+     * 添加朋友
+     */
     @PostMapping("/friend")
     public JSONObject addFriend(@RequestParam Integer id) {
-        UserDO friendUserDO = userService.find(id);
-        if (friendUserDO==null) {
-            return JSONObjectResult.create().fail("用户不存在");
-        }
-
-        Integer userId = getUserId();
-        UserDO userDO = userService.find(userId);
-        List<Integer> friendList = JSONObject.parseArray(userDO.getFriend(), Integer.class);
-        if (CollectionUtils.isEmpty(friendList)) {
-            friendList = new ArrayList<>();
-        }
-        friendList.add(friendUserDO.getId());
-        userDO.setFriend(JSONObject.toJSONString(friendList));
-        return JSONObjectResult.create().isSuccess(userService.update(userDO));
+        return JSONObjectResult.create().success(userService.addFriend(id, getUserId()));
     }
 
     @PostMapping

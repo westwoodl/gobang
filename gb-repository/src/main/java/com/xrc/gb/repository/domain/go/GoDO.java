@@ -26,4 +26,6 @@ public class GoDO extends BaseDO {
     private Date endTime;
 
     private Integer lastUserId;
+
+    private Integer goResult;
 }

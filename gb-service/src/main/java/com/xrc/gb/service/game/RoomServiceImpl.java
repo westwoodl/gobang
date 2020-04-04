@@ -6,7 +6,7 @@ import com.xrc.gb.enums.JoinRoomResultEnum;
 import com.xrc.gb.enums.RoomStatusEnum;
 import com.xrc.gb.manager.go.GoDataManager;
 import com.xrc.gb.manager.go.RoomDataManager;
-import com.xrc.gb.repository.dao.UserDAO;
+import com.xrc.gb.manager.go.UserDataManager;
 import com.xrc.gb.repository.domain.go.GoDO;
 import com.xrc.gb.repository.domain.go.RoomDO;
 import com.xrc.gb.repository.domain.user.UserDO;
@@ -14,6 +14,8 @@ import com.xrc.gb.util.CheckParameter;
 import com.xrc.gb.util.ExceptionHelper;
 import com.xrc.gb.util.PageQueryReq;
 import com.xrc.gb.util.PageQueryResultResp;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.Roman;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,7 +31,7 @@ public class RoomServiceImpl {
     private RoomDataManager roomManager;
 
     @Resource
-    private UserDAO userDAO;
+    private UserDataManager userDataManager;
 
     @Resource
     private GoDataManager goDataManager;
@@ -43,6 +45,8 @@ public class RoomServiceImpl {
         CheckParameter.isNotNull(joinUser.getId());
 
         RoomDO roomDO = roomManager.queryById(roomId);
+        RoomDO roomUpdateReq = new RoomDO();
+        roomUpdateReq.setId(roomId);
         if (roomDO == null) {
             throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_ROOM_NOT_EXIST);
         }
@@ -52,16 +56,18 @@ public class RoomServiceImpl {
             return resultEnum;
         }
         if (roomDO.getOpponents() == null || joinUser.getId().equals(roomDO.getOpponents())) {
-            roomDO.setOpponents(joinUser.getId());
-            roomDO.setRoomNumber(1);
-            roomManager.update(roomDO);
+            if (roomDO.getOpponents() == null) {
+                roomUpdateReq.setRoomNumber(1);
+            }
+            roomUpdateReq.setOpponents(joinUser.getId());
+            roomManager.update(roomUpdateReq);
             JoinRoomResultEnum resultEnum = JoinRoomResultEnum.YOU_ARE_WHITE;
             resultEnum.setExpectModifyTime(roomManager.queryById(roomId).getModifyTime().getTime());
             return resultEnum;
         }
-        roomDO.setRoomNumber(1);
-        roomDO.setWatchUser(roomDO.getWatchUser());
-        roomManager.update(roomDO);
+        roomUpdateReq.setRoomNumber(1);
+        roomUpdateReq.setWatchUser(roomDO.getWatchUser());
+        roomManager.update(roomUpdateReq);
         JoinRoomResultEnum resultEnum = JoinRoomResultEnum.YOU_ARE_WATCH;
         resultEnum.setExpectModifyTime(roomManager.queryById(roomId).getModifyTime().getTime());
         return resultEnum;
@@ -97,7 +103,7 @@ public class RoomServiceImpl {
     /**
      * 开始游戏
      */
-    public void startGame(Integer roomId, Integer userId) {
+    public boolean startGame(Integer roomId, Integer userId) {
         CheckParameter.isNotNull(roomId);
         CheckParameter.isNotNull(userId);
 
@@ -113,16 +119,14 @@ public class RoomServiceImpl {
                 RoomStatusEnum.ENDED.getCode().equals(roomDO.getRoomStatus())) {
             throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_GAME_START_NOT_ALLOW);
         }
-        RoomDO updateReq = new RoomDO();
-        updateReq.setId(roomId);
-        updateReq.setId(RoomStatusEnum.GAMING.getCode());
-
-        GoDO goDOCreateReq = new GoDO();
-        goDOCreateReq.setBlackUserId(roomDO.getCreateUser()); // todo 黑白子被定死了
-        goDOCreateReq.setWhiteUserId(roomDO.getOpponents());
-
-
-        goDataManager.createGo(goDOCreateReq);
+        return true;
+//
+//        GoDO goDOCreateReq = new GoDO();
+//        goDOCreateReq.setBlackUserId(roomDO.getCreateUser()); // todo 黑白子被定死了
+//        goDOCreateReq.setWhiteUserId(roomDO.getOpponents());
+//        goDOCreateReq.setGoContext();
+//
+//        return goDataManager.createGo(goDOCreateReq);
     }
 
     public PageQueryResultResp<List<RoomDO>> queryPage(PageQueryReq<RoomDO> pageQueryReq) {
@@ -146,13 +150,56 @@ public class RoomServiceImpl {
         return roomManager.update(roomDO);
     }
 
-    public boolean delete(int roomId) {
-        return roomManager.deleteById(roomId);
-    }
+//    public boolean delete(int roomId) {
+//        return roomManager.deleteById(roomId);
+//    }
 
     public RoomDO queryById(Integer id) {
         CheckParameter.isNotNull(id);
         return roomManager.queryById(id);
     }
 
+    public boolean leaveRoom(Integer roomId, Integer userId) {
+        CheckParameter.isNotNull(roomId);
+        CheckParameter.isNotNull(userId);
+        RoomDO roomDO = roomManager.queryById(roomId);
+        if (roomDO.getRoomNumber() <= 0) {
+            throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_YOU_ARE_NOT_IN_ROOM);
+        }
+        if (roomDO.getCreateUser().equals(userId)) {
+            return roomManager.deleteById(roomId);
+        }
+        RoomDO updateRoom = new RoomDO();
+        if (roomDO.getOpponents().equals(userId)) {
+            updateRoom.setId(roomId);
+            updateRoom.setRoomNumber(-1);
+            updateRoom.setOpponents(0);
+            return roomManager.update(roomDO);
+        }
+        if (StringUtils.isBlank(roomDO.getWatchUser())) {
+            throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_YOU_ARE_NOT_IN_ROOM);
+        }
+        // todo 优化为分布式锁 lock room id
+        synchronized (RoomServiceImpl.class) {
+            StringBuilder wUserSb = new StringBuilder();
+            updateRoom.setId(roomId);
+            boolean isIn = false;
+            for (String wId : roomManager.queryById(roomId).getWatchUser().split(CommonConst.SPLIT_STR)) {
+                if (StringUtils.isBlank(wId)) {
+                    continue;
+                }
+                if (wId.equals(String.valueOf(userId))) {
+                    updateRoom.setRoomNumber(-1);
+                    isIn = true;
+                } else {
+                    wUserSb.append(wId).append(CommonConst.SPLIT_STR);
+                }
+            }
+            if (!isIn) {
+                throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_YOU_ARE_NOT_IN_ROOM);
+            }
+            updateRoom.setWatchUser(wUserSb.toString());
+            return roomManager.update(updateRoom);
+        }
+    }
 }

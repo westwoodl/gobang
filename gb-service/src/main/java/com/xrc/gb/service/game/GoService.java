@@ -16,7 +16,10 @@ import java.util.List;
  */
 public interface GoService {
 
-    boolean createGame(GoQueryResp goQueryResp);
+    /**
+     * 返回 id
+     */
+    Integer createGame(GoQueryResp goQueryResp);
 
     GoQueryResp queryGame(Integer id);
 

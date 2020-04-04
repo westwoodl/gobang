@@ -23,4 +23,11 @@ public class ErrorInfoConstants {
     public static final String BOZ_PLACE_ERROR = "落子失败";
 
     public static final String BIZ_OPERATE_NOT_ALLOW = "您无权操作";
+
+    public static final String BIZ_PLEASE_LOGIN = "请登录";
+
+    public static final String BIZ_USER_NOT_EXIST = "用户不存在";
+
+    public static final String BIZ_YOU_ARE_NOT_IN_ROOM = "你不在当前对局";
+
 }

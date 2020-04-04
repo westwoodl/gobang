@@ -1,11 +1,15 @@
 package com.xrc.gb.web.controller.game;
 
 import com.alibaba.fastjson.JSONObject;
+import com.xrc.gb.consts.GoGameConst;
 import com.xrc.gb.enums.DateFormatEnum;
 import com.xrc.gb.enums.JoinRoomResultEnum;
 import com.xrc.gb.enums.RoomStatusEnum;
+import com.xrc.gb.manager.go.dto.GoContext;
+import com.xrc.gb.manager.go.dto.GoQueryResp;
 import com.xrc.gb.repository.domain.go.RoomDO;
 import com.xrc.gb.repository.domain.user.UserDO;
+import com.xrc.gb.service.game.GoBangGameServiceImpl;
 import com.xrc.gb.service.game.RoomServiceImpl;
 import com.xrc.gb.service.user.UserService;
 import com.xrc.gb.util.DateFormatUtils;
@@ -14,13 +18,12 @@ import com.xrc.gb.util.PageQueryResultResp;
 import com.xrc.gb.web.common.JSONObjectResult;
 import com.xrc.gb.web.controller.AbstractController;
 import com.xrc.gb.web.controller.vo.RoomCreateVO;
-import com.xrc.gb.web.controller.vo.RoomQueryRespVO;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,6 +36,9 @@ public class RoomController extends AbstractController {
 
     @Resource
     private RoomServiceImpl roomService;
+
+    @Resource
+    private GoBangGameServiceImpl goBangGameService;
 
     @Resource
     private UserService userService;
@@ -49,7 +55,7 @@ public class RoomController extends AbstractController {
         roomDO.setRoomName(roomVO.getRoomName());
         roomDO.setRoomPassword(roomVO.getRoomPassword());
         roomService.create(roomDO);
-        return JSONObjectResult.create().success();
+        return JSONObjectResult.create().success(roomDO.getId());
     }
 
     @GetMapping
@@ -96,16 +102,49 @@ public class RoomController extends AbstractController {
     /**
      * 开始游戏
      */
-    @GetMapping("start")
-    public JSONObject startGame(@RequestParam Integer roomId) {
+    @PutMapping("/start")
+    public JSONObject startGame(@RequestParam Integer roomId, @RequestParam(required = false) Long gameTime, @RequestParam(required = false) Integer gameMode) {
         roomService.startGame(roomId, getUserId());
-        return JSONObjectResult.create().success();
+        // 创建对局
+        RoomDO roomDO = roomService.queryById(roomId);
+        GoQueryResp goCreateReq = new GoQueryResp();
+        goCreateReq.setBlackUserId(roomDO.getCreateUser());
+        goCreateReq.setWhiteUserId(roomDO.getOpponents());
+        if (gameTime != null && gameTime >= GoGameConst.DEFAULT_GAME_MIN_TIME_MILLIS) {
+            goCreateReq.setEndTime(new Date(System.currentTimeMillis() + gameTime));
+        }
+        GoContext goContextCreateReq = new GoContext();
+        goContextCreateReq.setCheckerBoardSize(GoGameConst.DEFAULT_GAME_BROAD_SIZE);
+        goCreateReq.setGoContext(goContextCreateReq);
+        Integer goId = goBangGameService.createGame(goCreateReq);
+        if (goId == null) {
+            return JSONObjectResult.create().fail("创建对局失败");
+        }
+        // 创建对局成功，修改对局状态
+        RoomDO updateRoomReq = new RoomDO();
+        updateRoomReq.setId(roomId);
+        updateRoomReq.setRoomStatus(RoomStatusEnum.GAMING.getCode());
+        updateRoomReq.setGoId(goId);
+        boolean isUpdateSuccess = roomService.update(updateRoomReq);
+        if (isUpdateSuccess) {
+            return JSONObjectResult.create().success(goId);
+        } else {
+            return JSONObjectResult.create().fail("房修改失败");
+        }
+    }
+
+    /**
+     * 离开房间
+     */
+    @PutMapping("/leave")
+    public JSONObject leaveRoom(@RequestParam Integer roomId) {
+        return JSONObjectResult.create().isSuccess(roomService.leaveRoom(roomId, getUserId()));
     }
 
     /**
      * 查询room的创建者和对手的人物名称
      */
-    private RoomDO buildRoomDO(RoomDO roomDO) {
+    private void buildRoomDO(RoomDO roomDO) {
         UserDO create = userService.find(roomDO.getCreateUser());
         roomDO.setCreateUserName(create.getUserName());
         roomDO.setCreateUserImg(create.getImg());
@@ -114,7 +153,6 @@ public class RoomController extends AbstractController {
             roomDO.setOpponentsName(opUser.getUserName());
             roomDO.setOpponentsImg(opUser.getImg());
         }
-        return roomDO;
     }
 
 }
