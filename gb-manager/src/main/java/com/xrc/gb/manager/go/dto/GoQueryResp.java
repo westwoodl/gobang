@@ -24,7 +24,11 @@ public class GoQueryResp implements Serializable {
 
     private Integer isEnd;
 
+    private Date modifyTime;
+
     private Date endTime;
 
     private Integer lastUserId;
+
+    private Integer goStatus;
 }

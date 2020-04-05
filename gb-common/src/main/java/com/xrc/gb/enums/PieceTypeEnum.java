@@ -7,9 +7,8 @@ import lombok.Data;
  * @date 2020/3/23 20:33
  */
 public enum PieceTypeEnum {
-
-    WHITE_PIECE(1, "白棋"),
-    BLACK_PIECE(2, "黑棋");
+    BLACK_PIECE(1, "黑棋"),
+    WHITE_PIECE(2, "白棋");
 
 
     private Integer code;

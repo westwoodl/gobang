@@ -80,7 +80,11 @@ public class RoomDataManager {
 
     public boolean deleteById(int roomId) {
         roomTypeRedisCache.remove(CacheKeyUtils.getIdKey(roomId, RoomDO.class));
-        return roomDAO.deleteById(roomId) > 0;
+        if(roomDAO.deleteById(roomId) > 0) {
+            roomTypeRedisCache.remove(CacheKeyUtils.getIdKey(roomId, RoomDO.class));
+            return true;
+        }
+        return false;
         // 删除失败 什么操蛋情况会删除失败？
         // RoomDO roomDO = roomDAO.queryById(roomId);
         //roomTypeRedisCache.set(CacheKeyUtils.getIdKey(roomDO), roomDO, CommonConst.CACHE_STORE_MINUTES);

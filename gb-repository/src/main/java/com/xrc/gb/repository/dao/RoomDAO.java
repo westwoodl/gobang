@@ -9,4 +9,6 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface RoomDAO extends BaseDAO<RoomDO> {
+
+    public RoomDO queryByGoId(Integer goId);
 }

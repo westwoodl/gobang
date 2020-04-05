@@ -16,6 +16,21 @@
         <result property="roomPassword" column="room_password" jdbcType="VARCHAR"/>
     </resultMap>
 
+    <select id="queryByGoId"  resultMap="GbRoomMap">
+        select room_id,
+               create_time,
+               modify_time,
+               room_number,
+               create_user,
+               opponents,
+               watch_user,
+               go_id,
+               room_status,
+               room_name,
+               room_password
+        from gobang.gb_room
+        where go_id = #{goId}
+    </select>
     <!--查询单个-->
     <select id="queryById" resultMap="GbRoomMap">
         select room_id,

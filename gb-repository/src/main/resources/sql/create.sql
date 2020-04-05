@@ -30,11 +30,12 @@ create table gb_go (
     modify_time timestamp,
     black_user_id int not null  comment '执黑者',
     white_user_Id int not null  comment '执白',
-    go_context varchar(100) not null comment '棋盘json',
+    go_context text not null comment '棋盘json',
     is_end int comment '对局是否结束',
     end_time timestamp  comment '对局结束时间',
     last_user_id int  comment '最后落子玩家',
-    go_result varchar(100) comment '结果json'
+    go_result varchar(100) comment '结果json',
+    go_status int not null comment '对局状态'
 );
 create index query_go_by_white_user_index on gb_go(white_user_Id);
 create index query_go_by_black_user_index on gb_go(black_user_id);

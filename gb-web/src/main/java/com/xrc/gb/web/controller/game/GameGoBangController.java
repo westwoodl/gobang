@@ -41,7 +41,7 @@ public class GameGoBangController extends AbstractController {
     }
 
     @GetMapping("/queryBlock")
-    public JSONObject queryBlock(@RequestParam Integer goId, @RequestParam(value = "placeTime") Long expectModifyTime) {
+    public JSONObject queryBlock(@RequestParam Integer goId, @RequestParam(value = "expectTime") Long expectModifyTime) {
         return JSONObjectResult.create().success(goBangGameService.queryGameBlock(goId, expectModifyTime));
     }
 

@@ -58,7 +58,7 @@ function creatRoom() {
                 var room_name = $dom.find("#room_create_name_input").val();
                 var room_pwd = $dom.find("#room_create_pwd_input").val();
                 console.log(room_name.length);
-                if (room_name.length < 1 || room_name.length > 7) {
+                if (room_name.length < 1 || room_name.length > 8) {
                     $dom.find("#span").html("房间名长度不能大于七")
                     $dom.find("#span").attr("style", "font-size: 10px;color: red;margin-top: 20px;");
                     return;

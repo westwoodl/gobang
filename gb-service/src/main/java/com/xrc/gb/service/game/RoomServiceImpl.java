@@ -163,6 +163,9 @@ public class RoomServiceImpl {
         CheckParameter.isNotNull(roomId);
         CheckParameter.isNotNull(userId);
         RoomDO roomDO = roomManager.queryById(roomId);
+        if (roomDO == null) {
+            throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_ROOM_NOT_EXIST);
+        }
         if (roomDO.getRoomNumber() <= 0) {
             throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_YOU_ARE_NOT_IN_ROOM);
         }
@@ -174,7 +177,7 @@ public class RoomServiceImpl {
             updateRoom.setId(roomId);
             updateRoom.setRoomNumber(-1);
             updateRoom.setOpponents(0);
-            return roomManager.update(roomDO);
+            return roomManager.update(updateRoom);
         }
         if (StringUtils.isBlank(roomDO.getWatchUser())) {
             throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_YOU_ARE_NOT_IN_ROOM);

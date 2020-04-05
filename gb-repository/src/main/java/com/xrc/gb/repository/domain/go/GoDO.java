@@ -28,4 +28,6 @@ public class GoDO extends BaseDO {
     private Integer lastUserId;
 
     private Integer goResult;
+
+    private Integer goStatus;
 }

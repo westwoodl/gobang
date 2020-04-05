@@ -61,30 +61,34 @@
 
     <!--棋盘配置-->
     <div id="chess_config_div" class="layui-anim" data-anim="layui-anim-fadein"
-         style="width: 300px;height: 700px;margin-top: 20px;margin-right: 20px">
+         style="width: 300px;height: 700px;margin-top: 20px;margin-left: 20px;background: #333D49;">
         <!--        -->
-        <div id="chess_config_card_div" style="background: #333D49;" v-if="room!=null">
+        <div id="chess_config_card_div" style="" v-if="room!=null">
             <div class="layui-card-body">当前位置：{{room.roomName}}</div>
-            <div class="layui-card-body">
+            <div class="layui-card-body" id="black_div">
                 <span style="margin-right: 10px">黑棋</span>
 
                 <img v-if="!isSuccess || room.createUserImg==null"
-                     src="http://pic4.zhimg.com/50/v2-7fece9a613445edb78271216c8c20c6d_hd.jpg" class="layui-nav-img">
+                     src="http://pic4.zhimg.com/50/v2-7fece9a613445edb78271216c8c20c6d_hd.jpg"
+                     class="layui-nav-img">
                 <img v-else v-bind:src="room.createUserImg" class="layui-nav-img">
-                {{room.createUserName}}
+                <span>{{room.createUserName}}</span>
                 <!--                    <button type="button" class="layui-btn layui-btn-sm" style="float: right">添加好友</button>-->
-
+                <span id="black_span" style="margin-left: 10px;display: none" class="layui-badge">我</span>
                 <button type="button" class="layui-btn layui-btn-sm" style="float: right">
                     <i class="layui-icon">&#xe654;</i>
                 </button>
                 <br>
             </div>
-            <div class="layui-card-body">
+            <div class="layui-card-body" id="white_div">
                 <span style="margin-right: 10px">白棋</span>
                 <img v-if="!isSuccess || room.opponentsImg==null"
-                     src="http://pic4.zhimg.com/50/v2-7fece9a613445edb78271216c8c20c6d_hd.jpg" class="layui-nav-img">
+                     src="http://pic4.zhimg.com/50/v2-7fece9a613445edb78271216c8c20c6d_hd.jpg"
+                     class="layui-nav-img">
                 <img v-else v-bind:src="room.opponentsImg" class="layui-nav-img">
-                {{room.opponentsName}}
+                <span>{{room.opponentsName}}</span>
+
+                <span id="white_span" style="margin-left: 10px;display: none" class="layui-badge">我</span>
                 <button type="button" class="layui-btn layui-btn-sm" style="float: right">
                     <i class="layui-icon">&#xe65a;</i>
                 </button>
@@ -104,20 +108,27 @@
                     </div>
                 </form>
                 <button type="button" class="layui-btn layui-btn-sm" onclick="startGameRequest()">开始游戏</button>
-                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="leaveRoomRequest()">离开房间</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="leaveRoomRequest()">
+                    离开房间
+                </button>
             </div>
             <div class="layui-card-body" style="display:none;">
                 <span style="margin-right: 10px">配置</span>
                 <button type="button" class="layui-btn layui-btn-sm layui-btn-normal">认输</button>
                 <button type="button" class="layui-btn layui-btn-sm layui-btn-normal">离开房间</button>
             </div>
-            <div class="layui-card-body">
-                等待房主开始...
-            </div>
+
         </div>
 
+        <div>
+            <div class="layui-card-body" id="go_status_div">
+                <span v-if="isSuccess">{{goStatus}}</span>
+                <span v-else="">等待房主开始...</span>
+            </div>
+        </div>
     </div>
 
+    <!--    棋盘-->
     <div id="chess_div" class="layui-anim layui-anim-scale">
         <canvas id="chess"></canvas>
     </div>
@@ -128,9 +139,9 @@
 
 <script type="text/javascript" src="../static/js/jQuery/jQuery.js"></script>
 <!--画棋盘和画棋子的方法 todo-->
-<script type="text/javascript" src="../static/js/myjs/gobang.js"></script>
+<script type="text/javascript" src="../static/js/myjs/gobang/gobang.js"></script>
 <!--页面加载 用户事件 todo-->
-<script type="text/javascript" src="../static/js/myjs/gobangLoad.js"></script>
+<script type="text/javascript" src="../static/js/myjs/gobang/gobangLoad.js"></script>
 <!--对战-->
 <script type="text/javascript" src="../static/js/myjs/room_paly.js"></script>
 <!--棋子请求-->
@@ -138,7 +149,6 @@
 <!--layui-->
 <!--<script src="https://www.layuicdn.com/layui-v2.5.6/layui.js" charset="utf-8"></script>-->
 <script src="https://www.layuicdn.com/layer-v3.1.1/layer.js" charset="utf-8"></script>
-
 <!--vue-->
 <script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
 

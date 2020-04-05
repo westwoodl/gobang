@@ -111,6 +111,11 @@ function firstLoadRoomRequest(roomId, expectTime) {
             if (!res.success) {
                 alertLayer(res.msg);
             } else {
+                if (res.data.roomStatus === 2 || res.data.roomStatus === 3) {
+                    is_game_start_for_room = true;
+                    loadGoRequest(res.data.goId);
+                    return;
+                }
                 is_user_join_room = true;
                 queryRoomBlockRequest(roomId, expectTime);
             }
@@ -142,11 +147,17 @@ function queryRoomBlockRequest(roomId, room_expect_time) {
                 join_room_data_vue.room = data.data;
                 if (!is_game_start_for_room && is_user_join_room && !is_room_end) {
                     console.log("游戏未开始：" + roomId + ";" + new Date(join_room_data_vue.room.modifyTime).getTime());
+                    if (data.data.roomStatus === 2) {
+                        is_game_start_for_room = true;
+                        loadGoRequest(data.data.goId);
+                        return;
+                    }
                     queryRoomBlockRequest(roomId, new Date(join_room_data_vue.room.modifyTime).getTime());
                 }
             } else {
                 if (data.msg === '对局不存在') {
                     alertLayer(data.msg);
+                    is_room_end = true;
                 }
                 if (!is_game_start_for_room && is_user_join_room && !is_room_end) {
                     queryRoomBlockRequest(roomId, room_expect_time);
@@ -193,34 +204,40 @@ function startGameRequest() {
 
 function leaveRoomRequest() {
     if (join_room_data_vue.room.createUser == user_id) {
-        layer.msg('您是房主，离开后房间就找不到了哦', {
-            time: 20000, //20s后自动关闭
-            btn: ['明白了', '取消']
-        }, function () {
-            $.ajax({
-                async: true,
-                type: "PUT",
-                url: base_gobang_url + "/room/leave",
-                xhrFields: {withCredentials: true},	//前端适配：允许session跨域
-                crossDomain: true,
-                data: {
-                    roomId: join_room_data_vue.room.id
-                },
-                dataType: "json",
-                success: function (data) {
-                    alertLayer(data.msg);
-                    if (data.success) {
-                        locationLeave();
-                        is_room_end = true;
-                    } else {
-                        alertLayer(data.msg);
-                    }
-                },
-                error: function () {
-                    alert("系统繁忙");
-                }
-            });
-        }, function () {
+
+        layer.confirm('您是房主，离开后房间就找不到了哦', {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            leaveRoomRequestFun();
+        }, function(){
         });
+    } else {
+        leaveRoomRequestFun();
     }
+}
+
+function leaveRoomRequestFun() {
+    $.ajax({
+        async: true,
+        type: "PUT",
+        url: base_gobang_url + "/room/leave",
+        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+        crossDomain: true,
+        data: {
+            roomId: join_room_data_vue.room.id
+        },
+        dataType: "json",
+        success: function (data) {
+            alertLayer(data.msg);
+            if (data.success) {
+                locationLeave();
+                is_room_end = true;
+            } else {
+                alertLayer(data.msg);
+            }
+        },
+        error: function () {
+            alert("系统繁忙");
+        }
+    });
 }
