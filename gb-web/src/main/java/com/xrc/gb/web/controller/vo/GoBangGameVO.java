@@ -1,6 +1,5 @@
 package com.xrc.gb.web.controller.vo;
 
-import com.xrc.gb.manager.go.dto.GoContext;
 import lombok.Data;
 import lombok.ToString;
 

@@ -1,10 +1,9 @@
 package com.xrc.gb.work;
 
+import com.xrc.gb.dto.GoContext;
+import com.xrc.gb.dto.GoPieces;
 import com.xrc.gb.enums.PieceTypeEnum;
 import com.xrc.gb.enums.PlaceResultTypeEnum;
-import com.xrc.gb.manager.go.dto.GoContext;
-import com.xrc.gb.manager.go.dto.GoPieces;
-import com.xrc.gb.manager.go.dto.GoQueryResp;
 import com.xrc.gb.util.CheckParameter;
 import com.xrc.gb.work.exception.PlaceNotAllowException;
 import org.apache.commons.collections4.CollectionUtils;

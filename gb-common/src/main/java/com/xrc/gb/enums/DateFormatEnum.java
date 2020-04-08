@@ -10,6 +10,9 @@ package com.xrc.gb.enums;
 public enum DateFormatEnum {
 
     YYYY_MM_DD("yyyy-MM-dd"),
+    /**
+     *
+     */
     YYYY_MM_DD_HH_MM_SS("yyyy-MM-dd HH:mm:ss");
     // YYYY_MM_DD_HH_MM_SS_2("yyyy/MM/dd HH:mm:ss"); // do like this direct if you want to add
 

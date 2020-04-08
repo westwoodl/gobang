@@ -2,22 +2,18 @@ package com.xrc.gb.web.controller.game;
 
 import com.alibaba.fastjson.JSONObject;
 import com.xrc.gb.enums.PlaceResultTypeEnum;
-import com.xrc.gb.manager.go.dto.GoContext;
-import com.xrc.gb.manager.go.dto.GoPieces;
-import com.xrc.gb.manager.go.dto.GoPlaceReq;
-import com.xrc.gb.manager.go.dto.GoQueryResp;
-import com.xrc.gb.repository.domain.go.GoDO;
+import com.xrc.gb.dto.GoContext;
+import com.xrc.gb.dto.GoPieces;
+import com.xrc.gb.dto.GoPlaceReq;
+import com.xrc.gb.dto.GoQueryResp;
 import com.xrc.gb.service.game.GoBangGameServiceImpl;
 import com.xrc.gb.util.PageQueryReq;
 import com.xrc.gb.web.common.JSONObjectResult;
 import com.xrc.gb.web.controller.AbstractController;
 import com.xrc.gb.web.controller.vo.GoBangGameVO;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Date;
 
 /**
  * 对局创建、查询、落子

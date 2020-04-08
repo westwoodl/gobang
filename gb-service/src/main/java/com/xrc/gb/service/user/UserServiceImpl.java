@@ -28,6 +28,7 @@ public class UserServiceImpl implements UserService {
     @Resource
     private UserDataManager userDataManager;
 
+    @Override
     public boolean add(String username, String account, String password) {
         CheckParameter.assertTrue(StringUtils.isNotBlank(username));
         CheckParameter.assertTrue(StringUtils.isNotBlank(account));
@@ -43,6 +44,7 @@ public class UserServiceImpl implements UserService {
         userDO.setUserName(username);
         userDO.setAccount(account);
         userDO.setPassword(password);
+        userDO.setImg("https://s1.ax1x.com/2020/04/06/GsWKDH.jpg");
         return userDataManager.insert(userDO);
     }
 

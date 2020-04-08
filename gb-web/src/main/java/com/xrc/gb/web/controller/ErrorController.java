@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/xrc")
+@Deprecated
 public class ErrorController {
 
     @RequestMapping("/error")

@@ -1,4 +1,4 @@
-package com.xrc.gb.manager.go.dto;
+package com.xrc.gb.dto;
 
 import lombok.Data;
 

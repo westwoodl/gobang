@@ -128,6 +128,7 @@ function queryRoomRequest(pageIndex, pageSize, sync) {
             },
             error: function () {
                 alert("系统繁忙");
+                layer.close(index);
             }
         });
     });

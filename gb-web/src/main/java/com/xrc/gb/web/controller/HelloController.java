@@ -18,6 +18,7 @@ import java.util.Date;
  */
 @RequestMapping("/")
 @RestController
+@Deprecated
 public class HelloController extends AbstractController {
 
     @GetMapping

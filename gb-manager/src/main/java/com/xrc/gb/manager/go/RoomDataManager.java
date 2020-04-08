@@ -25,7 +25,7 @@ import java.util.List;
  * @date 2020/3/28 13:47
  */
 @Component
-@Transactional
+@Transactional(rollbackFor = {Exception.class})
 @Slf4j
 public class RoomDataManager {
 

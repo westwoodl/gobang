@@ -298,6 +298,7 @@ public class RedisCache {
         final byte[] rawKey = redisTemplate.getStringSerializer().serialize(key);
         final byte[] rawField = redisTemplate.getStringSerializer().serialize(field);
         return redisTemplate.execute(new RedisCallback<Long>() {
+            @Override
             public Long doInRedis(RedisConnection connection) {
                 Long ret = connection.hIncrBy(rawKey, rawField, delta);
                 if (expire.length > 0 && expire[0] > 0) {

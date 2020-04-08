@@ -1,11 +1,10 @@
 package com.xrc.gb.work.gobang;
 
+import com.xrc.gb.dto.GoContext;
+import com.xrc.gb.dto.GoPieces;
 import com.xrc.gb.enums.GameTypeEnum;
 import com.xrc.gb.enums.PieceTypeEnum;
 import com.xrc.gb.enums.PlaceResultTypeEnum;
-import com.xrc.gb.manager.go.dto.GoContext;
-import com.xrc.gb.manager.go.dto.GoPieces;
-import com.xrc.gb.manager.go.dto.GoQueryResp;
 import com.xrc.gb.util.CheckParameter;
 import com.xrc.gb.work.AbstractGoGameRunner;
 import com.xrc.gb.work.GoGameFactory;

@@ -52,6 +52,8 @@ window.onload = function () {
     drawChessBoard(img, line_num, broad_size, font_size); // 画棋盘
 };
 // 我，下棋
+var end_i = null;
+var end_j = null;
 chess.onclick = function (e) {
     if (over) {
         return;
@@ -63,8 +65,13 @@ chess.onclick = function (e) {
     _nowi = i;
     _nowj = j;
     if (chressBord[i][j] === 0) {
-        oneStep(i, j, me, bSize);
-        chressBord[i][j] = me ? 1 : 2; //我，已占位置
+        end_i = i;
+        end_j = j;
+        // chressBordAdd(i, j, !me); //我，已占位置
+        if(!goStepOne(i, j, me ? 1 : 2, chressBord)) {
+            return;
+        }
+        reflash();
         me = !me;
         playSound();
     }
@@ -85,7 +92,7 @@ chess.onmousemove = function (e) {
         return;
     }
     if (chressBord[i][j] === 0) {
-        if (las_move_j ===j && las_move_i === i) {
+        if (las_move_j === j && las_move_i === i) {
             return;
         }
         if (las_move_i >= 0 && las_move_j >= 0 && chressBord[las_move_i][las_move_j] === 0) {
@@ -97,6 +104,14 @@ chess.onmousemove = function (e) {
     }
 };
 
+
+function chressBordAdd(i, j, isWhite) {
+    if (isWhite) {
+        chressBord[i][j] = 2;
+    } else {
+        chressBord[i][j] = 1;
+    }
+}
 
 function reflash() {
     drawChessBoard(img, line_num, broad_size, font_size);
