@@ -36,7 +36,7 @@ public class ControllerAspect {
         try {
             obj = pjp.proceed();
         } catch (Throwable throwable) {
-            log.info("Controller:erro{}", throwable.getMessage());
+            log.error("Controller:erro{}", throwable.getMessage());
             throw throwable;
         }
         stopWatch.stop();

@@ -65,7 +65,13 @@ function drawChessBoard(img, line_num, broad_size, font_size) {
  * @param bSize 格子大小
  */
 function oneStep(i, j, me, bSize, xuanting) {
+    // x悬停
     if (xuanting) {
+        if (me) {
+            context.strokeStyle = "#000000";
+        } else {
+            context.strokeStyle = "#ffffff";
+        }
         context.beginPath();
         context.arc(bSize + i * bSize, bSize + j * bSize, bSize / 5, bSize / 5, 0, 2 * Math.PI);// 画圆
         context.closePath();
@@ -80,7 +86,7 @@ function oneStep(i, j, me, bSize, xuanting) {
         var random_img = j > 8 ? w1_img : w2_img;
         context.drawImage(random_img, bSize / 2 + i * bSize, bSize / 2 + j * bSize, random_img.height, random_img.width);
     }
-
+    // 最后落子提示
     if (end_j > -1 && end_i > -1 && chressBord[end_i][end_j] !== 0 && i === end_i && j === end_j) {
         context.fillStyle = "#FF0000";
         context.beginPath();

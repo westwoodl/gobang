@@ -258,7 +258,7 @@ function loginOrRegister() {
 
     let login_and_register_html = '\n' +
         '<span id="span"></span>' +
-        '<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">\n' +
+        '<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" >\n' +
         '  <ul class="layui-tab-title">\n' +
         '    <li class="layui-this">登录</li>\n' +
         '    <li>注册</li>\n' +
@@ -275,7 +275,8 @@ function loginOrRegister() {
     layui.use('layer', function () {
         var layer = layui.layer;
         layer.open({
-            title: '用户'
+            area: ['400px']
+            ,title: '用户'
             , resize: false
             , content: login_and_register_html
             , yes: function (index, layero) {

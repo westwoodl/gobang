@@ -35,7 +35,7 @@ public class ServiceAspect {
             throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_PARAMETER_ERROR);
         } catch (Throwable e) {
             e.printStackTrace();
-            log.info("Service Throwable{}", e.getMessage());
+            log.error("Service Throwable{}", e.getMessage());
             throw ExceptionHelper.newSysException(ErrorInfoConstants.BIZ_SYSTEM_BUSY);
         }
         return obj;

@@ -29,12 +29,7 @@ public class TypeRedisCache<T> {
         if (key == null) {
             return null;
         }
-        try {
-            ValueOperations<String, T> operations = redisTemplate.opsForValue();
-            return operations.get(key);
-        } catch (Exception e) {
-            return null;
-        }
+        return redisTemplate.opsForValue().get(key);
     }
 
     /**
@@ -44,13 +39,9 @@ public class TypeRedisCache<T> {
         if (key == null || value == null) {
             return false;
         }
-        try {
-            ValueOperations<String, T> operations = redisTemplate.opsForValue();
-            operations.set(key, value);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        ValueOperations<String, T> operations = redisTemplate.opsForValue();
+        operations.set(key, value);
+        return true;
     }
 
     public boolean set(final String key, T value, Long minutes) {
@@ -103,7 +94,7 @@ public class TypeRedisCache<T> {
         if (set == null) {
             return null;
         }
-        for(T t : set) {
+        for (T t : set) {
             if (set.size() > 1) {
                 throw ExceptionHelper.newSysException("redis的room出现重复");
             }

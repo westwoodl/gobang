@@ -2,15 +2,22 @@ package com.xrc.gb.repository.cache;
 
 import com.xrc.gb.consts.ErrorInfoConstants;
 import com.xrc.gb.exception.BusinessException;
+import com.xrc.gb.util.Defaults;
 import com.xrc.gb.util.ExceptionHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Method;
+
 /**
+ * redis内部处理异常，有异常返回默认值
+ *
  * @author xu rongchao
  * @date 2020/4/2 22:01
  */
@@ -23,13 +30,15 @@ public class RedisAspect {
 
     @Around("cacheAspect()")
     public Object doAround(ProceedingJoinPoint pjp) throws Throwable {
-        Object obj = null;
         try {
-            obj = pjp.proceed();
+            return pjp.proceed();
         }  catch (Throwable e) {
-            log.info("CacheError{}", e.getMessage());
-            throw e;
+            MethodSignature signature = (MethodSignature)  pjp.getSignature();
+            //获取method对象
+            Method method = signature.getMethod();
+            Class returnType = method.getReturnType();
+            log.error("缓存异常, method {}:{}", method.getName(), e.getMessage());
+            return Defaults.defaultValue(returnType);
         }
-        return obj;
     }
 }

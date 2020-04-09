@@ -20,6 +20,8 @@
         如果设置为true则这个设置强制使用自动生成主键，尽管一些驱动不能兼容但仍可正常工作（比如 Derby）。
         -->
         <setting name="useGeneratedKeys" value="true" />
+<!--        打印sql-->
+        <setting name="logImpl" value="STDOUT_LOGGING" />
     </settings>
 
     <typeAliases>
