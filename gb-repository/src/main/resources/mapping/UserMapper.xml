@@ -44,7 +44,7 @@
     delete from gb_user
     where user_id = #{userId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.xrc.gb.repository.domain.user.UserDO" >
+  <insert id="insert" parameterType="com.xrc.gb.repository.domain.user.UserDO"  keyProperty="id" useGeneratedKeys="true">
     insert into gb_user ( user_name, user_account,
       user_password, user_power, create_time,
       modify_time, img, autograph, friend, `status`)

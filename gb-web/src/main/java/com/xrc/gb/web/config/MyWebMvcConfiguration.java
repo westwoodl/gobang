@@ -27,7 +27,9 @@ public class MyWebMvcConfiguration implements WebMvcConfigurer {
                 .excludePathPatterns("/user")
                 .excludePathPatterns("/room").addPathPatterns("/room/create")
                 .excludePathPatterns("/gobang/query")
-                .excludePathPatterns("/static/**");
+                .excludePathPatterns("/static/**")
+                .excludePathPatterns("/go")
+                .excludePathPatterns("/gp/**");
     }
 
     /**

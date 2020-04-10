@@ -59,6 +59,7 @@ window.onload = function () {
 function drawChessBoard(img, line_num, broad_size, font_size) {
     // context.drawImage(img, 0, 0, broad_size, broad_size);
     context.drawImage(img, 0, 0);
+    context.strokeStyle = '#000000';
     for (var i = 0; i < line_num; i++) {
         if (i === 0 || i === line_num - 1) { //画粗线
             context.beginPath();
@@ -77,6 +78,7 @@ function drawChessBoard(img, line_num, broad_size, font_size) {
         context.stroke();
         context.font = font_size + "px Arial";
 
+        context.fillStyle = "#000000";
         if (i + 1 > 9) {
             context.fillText(i + 1, 10, bSize + 3 + i * bSize); // shu
             context.fillText(i + 1, bSize - 10 + i * bSize, 28); //heng
@@ -117,6 +119,11 @@ function drawChessBoard(img, line_num, broad_size, font_size) {
  */
 function oneStep(i, j, isWhite, bSize, xuanting) {
     if (xuanting) {
+        if (!isWhite) {
+            context.strokeStyle = "#000000";
+        } else {
+            context.strokeStyle = "#ffffff";
+        }
         context.beginPath();
         context.arc(bSize + i * bSize, bSize + j * bSize, bSize / 5, bSize / 5, 0, 2 * Math.PI);// 画圆
         context.closePath();
@@ -131,22 +138,32 @@ function oneStep(i, j, isWhite, bSize, xuanting) {
         var random_img = j > 8 ? w1_img : w2_img;
         context.drawImage(random_img, bSize / 2 + i * bSize, bSize / 2 + j * bSize, random_img.height, random_img.width);
     }
-
+// 最后落子提示
+    if (end_j > -1 && end_i > -1 && chressBord[end_i][end_j] !== 0 && i === end_i && j === end_j) {
+        context.fillStyle = "#FF0000";
+        context.beginPath();
+        context.arc(bSize + i * bSize, bSize + j * bSize, 5, 0, 2 * Math.PI);
+        context.fill();
+        context.closePath();
+    }
 }
 
 /**
  * 播放落子音
  * src 可以为任意声音来源
  */
-function playSound(src) {
+function playSound(src, id) {
     if (src == null || src == "" || src === undefined) {
         src = "../static/media/play.wav";
+    }
+    if (id == null) {
+        id = "play";
     }
     var borswer = window.navigator.userAgent.toLowerCase();
     if (borswer.indexOf("ie") >= 0) {
         //IE内核浏览器
-        var strEmbed = '<embed name="embedPlay" src="' + src + '" autostart="true" hidden="true" loop="false"/>';
-        if ($("body").find("embed").length <= 0)
+        var strEmbed = '<embed id="' + id + '" name="embedPlay" src="' + src + '" autostart="true" hidden="true" loop="false"/>';
+        if ($("#" + id).length === 0)
             $("body").append(strEmbed);
         var embed = document.embedPlay;
 
@@ -155,11 +172,10 @@ function playSound(src) {
         //embed.play();这个不需要
     } else {
         //非IE内核浏览器
-        var strAudio = "<audio id='audioPlay' src=\"" + src + "\" hidden='true'>";
-        if ($("body").find("audio").length <= 0)
+        var strAudio = "<audio id='" + id + "' src=\"" + src + "\" hidden='true'>";
+        if ($("#" + id).length === 0)
             $("body").append(strAudio);
-        var audio = document.getElementById("audioPlay");
-
+        var audio = document.getElementById(id);
         //浏览器支持 audion
         audio.play();
     }

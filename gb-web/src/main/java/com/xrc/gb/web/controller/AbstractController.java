@@ -1,11 +1,10 @@
 package com.xrc.gb.web.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.xrc.gb.consts.CommonConst;
+import com.xrc.gb.common.consts.CommonConst;
 import com.xrc.gb.repository.domain.user.UserDO;
-import com.xrc.gb.service.user.UserServiceImpl;
-import com.xrc.gb.util.ExceptionHelper;
-import com.xrc.gb.util.PageQueryReq;
+import com.xrc.gb.common.util.ExceptionHelper;
+import com.xrc.gb.common.util.PageQueryReq;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;

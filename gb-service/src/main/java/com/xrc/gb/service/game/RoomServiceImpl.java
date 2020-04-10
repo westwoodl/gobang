@@ -1,19 +1,18 @@
 package com.xrc.gb.service.game;
 
-import com.xrc.gb.consts.CommonConst;
-import com.xrc.gb.consts.ErrorInfoConstants;
-import com.xrc.gb.enums.JoinRoomResultEnum;
-import com.xrc.gb.enums.RoomStatusEnum;
+import com.xrc.gb.common.consts.CommonConst;
+import com.xrc.gb.common.consts.ErrorInfoConstants;
+import com.xrc.gb.common.enums.JoinRoomResultEnum;
+import com.xrc.gb.common.enums.RoomStatusEnum;
 import com.xrc.gb.manager.go.GoDataManager;
 import com.xrc.gb.manager.go.RoomDataManager;
 import com.xrc.gb.manager.go.UserDataManager;
-import com.xrc.gb.repository.domain.go.GoDO;
 import com.xrc.gb.repository.domain.go.RoomDO;
 import com.xrc.gb.repository.domain.user.UserDO;
-import com.xrc.gb.util.CheckParameter;
-import com.xrc.gb.util.ExceptionHelper;
-import com.xrc.gb.util.PageQueryReq;
-import com.xrc.gb.util.PageQueryResultResp;
+import com.xrc.gb.common.util.CheckParameter;
+import com.xrc.gb.common.util.ExceptionHelper;
+import com.xrc.gb.common.util.PageQueryReq;
+import com.xrc.gb.common.util.PageQueryResultResp;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -168,11 +167,11 @@ public class RoomServiceImpl {
         if (roomDO.getRoomNumber() <= 0) {
             throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_YOU_ARE_NOT_IN_ROOM);
         }
-        if (roomDO.getCreateUser().equals(userId)) {
+        if (userId.equals(roomDO.getCreateUser())) {
             return roomManager.deleteById(roomId);
         }
         RoomDO updateRoom = new RoomDO();
-        if (roomDO.getOpponents().equals(userId)) {
+        if (userId.equals(roomDO.getOpponents())) {
             updateRoom.setId(roomId);
             updateRoom.setRoomNumber(-1);
             updateRoom.setOpponents(0);

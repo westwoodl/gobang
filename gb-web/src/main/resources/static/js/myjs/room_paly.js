@@ -12,13 +12,15 @@ var is_user_join_room = false;
 // 房间数据呈现
 var join_room_data_vue;
 
+var init_room_id;
 // vue数据初始化
 $(function () {
     join_room_data_vue = new Vue({
         el: "#chess_config_card_div",
         data: {
             isSuccess: false,
-            room: null
+            room: null,
+            currentUserId:null
         }
     });
 
@@ -33,6 +35,7 @@ $(function () {
         success: function (data) {
             if (data.success) {
                 user_id = data.data.id;
+                join_room_data_vue.currentUserId = user_id;
                 joinRoom();
             } else {
                 alertLayer(data.msg);
@@ -64,14 +67,13 @@ function joinRoom() {
         return;
     }
     joinRoomRequest(roomId);
+    connectWebSocket();
     return false;
 }
 
 /*
     先加入房间 -> 首次加载数据 -> 持续更新房间数据
  */
-
-// 加入房间
 function joinRoomRequest(roomId) {
     $.ajax({
         type: "PUT",
@@ -85,7 +87,7 @@ function joinRoomRequest(roomId) {
         success: function (data) {
             alertLayer(data.msg);
             if (data.success) {
-                firstLoadRoomRequest(roomId, data.data);
+                init_room_id = roomId;
             } else {
                 locationLeave();
             }
@@ -96,87 +98,70 @@ function joinRoomRequest(roomId) {
     });
 }
 
-// 进入房间加载数据 加载成功后 循环获取数据
-function firstLoadRoomRequest(roomId, expectTime) {
-    $.ajax({
-        type: "GET",
-        url: base_gobang_url + "/room/" + roomId,
-        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
-        crossDomain: true,
-        data: {},
-        dataType: "json",
-        success: function (res) {
-            join_room_data_vue.isSuccess = res.success;
-            join_room_data_vue.room = res.data;
-            if (!res.success) {
-                alertLayer(res.msg);
-            } else {
-                if (res.data.roomStatus === 2 || res.data.roomStatus === 3) {
+/*
+    web socket 请求获取房间数据
+ */
+var gobang_socket;
+
+function connectWebSocket() {
+    if (typeof (WebSocket) == "undefined") {
+        alertLayer("您的浏览器不支持，建议使用谷歌浏览器");
+        return;
+    }
+    let socketUrl = base_gobang_url + "/socket/go/" + user_id;
+    socketUrl = socketUrl.replace("https", "ws").replace("http", "ws");
+    gobang_socket = new WebSocket(socketUrl);
+    //打开事件
+    gobang_socket.onopen = function () {
+        is_user_join_room = true;
+        alertLayer("进入连接");
+    };
+    //获得消息事件
+    gobang_socket.onmessage = function (msg) {
+        console.log("来消息了：" + msg.data.roomDO + msg.data.goQueryResp);
+        let data = JSON.parse(msg.data);
+        if (data.success) {
+            if (data.data.roomDO == null) {
+                fetchGoData(data.data.goQueryResp);
+                return;
+            }
+            fetchRoomData(data.data.roomDO);
+
+            if (data.data.roomDO.roomStatus === 2) {
+                if (!is_game_start_for_room) {
                     is_game_start_for_room = true;
-                    loadGoRequest(res.data.goId);
-                    return;
+                    alertLayer("开始游戏");
                 }
-                is_user_join_room = true;
-                queryRoomBlockRequest(roomId, expectTime);
+                fetchGoData(data.data.goQueryResp);
             }
-        },
-        error: function () {
-            alert("系统繁忙");
+            if (data.data.roomDO.roomStatus === 3) {
+                is_room_end = true;
+            }
+        } else {
+            alertLayer(data.msg);
         }
-    });
+    };
+    //关闭事件
+    gobang_socket.onclose = function () {
+        alertLayer("会话已关闭");
+        // leaveRoomRequest();
+    };
 
+    //发生了错误事件
+    gobang_socket.onerror = function () {
+        alertLayer("websocket发生了错误");
+    }
 }
 
-
-// 查询数据 25s超时
-function queryRoomBlockRequest(roomId, room_expect_time) {
-    $.ajax({
-        type: "get",
-        url: base_gobang_url + "/room/queryBlock",
-        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
-        crossDomain: true,
-        data: {
-            roomId: roomId,
-            expectTime: room_expect_time
-        },
-        timeout: 25000,
-        dataType: "json",
-        success: function (data) {
-            if (data.success) {
-                join_room_data_vue.isSuccess = data.success;
-                join_room_data_vue.room = data.data;
-                if (!is_game_start_for_room && is_user_join_room && !is_room_end) {
-                    console.log("游戏未开始：" + roomId + ";" + new Date(join_room_data_vue.room.modifyTime).getTime());
-                    if (data.data.roomStatus === 2) {
-                        is_game_start_for_room = true;
-                        loadGoRequest(data.data.goId);
-                        return;
-                    }
-                    queryRoomBlockRequest(roomId, new Date(join_room_data_vue.room.modifyTime).getTime());
-                }
-            } else {
-                if (data.msg === '对局不存在') {
-                    alertLayer(data.msg);
-                    is_room_end = true;
-                }
-                if (!is_game_start_for_room && is_user_join_room && !is_room_end) {
-                    queryRoomBlockRequest(roomId, room_expect_time);
-                }
-            }
-        },
-        complete: function (XMLHttpRequest, textStatus) {
-            if (textStatus === 'timeout' && !is_game_start_for_room && is_user_join_room && !is_room_end) {
-                console.log("请求房间超时，正在重试");
-                queryRoomBlockRequest(roomId, room_expect_time);
-            }
-        },
-        error: function () {
-            alert("系统繁忙");
-        }
-    });
+function fetchRoomData(roomData) {
+    join_room_data_vue.isSuccess = true;
+    join_room_data_vue.room = roomData;
 }
 
-function startGameRequest() {
+function startGameRequest(gameMode) {
+    if (gameMode == null) {
+        gameMode = 2;
+    }
     $.ajax({
         async: true,
         type: "PUT",
@@ -184,7 +169,8 @@ function startGameRequest() {
         xhrFields: {withCredentials: true},	//前端适配：允许session跨域
         crossDomain: true,
         data: {
-            roomId: join_room_data_vue.room.id
+            roomId: join_room_data_vue.room.id,
+            gameMode: gameMode
         },
         dataType: "json",
         success: function (data) {
@@ -193,7 +179,6 @@ function startGameRequest() {
             } else {
                 is_game_start_for_room = true;
                 alertLayer("游戏开始");
-                loadGoRequest(data.data);
             }
         },
         error: function () {
@@ -202,14 +187,15 @@ function startGameRequest() {
     });
 }
 
+
 function leaveRoomRequest() {
     if (join_room_data_vue.room.createUser == user_id) {
 
         layer.confirm('您是房主，离开后房间就找不到了哦', {
-            btn: ['确定','取消'] //按钮
-        }, function(){
+            btn: ['确定', '取消'] //按钮
+        }, function () {
             leaveRoomRequestFun();
-        }, function(){
+        }, function () {
         });
     } else {
         leaveRoomRequestFun();
@@ -230,10 +216,14 @@ function leaveRoomRequestFun() {
         success: function (data) {
             alertLayer(data.msg);
             if (data.success) {
+                gobang_socket.close();
                 locationLeave();
                 is_room_end = true;
             } else {
                 alertLayer(data.msg);
+                if (data.msg == "房间不存在") {
+                    locationLeave();
+                }
             }
         },
         error: function () {

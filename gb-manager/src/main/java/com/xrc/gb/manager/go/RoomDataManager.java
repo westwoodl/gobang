@@ -1,13 +1,12 @@
 package com.xrc.gb.manager.go;
 
-import com.xrc.gb.consts.CommonConst;
+import com.xrc.gb.common.consts.CommonConst;
 import com.xrc.gb.repository.cache.CacheKeyUtils;
 import com.xrc.gb.repository.cache.TypeRedisCache;
 import com.xrc.gb.repository.dao.RoomDAO;
-import com.xrc.gb.repository.domain.go.GoDO;
 import com.xrc.gb.repository.domain.go.RoomDO;
-import com.xrc.gb.util.PageQueryReq;
-import com.xrc.gb.util.PageQueryResultResp;
+import com.xrc.gb.common.util.PageQueryReq;
+import com.xrc.gb.common.util.PageQueryResultResp;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;

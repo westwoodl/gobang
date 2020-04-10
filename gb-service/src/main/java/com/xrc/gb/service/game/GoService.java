@@ -1,10 +1,10 @@
 package com.xrc.gb.service.game;
 
-import com.xrc.gb.enums.PlaceResultTypeEnum;
-import com.xrc.gb.dto.GoPlaceReq;
-import com.xrc.gb.dto.GoQueryResp;
-import com.xrc.gb.util.PageQueryReq;
-import com.xrc.gb.util.PageQueryResultResp;
+import com.xrc.gb.common.enums.PlaceResultTypeEnum;
+import com.xrc.gb.common.dto.GoPlaceReq;
+import com.xrc.gb.common.dto.GoQueryResp;
+import com.xrc.gb.common.util.PageQueryReq;
+import com.xrc.gb.common.util.PageQueryResultResp;
 
 import java.util.List;
 

@@ -49,7 +49,7 @@ public class RoomDO extends BaseDO implements Serializable {
      */
     private Integer goId;
     /**
-     * 房间状态
+     * 房间状态 {@link com.xrc.gb.common.enums.RoomStatusEnum}
      */
     private Integer roomStatus;
 

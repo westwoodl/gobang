@@ -1,6 +1,6 @@
 package com.xrc.gb.work;
 
-import com.xrc.gb.enums.GameTypeEnum;
+import com.xrc.gb.common.enums.GameTypeEnum;
 
 import java.util.HashMap;
 import java.util.Map;

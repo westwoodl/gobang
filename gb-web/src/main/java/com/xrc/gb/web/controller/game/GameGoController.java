@@ -14,7 +14,6 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/go")
 public class GameGoController {
-
     @GetMapping("/query")
     public JSONObject index() {
         return JSONObjectResult.create().success();
@@ -30,9 +29,9 @@ public class GameGoController {
         return JSONObjectResult.create().success();
     }
 
-    @PutMapping("/push/{toUserId}")
+    @RequestMapping("/push/{toUserId}")
     public JSONObject pushToWeb(String message, @PathVariable String toUserId) throws IOException {
         WebSocketServer.sendInfo(message, toUserId);
-        return JSONObjectResult.create().success();
+        return JSONObjectResult.create().success("MSG SEND SUCCESS");
     }
 }

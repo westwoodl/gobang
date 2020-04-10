@@ -63,12 +63,6 @@
                 <version>1.2.60</version>
             </dependency>
 
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-starter-logging</artifactId>-->
-<!--            </dependency>-->
-
-
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
@@ -90,48 +84,4 @@
 
         </dependencies>
     </dependencyManagement>
-
-    <!--    <dependencies>-->
-    <!--        <dependency>-->
-    <!--            <groupId>org.springframework.boot</groupId>-->
-    <!--            <artifactId>spring-boot-starter-web</artifactId>-->
-    <!--        </dependency>-->
-    <!--        <dependency>-->
-    <!--            <groupId>org.springframework.boot</groupId>-->
-    <!--            <artifactId>spring-boot-configuration-processor</artifactId>-->
-    <!--        </dependency>-->
-    <!--        <dependency>-->
-    <!--            <groupId>org.springframework.boot</groupId>-->
-    <!--            <artifactId>spring-boot-starter-aop</artifactId>-->
-    <!--        </dependency>-->
-
-    <!--        <dependency>-->
-    <!--            <groupId>org.projectlombok</groupId>-->
-    <!--            <artifactId>lombok</artifactId>-->
-    <!--        </dependency>-->
-
-    <!--        &lt;!&ndash; for unit test&ndash;&gt;-->
-    <!--        <dependency>-->
-    <!--            <groupId>org.springframework.boot</groupId>-->
-    <!--            <artifactId>spring-boot-starter-test</artifactId>-->
-    <!--            <scope>test</scope>-->
-    <!--        </dependency>-->
-    <!--        &lt;!&ndash; gateway &ndash;&gt;-->
-    <!--        &lt;!&ndash;-->
-    <!--        <dependency>-->
-    <!--            <groupId>pac.sdk</groupId>-->
-    <!--            <artifactId>pac.sdk.cp</artifactId>-->
-    <!--            <version>1.0.1-tenant-sto-test-2155990863</version>-->
-    <!--        </dependency>&ndash;&gt;-->
-    <!--    </dependencies>-->
-
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 </project>

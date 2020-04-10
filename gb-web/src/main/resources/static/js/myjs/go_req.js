@@ -14,48 +14,15 @@ $(function () {
             isSuccess: false,
             goId: null,
             goStatus: null,
-            go: null
+            go: null,
+            my_role: my_role
         }
     });
 });
 
-/*
-    rookStart 房间开始游戏后，执行此函数
- */
-function loadGoRequest(goId) {
-    $.ajax({
-        type: "GET",
-        url: base_gobang_url + "/gobang/query",
-        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
-        crossDomain: true,
-        data: {
-            goId: goId
-        },
-        dataType: "json",
-        success: function (data) {
-            if (!data.success) {
-                alertLayer(data.msg);
-            } else {
-                loadGoDO(data.data);
-                loadBroadArray(data.data);
-                if (my_role === 1) {
-                    $("#black_span").show();
-                }
-                if (my_role === 2) {
-                    $("#white_span").show();
-                }
-                if (is_me) {
-                    //请你click吧
-                } else {
-                    goBlockRequest(goId, new Date(data.data.modifyTime).getTime());
-                }
-            }
-        },
-        error: function () {
-            alert("系统繁忙");
-        }
-    });
-
+function fetchGoData(goData) {
+    loadBroadArray(goData);
+    loadGoDO(goData);
 }
 
 /*
@@ -93,59 +60,51 @@ function loadGoDO(goQueryResp) {
     }
     go_vue.goStatus = go_vue.goStatus + " 第" + (goQueryResp.goContext.placeArrays.length + 1) + "手";
     go_vue.go = goQueryResp;
+    if (goQueryResp.goType == 1) {
+        game_mode = 4;
+    }
+    if (goQueryResp.goType == 2) {
+        game_mode = 3;
+    }
     alertLayer(go_vue.goStatus);
     setColor(goQueryResp.goStatus);
 }
 
+var play_sound_dead_old = 0;
+var not_first_load = false;
+
 function loadBroadArray(goQueryResp) {
+    let play_sound_dead = 0;
     var placeArrays = goQueryResp.goContext.placeArrays;
     for (let i = 0; i < placeArrays.length; i++) {
         let goPieces = placeArrays[i];
-        chressBord[goPieces.x][goPieces.y] = goPieces.pieceType;
-    }
-    reflash();
-}
-
-function goBlockRequest(goId, expectTime) {
-    if (go_game_is_end || is_me) {
-        return;
-    }
-    $.ajax({
-        type: "get",
-        url: base_gobang_url + "/gobang/queryBlock",
-        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
-        crossDomain: true,
-        data: {
-            goId: goId,
-            expectTime: expectTime
-        },
-        timeout: 25000,
-        dataType: "json",
-        success: function (data) {
-            if (data.success) {
-                loadGoDO(data.data);
-                loadBroadArray(data.data);
-                if (is_me) {
-                    //请click
-                } else {
-                    goBlockRequest(goId, expectTime);
-                }
-            } else {
-                if (!is_me && !go_game_is_end) {
-                    goBlockRequest(goId, expectTime);
-                }
-            }
-        },
-        complete: function (XMLHttpRequest, textStatus) {
-            if (textStatus === 'timeout' && !is_me && !go_game_is_end) {
-                console.log("请求对局超时，正在重试");
-                goBlockRequest(goId, expectTime);
-            }
-        },
-        error: function () {
-            alert("系统繁忙");
+        // 死亡棋子
+        if (goPieces.dead != null && goPieces.dead === true) {
+            play_sound_dead++;
+            chressBord[goPieces.x][goPieces.y] = 0;
+            continue;
         }
-    });
+        chressBord[goPieces.x][goPieces.y] = goPieces.pieceType;
+        if (i === placeArrays.length - 1) {
+            end_i = goPieces.x;
+            end_j = goPieces.y;
+        }
+    }
+    if (!is_me) {
+        playSound();
+    }
+    if (play_sound_dead > play_sound_dead_old && not_first_load) {
+        if (play_sound_dead - play_sound_dead_old > 4) {
+            playSound("../static/media/remove0.wav", "remove0");
+        } else if (play_sound_dead - play_sound_dead_old > 2) {
+            playSound("../static/media/remove2.wav", "remove2");
+        } else {
+            playSound("../static/media/remove1.wav", "remove1");
+        }
+    }
+    play_sound_dead_old = play_sound_dead;
+    not_first_load = true;
+    reflash();
 }
 
 function placeChessRequest(x, y) {
@@ -171,8 +130,6 @@ function placeChessRequest(x, y) {
                     go_vue.goStatus = data.msg + " 等待对方行棋";
                     is_me = false;
                 }
-                let expectTIme = data.data;
-                goBlockRequest(go_vue.goId, expectTIme);
             }
         },
         error: function () {

@@ -53,6 +53,7 @@
             color: rgb(160, 189, 201);
         }
     </style>
+    <link rel="icon" href="https://s1.ax1x.com/2020/04/06/GszKsJ.png" >
     <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.5.6/css/layui.css" media="all">
 </head>
 <body bgcolor="#2B2B2B">
@@ -69,12 +70,12 @@
                 <span style="margin-right: 10px">黑棋</span>
 
                 <img v-if="!isSuccess || room.createUserImg==null"
-                     src="http://pic4.zhimg.com/50/v2-7fece9a613445edb78271216c8c20c6d_hd.jpg"
+                     src="https://s1.ax1x.com/2020/04/06/GsWKDH.jpg"
                      class="layui-nav-img">
                 <img v-else v-bind:src="room.createUserImg" class="layui-nav-img">
                 <span>{{room.createUserName}}</span>
                 <!--                    <button type="button" class="layui-btn layui-btn-sm" style="float: right">添加好友</button>-->
-                <span id="black_span" style="margin-left: 10px;display: none" class="layui-badge">我</span>
+                <span id="black_span" style="margin-left: 10px;" class="layui-badge" v-if="room.createUser==currentUserId">我</span>
                 <button type="button" class="layui-btn layui-btn-sm" style="float: right">
                     <i class="layui-icon">&#xe654;</i>
                 </button>
@@ -83,12 +84,12 @@
             <div class="layui-card-body" id="white_div">
                 <span style="margin-right: 10px">白棋</span>
                 <img v-if="!isSuccess || room.opponentsImg==null"
-                     src="http://pic4.zhimg.com/50/v2-7fece9a613445edb78271216c8c20c6d_hd.jpg"
+                     src="https://s1.ax1x.com/2020/04/06/GsWKDH.jpg"
                      class="layui-nav-img">
                 <img v-else v-bind:src="room.opponentsImg" class="layui-nav-img">
                 <span>{{room.opponentsName}}</span>
 
-                <span id="white_span" style="margin-left: 10px;display: none" class="layui-badge">我</span>
+                <span id="white_span" style="margin-left: 10px;" class="layui-badge" v-if="room.opponents==currentUserId">我</span>
                 <button type="button" class="layui-btn layui-btn-sm" style="float: right">
                     <i class="layui-icon">&#xe65a;</i>
                 </button>
@@ -101,16 +102,15 @@
             </div>
             <div class="layui-card-body">
                 <span style="margin-right: 10px">配置</span>
-                <form class="layui-form" action="">
-                    <div class="layui-form-item">
-                        <input type="radio" name="sex" value="nan" title="围棋" checked>
-                        <input type="radio" name="sex" value="nv" title="五子棋">
-                    </div>
-                </form>
-                <button type="button" class="layui-btn layui-btn-sm" onclick="startGameRequest()">开始游戏</button>
-                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="leaveRoomRequest()">
-                    离开房间
-                </button>
+                <br>
+                <div style="margin-top: 20px">
+                    <button type="button" class="layui-btn layui-btn-sm" onclick="startGameRequest()"  v-if="room.roomStatus==1">开始五子棋</button>
+                    <button type="button" class="layui-btn layui-btn-sm" onclick="startGameRequest(1)"  v-if="room.roomStatus==1">开始围棋</button>
+                    <button type="button" class="layui-btn layui-btn-sm" onclick="giveUp()"  v-if="room.roomStatus==2">弃子认输</button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="leaveRoomRequest()">
+                        离开房间
+                    </button>
+                </div>
             </div>
             <div class="layui-card-body" style="display:none;">
                 <span style="margin-right: 10px">配置</span>
@@ -140,6 +140,8 @@
 <script type="text/javascript" src="../static/js/jQuery/jQuery.js"></script>
 <!--画棋盘和画棋子的方法 todo-->
 <script type="text/javascript" src="../static/js/myjs/gobang/gobang.js"></script>
+<!--围棋-->
+<script type="text/javascript" src="../static/js/myjs/go/go.js"></script>
 <!--页面加载 用户事件 todo-->
 <script type="text/javascript" src="../static/js/myjs/gobang/gobangLoad.js"></script>
 <!--对战-->
@@ -162,6 +164,7 @@
 
 
     function locationLeave() {
+        // alertLayer("我走了todo")
         window.location.href = "/";
     }
 

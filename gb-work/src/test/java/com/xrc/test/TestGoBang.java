@@ -1,6 +1,6 @@
 package com.xrc.test;
 
-import com.xrc.gb.work.gobang.GoBangGameRunner;
+import com.xrc.gb.work.game.GoBangGameRunner;
 import org.junit.Test;
 
 /**

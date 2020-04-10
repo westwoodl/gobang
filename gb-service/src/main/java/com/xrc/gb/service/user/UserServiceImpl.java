@@ -1,12 +1,12 @@
 package com.xrc.gb.service.user;
 
 import com.alibaba.fastjson.JSONObject;
-import com.xrc.gb.consts.ErrorInfoConstants;
+import com.xrc.gb.common.consts.ErrorInfoConstants;
 import com.xrc.gb.manager.go.UserDataManager;
 import com.xrc.gb.repository.dao.UserDAO;
 import com.xrc.gb.repository.domain.user.UserDO;
-import com.xrc.gb.util.CheckParameter;
-import com.xrc.gb.util.ExceptionHelper;
+import com.xrc.gb.common.util.CheckParameter;
+import com.xrc.gb.common.util.ExceptionHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
         if (userDAO.queryByUserName(username) != null) {
             throw ExceptionHelper.newBusinessException("昵称已存在");
         }
-        if (userDAO.queryByUserName(account) != null) {
+        if (userDAO.queryByAccount(account) != null) {
             throw ExceptionHelper.newBusinessException("账号已存在");
         }
 
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
         userDO.setUserName(username);
         userDO.setAccount(account);
         userDO.setPassword(password);
-        userDO.setImg("https://s1.ax1x.com/2020/04/06/GsWKDH.jpg");
+        userDO.setImg("https://s1.ax1x.com/2020/04/09/G5SVjs.jpg");
         return userDataManager.insert(userDO);
     }
 

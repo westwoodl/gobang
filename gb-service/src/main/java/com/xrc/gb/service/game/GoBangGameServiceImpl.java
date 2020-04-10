@@ -1,24 +1,24 @@
 package com.xrc.gb.service.game;
 
 import com.alibaba.fastjson.JSONObject;
-import com.xrc.gb.consts.CommonConst;
-import com.xrc.gb.consts.ErrorInfoConstants;
-import com.xrc.gb.consts.GoGameConst;
-import com.xrc.gb.enums.*;
+import com.xrc.gb.common.consts.CommonConst;
+import com.xrc.gb.common.consts.ErrorInfoConstants;
+import com.xrc.gb.common.consts.GoGameConst;
+import com.xrc.gb.common.dto.GoContext;
+import com.xrc.gb.common.dto.GoPieces;
+import com.xrc.gb.common.dto.GoPlaceReq;
+import com.xrc.gb.common.dto.GoQueryResp;
+import com.xrc.gb.common.enums.*;
+import com.xrc.gb.common.util.CheckParameter;
+import com.xrc.gb.common.util.ExceptionHelper;
+import com.xrc.gb.common.util.PageQueryReq;
+import com.xrc.gb.common.util.PageQueryResultResp;
 import com.xrc.gb.manager.go.GoDataManager;
 import com.xrc.gb.manager.go.RoomDataManager;
-import com.xrc.gb.dto.GoContext;
-import com.xrc.gb.dto.GoPieces;
-import com.xrc.gb.dto.GoPlaceReq;
-import com.xrc.gb.dto.GoQueryResp;
 import com.xrc.gb.repository.dao.GoDAO;
 import com.xrc.gb.repository.dao.RoomDAO;
 import com.xrc.gb.repository.domain.go.GoDO;
 import com.xrc.gb.repository.domain.go.RoomDO;
-import com.xrc.gb.util.CheckParameter;
-import com.xrc.gb.util.ExceptionHelper;
-import com.xrc.gb.util.PageQueryReq;
-import com.xrc.gb.util.PageQueryResultResp;
 import com.xrc.gb.work.GoGameFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -44,11 +44,18 @@ public class GoBangGameServiceImpl implements GoService {
     public Integer createGame(GoQueryResp goQueryResp) {
         CheckParameter.isNotNull(goQueryResp.getBlackUserId());
         CheckParameter.isNotNull(goQueryResp.getWhiteUserId());
-        CheckParameter.isNotNull(goQueryResp.getGoContext());
-        CheckParameter.isNotNull(goQueryResp.getGoContext().getCheckerBoardSize());
+
+        if (goQueryResp.getGoContext() == null) {
+            GoContext goContextCreateReq = new GoContext();
+            goContextCreateReq.setCheckerBoardSize(GoGameConst.DEFAULT_GAME_BROAD_SIZE);
+            goQueryResp.setGoContext(goContextCreateReq);
+        }
 
         if (goQueryResp.getEndTime() == null) {
             goQueryResp.setEndTime(new Date(System.currentTimeMillis() + GoGameConst.DEFAULT_GAME_TIME_MILLIS));
+        }
+        if (goQueryResp.getGoType() == null) {
+            goQueryResp.setGoType(GameTypeEnum.GO_BANG.getCode());
         }
         goQueryResp.getGoContext().setPlaceArrays(new ArrayList<>());
         goQueryResp.setIsEnd(0);
@@ -67,11 +74,11 @@ public class GoBangGameServiceImpl implements GoService {
         goDO.setBlackUserId(goQueryResp.getBlackUserId());
         goDO.setWhiteUserId(goQueryResp.getWhiteUserId());
         goDO.setGoContext(JSONObject.toJSONString(goQueryResp.getGoContext()));
-//        goDO.setRoomId(goQueryResp.getRoomId());
         goDO.setIsEnd(goQueryResp.getIsEnd());
         goDO.setEndTime(goQueryResp.getEndTime());
         goDO.setLastUserId(goQueryResp.getLastUserId());
         goDO.setGoStatus(goQueryResp.getGoStatus());
+        goDO.setGoType(goQueryResp.getGoType());
         return goDO;
     }
 
@@ -92,12 +99,12 @@ public class GoBangGameServiceImpl implements GoService {
         goQuery.setBlackUserId(queryGo.getBlackUserId());
         goQuery.setWhiteUserId(queryGo.getWhiteUserId());
         goQuery.setGoContext(JSONObject.parseObject(queryGo.getGoContext(), GoContext.class));
-//        goQuery.setRoomId(queryGo.getRoomId());
         goQuery.setIsEnd(queryGo.getIsEnd());
         goQuery.setEndTime(queryGo.getEndTime());
         goQuery.setLastUserId(queryGo.getLastUserId());
         goQuery.setModifyTime(queryGo.getModifyTime());
         goQuery.setGoStatus(queryGo.getGoStatus());
+        goQuery.setGoType(queryGo.getGoType());
         return goQuery;
     }
 
@@ -121,6 +128,7 @@ public class GoBangGameServiceImpl implements GoService {
     /**
      * 通过修改时间判断数据是否被变更
      */
+    @Deprecated
     public GoQueryResp queryGameBlock(Integer goId, Long expectModifyTime) {
         CheckParameter.isNotNull(goId);
         CheckParameter.isNotNull(expectModifyTime);
@@ -175,8 +183,9 @@ public class GoBangGameServiceImpl implements GoService {
         List<GoPieces> goPiecesList = goQueryResp.getGoContext().getPlaceArrays();
         goPlaceReq.getGoPieces().setHandNum(goPiecesList.size() + 1);
         goPiecesList.add(goPlaceReq.getGoPieces());
-
-        PlaceResultTypeEnum resultTypeEnum = GoGameFactory.subscribe(GameTypeEnum.GO_BANG).place(goQueryResp.getGoContext());
+        // 下面两行代码简直完美
+        GameTypeEnum gameTypeEnum = GameTypeEnum.getEnum(goQueryResp.getGoType());
+        PlaceResultTypeEnum resultTypeEnum = GoGameFactory.subscribe(gameTypeEnum).place(goQueryResp.getGoContext());
         //  结束房间
         if (!resultTypeEnum.equals(PlaceResultTypeEnum.PLACING_PIECES_SUCCESS)) {
             goQueryResp.setGoStatus(GoStatusEnum.END.getCode());

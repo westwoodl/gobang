@@ -138,10 +138,7 @@ function updateUserDetail(obj) {
             , content: update_user_html
             , yes: function (index, layero) {
                 //do something
-                console.log(index);
                 var $dom = $(layero);
-                // console.log($("#room_create_name_input").val());
-                // console.log($("#room_create_pwd_input").val());
                 var user_name = $dom.find("#search_user_input").val();
 
                 if (user_name.length < 1) {
@@ -181,10 +178,7 @@ function searchUser() {
             , content: search_user_html
             , yes: function (index, layero) {
                 //do something
-                console.log(index);
                 var $dom = $(layero);
-                // console.log($("#room_create_name_input").val());
-                // console.log($("#room_create_pwd_input").val());
                 var user_name = $dom.find("#search_user_input").val();
 
                 if (user_name.length < 1) {
@@ -281,7 +275,6 @@ function loginOrRegister() {
             , content: login_and_register_html
             , yes: function (index, layero) {
                 //do something
-                console.log(index);
                 let $dom = $(layero);
 
                 let account_input = $dom.find("#account_input").val();
@@ -291,17 +284,12 @@ function loginOrRegister() {
                 let reg_pwd_input = $dom.find("#reg_pwd_input").val();
 
                 if ($dom.find(".layui-this").html() === "登录") {
-                    console.log(account_input);
-                    console.log(pwd_input);
                     if (checkLoginParameter(account_input, pwd_input, $dom) && userLoginRequest(account_input, pwd_input, $dom)) {
                         layer.close(index); //如果设定了yes回调，需进行手工关闭
                         alertLayer("登录成功");
                     }
                 } else {
                     //注册亲求
-                    console.log(reg_name_input);
-                    console.log(reg_account_input);
-                    console.log(reg_pwd_input);
                     if (checkRegParameter(reg_name_input, reg_account_input, reg_pwd_input, $dom) && userRegisterRequest(reg_name_input, reg_account_input, reg_pwd_input, $dom)) {
                         layer.close(index); //如果设定了yes回调，需进行手工关闭
                         alertLayer("注册成功");

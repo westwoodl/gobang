@@ -1,12 +1,9 @@
 package com.xrc.gb.manager;
 
-import com.xrc.gb.consts.CommonConst;
+import com.xrc.gb.common.consts.CommonConst;
 import com.xrc.gb.repository.cache.CacheKeyUtils;
 import com.xrc.gb.repository.cache.TypeRedisCache;
-import com.xrc.gb.repository.dao.BaseDAO;
 import com.xrc.gb.repository.domain.BaseDO;
-import com.xrc.gb.repository.domain.go.GoDO;
-import com.xrc.gb.repository.domain.user.UserDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 

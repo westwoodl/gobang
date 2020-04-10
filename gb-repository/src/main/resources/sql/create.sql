@@ -39,6 +39,7 @@ create table gb_go (
 );
 create index query_go_by_white_user_index on gb_go(white_user_Id);
 create index query_go_by_black_user_index on gb_go(black_user_id);
+alter table gb_go add column go_type int not null comment ' 围棋1 五子棋2';
 
 -- 创建房间表
 drop table if exists gb_room;

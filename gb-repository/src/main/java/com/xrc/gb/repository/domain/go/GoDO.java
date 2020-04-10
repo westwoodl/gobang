@@ -30,4 +30,6 @@ public class GoDO extends BaseDO {
     private Integer goResult;
 
     private Integer goStatus;
+
+    private Integer goType;
 }

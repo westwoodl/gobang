@@ -1,28 +1,33 @@
 package com.xrc.gb.web.controller.game;
 
 import com.alibaba.fastjson.JSONObject;
-import com.xrc.gb.consts.GoGameConst;
-import com.xrc.gb.enums.DateFormatEnum;
-import com.xrc.gb.enums.JoinRoomResultEnum;
-import com.xrc.gb.enums.RoomStatusEnum;
-import com.xrc.gb.dto.GoContext;
-import com.xrc.gb.dto.GoQueryResp;
+import com.xrc.gb.common.consts.GoGameConst;
+import com.xrc.gb.common.enums.DateFormatEnum;
+import com.xrc.gb.common.enums.GameTypeEnum;
+import com.xrc.gb.common.enums.JoinRoomResultEnum;
+import com.xrc.gb.common.enums.RoomStatusEnum;
+import com.xrc.gb.common.dto.GoContext;
+import com.xrc.gb.common.dto.GoQueryResp;
+import com.xrc.gb.common.util.ExceptionHelper;
 import com.xrc.gb.repository.domain.go.RoomDO;
 import com.xrc.gb.repository.domain.user.UserDO;
 import com.xrc.gb.service.game.GoBangGameServiceImpl;
 import com.xrc.gb.service.game.RoomServiceImpl;
 import com.xrc.gb.service.user.UserService;
-import com.xrc.gb.util.DateFormatUtils;
-import com.xrc.gb.util.PageQueryReq;
-import com.xrc.gb.util.PageQueryResultResp;
+import com.xrc.gb.common.util.DateFormatUtils;
+import com.xrc.gb.common.util.PageQueryReq;
+import com.xrc.gb.common.util.PageQueryResultResp;
 import com.xrc.gb.web.common.JSONObjectResult;
 import com.xrc.gb.web.controller.AbstractController;
 import com.xrc.gb.web.controller.vo.RoomCreateVO;
+import com.xrc.gb.web.controller.vo.RoomGameVO;
+import com.xrc.gb.web.controller.ws.WebSocketServer;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -86,6 +91,7 @@ public class RoomController extends AbstractController {
     public JSONObject joinRoom(@RequestParam Integer roomId) {
         UserDO joinUserDO = getUserDO();
         JoinRoomResultEnum joinRoomResultEnum = roomService.joinRoom(roomId, joinUserDO);
+        sendTwoUserByRoomId(roomId);
         return JSONObjectResult.create().success(joinRoomResultEnum.getDesc(), joinRoomResultEnum.getExpectModifyTime());
     }
 
@@ -103,19 +109,19 @@ public class RoomController extends AbstractController {
      * 开始游戏
      */
     @PutMapping("/start")
-    public JSONObject startGame(@RequestParam Integer roomId, @RequestParam(required = false) Long gameTime, @RequestParam(required = false) Integer gameMode) {
+    public JSONObject startGame(@RequestParam Integer roomId, @RequestParam(required = false) Long gameTime, @RequestParam(required = false) Integer gameMode) throws IOException {
         roomService.startGame(roomId, getUserId());
         // 创建对局
         RoomDO roomDO = roomService.queryById(roomId);
         GoQueryResp goCreateReq = new GoQueryResp();
         goCreateReq.setBlackUserId(roomDO.getCreateUser());
         goCreateReq.setWhiteUserId(roomDO.getOpponents());
-        if (gameTime != null && gameTime >= GoGameConst.DEFAULT_GAME_MIN_TIME_MILLIS) {
+        if (gameTime != null) {
             goCreateReq.setEndTime(new Date(System.currentTimeMillis() + gameTime));
         }
-        GoContext goContextCreateReq = new GoContext();
-        goContextCreateReq.setCheckerBoardSize(GoGameConst.DEFAULT_GAME_BROAD_SIZE);
-        goCreateReq.setGoContext(goContextCreateReq);
+        if (gameMode != null && GameTypeEnum.exist(gameMode)) {
+            goCreateReq.setGoType(gameMode);
+        }
         Integer goId = goBangGameService.createGame(goCreateReq);
         if (goId == null) {
             return JSONObjectResult.create().fail("创建对局失败");
@@ -127,7 +133,9 @@ public class RoomController extends AbstractController {
         updateRoomReq.setGoId(goId);
         boolean isUpdateSuccess = roomService.update(updateRoomReq);
         if (isUpdateSuccess) {
-            return JSONObjectResult.create().success(goId);
+            // 开始游戏后发送room和go数据
+            sendTwoUserByRoomId(roomId);
+            return JSONObjectResult.create().success();
         } else {
             return JSONObjectResult.create().fail("房修改失败");
         }
@@ -138,7 +146,42 @@ public class RoomController extends AbstractController {
      */
     @PutMapping("/leave")
     public JSONObject leaveRoom(@RequestParam Integer roomId) {
-        return JSONObjectResult.create().isSuccess(roomService.leaveRoom(roomId, getUserId()));
+        boolean isSuccess = roomService.leaveRoom(roomId, getUserId());
+        if (isSuccess) {
+            sendTwoUserByRoomId(roomId);
+            return JSONObjectResult.create().success();
+        }
+        return JSONObjectResult.create().fail();
+    }
+
+    private void sendTwoUserByRoomId(Integer roomId) {
+        // 开始游戏后发送room和go数据
+        RoomGameVO roomGameVO = new RoomGameVO();
+        RoomDO roomDO = roomService.queryById(roomId);
+        if (roomDO == null) {
+            return;
+        }
+        buildRoomDO(roomDO);
+        roomGameVO.setRoomDO(roomDO);
+        if (roomDO.getGoId() == null) {
+            try {
+                WebSocketServer.send(roomGameVO, roomDO.getCreateUser());
+                WebSocketServer.send(roomGameVO, roomDO.getOpponents());
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw ExceptionHelper.newSysException();
+            }
+        } else {
+            GoQueryResp goQueryResp = goBangGameService.queryGame(roomDO.getGoId());
+            roomGameVO.setGoQueryResp(goQueryResp);
+            try {
+                WebSocketServer.send(roomGameVO, goQueryResp.getWhiteUserId());
+                WebSocketServer.send(roomGameVO, goQueryResp.getBlackUserId());
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw ExceptionHelper.newSysException();
+            }
+        }
     }
 
     /**
