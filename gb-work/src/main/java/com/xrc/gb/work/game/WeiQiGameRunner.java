@@ -34,17 +34,9 @@ public class WeiQiGameRunner extends AbstractGoGameRunner implements Initializin
         GoPieces lastHand = piecesList.get(piecesList.size() - 1);
 
         if (judgeLast(goArrArrays, lastHand.getX(), lastHand.getY())) {
-            // 删除死了的棋子
-            for (int i = 0; i < goArrArrays[0].length; i++) {
-                for (int j = 0; j < goArrArrays.length; j++) {
-                    // 遍历...
-                    if (goArrArrays[i][j] == ArrayIdentifiesNums.DEAD_PIECES) {
-                        for (GoPieces goPieces : goContext.getPlaceArrays()) {
-                            if(i == goPieces.getX() && j == goPieces.getY()) {
-                                goPieces.setDead(true);
-                            }
-                        }
-                    }
+            for (GoPieces goPieces : goContext.getPlaceArrays()) {
+                if (!goPieces.isDead() && goArrArrays[goPieces.getX()][goPieces.getY()] == ArrayIdentifiesNums.DEAD_PIECES) {
+                    goPieces.setDead(true);
                 }
             }
         }
