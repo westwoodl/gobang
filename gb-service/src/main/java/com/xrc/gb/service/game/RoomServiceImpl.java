@@ -139,7 +139,7 @@ public class RoomServiceImpl {
         CheckParameter.isNotNull(roomDO.getRoomName());
         CheckParameter.isNotNull(roomDO.getCreateUser());
         CheckParameter.isNotNull(roomDO.getRoomStatus());
-        return roomManager.createRoom(roomDO);
+        return roomManager.insert(roomDO);
     }
 
     public boolean update(RoomDO roomDO) {
@@ -147,10 +147,6 @@ public class RoomServiceImpl {
         CheckParameter.isNotNull(roomDO.getId());
         return roomManager.update(roomDO);
     }
-
-//    public boolean delete(int roomId) {
-//        return roomManager.deleteById(roomId);
-//    }
 
     public RoomDO queryById(Integer id) {
         CheckParameter.isNotNull(id);

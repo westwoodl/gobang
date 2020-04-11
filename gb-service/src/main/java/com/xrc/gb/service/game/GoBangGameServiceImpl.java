@@ -61,7 +61,7 @@ public class GoBangGameServiceImpl implements GoService {
         goQueryResp.setIsEnd(0);
 
         GoDO goDO = buildGoDO(goQueryResp);
-        if(goDataManager.createGo(goDO)) {
+        if(goDataManager.insert(goDO)) {
             return goDO.getId();
         }
         return null;
@@ -85,7 +85,7 @@ public class GoBangGameServiceImpl implements GoService {
     @Override
     public GoQueryResp queryGame(Integer id) {
         CheckParameter.isNotNull(id);
-        GoDO goDO = goDataManager.queryGo(id);
+        GoDO goDO = goDataManager.queryById(id);
         if (goDO == null) {
             throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_GAME_NOT_EXIST);
         }
@@ -138,7 +138,7 @@ public class GoBangGameServiceImpl implements GoService {
             if (System.currentTimeMillis() > deadLine) {
                 throw ExceptionHelper.newBusinessException(ErrorInfoConstants.DATA_FLASH_TIME_OUT);
             }
-            GoDO goDO = goDataManager.queryGo(goId);
+            GoDO goDO = goDataManager.queryById(goId);
             if (goDO == null) {
                 throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_GAME_NOT_EXIST);
             }
@@ -164,7 +164,7 @@ public class GoBangGameServiceImpl implements GoService {
         CheckParameter.isNotNull(goPlaceReq.getUserId());
         CheckParameter.isNotNull(goPlaceReq.getGoPieces());
 
-        GoDO goDO = goDataManager.queryGo(goPlaceReq.getId());
+        GoDO goDO = goDataManager.queryById(goPlaceReq.getId());
         if (goDO == null) {
             throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_GAME_NOT_EXIST);
         }
@@ -199,8 +199,8 @@ public class GoBangGameServiceImpl implements GoService {
         if (resultTypeEnum.equals(PlaceResultTypeEnum.WHITE_WIN_GAME)) {
             goQueryResp.setLastUserId(goQueryResp.getWhiteUserId());
         }
-        if (goDataManager.updateGo(buildGoDO(goQueryResp))) {
-            resultTypeEnum.setPlaceTime(goDataManager.queryGo(goPlaceReq.getId()).getModifyTime().getTime());
+        if (goDataManager.update(buildGoDO(goQueryResp))) {
+            resultTypeEnum.setPlaceTime(goDataManager.queryById(goPlaceReq.getId()).getModifyTime().getTime());
             return resultTypeEnum;
         } else {
             throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BOZ_PLACE_ERROR);

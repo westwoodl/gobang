@@ -12,40 +12,10 @@ import javax.annotation.Resource;
  * @date 2020/4/3 22:08
  */
 @Component("userDataManager")
-public class UserDataManager extends AbstractCacheManager<UserDO> {
-    @Resource
-    private UserDAO userDAO;
+public class UserDataManager extends AbstractCacheManager<UserDO, UserDAO> {
 
     @Override
-    public boolean insert(UserDO domain) {
-        if (userDAO.insert(domain) > 0) {
-            setCache(userDAO.queryById(domain.getId()));
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public UserDO queryById(int id) {
-        UserDO userDO = getCache(id);
-        if (userDO != null) {
-            return userDO;
-        }
-        userDO = userDAO.queryById(id);
-        if (userDO == null) {
-            setNullCache(id);
-            return null;
-        }
-        setCache(userDO);
-        return userDO;
-    }
-
-    @Override
-    public boolean update(UserDO domain) {
-        if (userDAO.update(domain) > 0) {
-            setCache(userDAO.queryById(domain.getId()));
-            return true;
-        }
-        return false;
+    public boolean deleteById(int id) {
+        throw new UnsupportedOperationException();
     }
 }

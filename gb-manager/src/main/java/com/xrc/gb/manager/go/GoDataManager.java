@@ -1,6 +1,7 @@
 package com.xrc.gb.manager.go;
 
 import com.xrc.gb.common.consts.CommonConst;
+import com.xrc.gb.manager.AbstractCacheManager;
 import com.xrc.gb.repository.cache.CacheKeyUtils;
 import com.xrc.gb.repository.cache.TypeRedisCache;
 import com.xrc.gb.repository.dao.GoDAO;
@@ -17,60 +18,8 @@ import javax.annotation.Resource;
  * @date 2020/3/23 17:02
  */
 @Component
-@Transactional
+@Transactional(rollbackFor = {Exception.class})
 @Slf4j
-public class GoDataManager {
-
-    @Resource
-    private TypeRedisCache<GoDO> goTypeRedisCache;
-
-    @Resource
-    private GoDAO goDAO;
-
-    public GoDO queryGo(@NonNull Integer goId) {
-        GoDO goDO = getCache(goId);
-        if (goDO != null) {
-            return goDO;
-        } else {
-            GoDO goDORep = goDAO.queryById(goId);
-            if (goDORep != null) {
-                log.info("go缓存击穿id{}", goId);
-                setCache(goDORep);
-                return goDORep;
-            }
-            log.info("go缓存穿透id{}", goId);
-            // 设置空值防止缓存穿透
-            setNullCache(goId);
-            return null;
-        }
-    }
-
-    public boolean updateGo(@NonNull GoDO go) {
-        boolean isSuccess = goDAO.update(go) == 1;
-        if (isSuccess) {
-            setCache(goDAO.queryById(go.getId()));
-            return true;
-        }
-        return false;
-    }
-
-    public boolean createGo(@NonNull GoDO go) {
-        if (goDAO.insert(go) > 0) {
-            setCache(goDAO.queryById(go.getId()));
-            return true;
-        }
-        return false;
-    }
-
-    private void setCache(GoDO go) {
-        goTypeRedisCache.set(CacheKeyUtils.getIdKey(go), go, CommonConst.CACHE_STORE_MINUTES);
-    }
-
-    private void setNullCache(Integer goId) {
-        goTypeRedisCache.set(CacheKeyUtils.getIdKey(goId, GoDO.class), null, CommonConst.NULL_CACHE_STORE_MINUTES);
-    }
-
-    private GoDO getCache(Integer goId) {
-        return goTypeRedisCache.get(CacheKeyUtils.getIdKey(goId, GoDO.class));
-    }
+public class GoDataManager extends AbstractCacheManager<GoDO, GoDAO> {
+    // 这...
 }
