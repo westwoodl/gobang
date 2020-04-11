@@ -52,8 +52,8 @@
             color: rgb(160, 189, 201);
         }
     </style>
-    <link rel="icon" href="https://s1.ax1x.com/2020/04/06/GszKsJ.png" >
-    <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.5.6/css/layui.css" media="all">
+    <link rel="icon" href="https://s1.ax1x.com/2020/04/06/GszKsJ.png">
+    <link rel="stylesheet" href="../static/js/layui/css/layui.css" media="all">
 </head>
 <!--<body>-->
 <body bgcolor="#2B2B2B">
@@ -124,7 +124,7 @@
             <li class="layui-nav-item layui-this">
                 <a href="">
                     <i class="layui-icon layui-icon-form" style="font-size: 18px; color: gray;"></i>
-                    &nbsp;纹枰论道
+                    &nbsp;研究
                 </a>
             </li>
             <li class="layui-nav-item">
@@ -149,7 +149,7 @@
                         <i class="layui-icon layui-icon-read" style="font-size: 18px; color: gray;"></i>
                         &nbsp;对战记录</a>
                     </dd>
-                    <dd><a href="javascript:userDetailShow();">
+                    <dd onclick="userDetailShow()"><a>
                         <i class="layui-icon layui-icon-tips" style="font-size: 18px; color: gray;"></i>
                         &nbsp;个人信息</a>
                     </dd>
@@ -184,7 +184,7 @@
             <div class="layui-card" style="box-shadow: 1px 1px 3px gray;">
                 <div class="layui-card-header">棋圣，欢迎您！点击进入房间</div>
                 <div class="layui-card-body">
-                    当前在线人数：1
+                    当前在线人数：<span id="online_span"></span>
                 </div>
             </div>
             <div style="display: flex;">
@@ -215,7 +215,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="data in dataList"  v-on:click="joinRoom(data)">
+                <tr v-for="data in dataList" v-on:click="joinRoom(data)">
                     <td>{{data.id}}</td>
                     <td>
                         &nbsp; {{data.roomName}}
@@ -386,100 +386,36 @@
                 <thead>
                 <tr>
                     <th>序号</th>
-                    <th>房间名</th>
-                    <th>白棋</th>
                     <th>黑棋</th>
-                    <th>对局结果</th>
-                    <th>对局结束时间</th>
+                    <th>白棋</th>
+                    <th>对局状态</th>
+                    <th>结束时间</th>
+                    <th>结果</th>
+                    <th>游戏模式</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>
-                        贤心的房间&nbsp;<i class="layui-icon layui-icon-password" style="font-size: 15px; color: gray;"></i>
-                    </td>
-                    <td>贤心222</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
+                <tr v-for="data in recordList">
+                    <td>{{data.id}}</td>
+                    <td>{{data.blackUserName}}</td>
+                    <td>{{data.whiteUserName}}</td>
 
-                <tr>
-                    <td>2</td>
-                    <td>木头的房间</td>
-                    <td>木头</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>木头的房间</td>
-                    <td>木头</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>木头的房间</td>
-                    <td>木头</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>木头的房间</td>
-                    <td>木头</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>木头的房间</td>
-                    <td>木头</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>木头的房间</td>
-                    <td>木头</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>木头的房间</td>
-                    <td>木头</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>木头的房间</td>
-                    <td>木头</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-green">空闲</span></td>
-                    <td>2/2</td>
-                </tr>
+                    <td v-if="data.goStatus == 0"><span class="layui-badge layui-bg-gray">已结束</span></td>
+                    <td v-if="data.goStatus == 1"><span class="layui-badge layui-bg-orange">对局中</span></td>
+                    <td v-if="data.goStatus == 2"><span class="layui-badge layui-bg-orange">对局中</span></td>
 
-                <tr>
-                    <td>3</td>
-                    <td>3</td>
-                    <td>贤心</td>
-                    <td>2016-11-29</td>
-                    <td><span class="layui-badge layui-bg-orange">游戏中</span></td>
-                    <td>11/2</td>
+
+                    <td>{{data.endTime}}</td>
+
+                    <td v-if="data.goResult==1">白胜</td>
+                    <td v-if="data.goResult==2">黑胜</td>
+                    <td v-if="data.goResult==null">无</td>
+
+                    <td v-if="data.goType==1">围棋</td>
+                    <td v-if="data.goType==2">五子棋</td>
                 </tr>
                 <tr id="record_page_tr" disabled="true" style="">
-                    <td colspan="6">
+                    <td colspan="7">
                         <div id="record_page_div">
                             <!--            使用js加载分页-->
                         </div>
@@ -491,8 +427,8 @@
     </div>
 
     <!--用户信息div-->
-    <div id="user_detail_div" class="layui-anim layui-anim-scale" style="display: none;margin-top: 40px;" v-if="user!=null">
-        <div class="layui-card" style="box-shadow: 1px 1px 2px gray;width: 700px">
+    <div id="user_detail_div" class="layui-anim layui-anim-scale" style="display: none;margin-top: 40px;">
+        <div class="layui-card" style="box-shadow: 1px 1px 2px gray;width: 700px" v-if="user!=null">
             <div class="layui-card-header" style="height: 70px;display: flex;justify-content: space-between;">
                 <div style="margin-top: 10px">
 
@@ -512,7 +448,7 @@
                 &nbsp;*************
                 <br>
                 <i class="layui-icon layui-icon-note" style="font-size: 18px; color: #1E9FFF;"></i>
-                研究
+                纹枰论道
 
                 <br>
                 <i class="layui-icon layui-icon-login-wechat" style="font-size: 18px; color: #1E9FFF;"></i>
@@ -587,34 +523,35 @@
 
 <script type="text/javascript" src="../static/js/jQuery/jQuery.js"></script>
 <!--画棋盘和画棋子的方法-->
-<script type="text/javascript" src="../static/js/myjs/gobang.js"></script>
+<script type="text/javascript" src="../static/myjs/gobang/draw_board.js"></script>
 <!--房间-->
-<script type="text/javascript" src="../static/js/myjs/room.js"></script>
+<script type="text/javascript" src="../static/myjs/room.js"></script>
 <!--收藏-->
-<script type="text/javascript" src="../static/js/myjs/collection.js"></script>
+<script type="text/javascript" src="../static/myjs/collection.js"></script>
 <!--记录，用户-->
-<script type="text/javascript" src="../static/js/myjs/user.js"></script>
+<script type="text/javascript" src="../static/myjs/user.js"></script>
 <!--页面加载 用户事件-->
-<script type="text/javascript" src="../static/js/myjs/gobangLoad.js"></script>
+<script type="text/javascript" src="../static/myjs/gobang/place_event.js"></script>
 <!--围棋-->
-<script type="text/javascript" src="../static/js/myjs/go/go.js"></script>
+<script type="text/javascript" src="../static/myjs/go/go.js"></script>
 <!--layui-->
 <script src="../static/js/layui/layui.js" charset="utf-8"></script>
 <!--vue-->
 <script src="../static/js/vue/vue.min.js"></script>
 <script type="text/javascript" charset="utf-8">
 
+    $(function () {
+        game_mode = 2;
+    });
+
     var base_gobang_url = "http://localhost:8080";
     //导航 依赖 element 模块，否则无法进行功能性操作
     layui.use('element', function () {
         var element = layui.element;
-
-        //…
     });
 
     layui.use('form', function () {
         var form = layui.form;
-
     });
 
     function displayWhat(dom_id) {
@@ -623,19 +560,15 @@
         for (let i = 0; i < dom_arr.length; i++) {
             if (dom_id === dom_arr[i]) {
                 $("#" + dom_arr[i]).show();
-                continue;
+            } else {
+                $("#" + dom_arr[i]).hide();
             }
-            $("#" + dom_arr[i]).hide();
         }
     }
 
     function comingSoon() {
         alertLayer("敬请期待");
         return false;
-    }
-
-    function windowLeave() {
-        window.location.href = "/templates/room.html";
     }
 </script>
 </body>

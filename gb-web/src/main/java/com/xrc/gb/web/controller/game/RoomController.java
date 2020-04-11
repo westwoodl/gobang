@@ -164,23 +164,14 @@ public class RoomController extends AbstractController {
         buildRoomDO(roomDO);
         roomGameVO.setRoomDO(roomDO);
         if (roomDO.getGoId() == null) {
-            try {
                 WebSocketServer.send(roomGameVO, roomDO.getCreateUser());
                 WebSocketServer.send(roomGameVO, roomDO.getOpponents());
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw ExceptionHelper.newSysException();
-            }
+
         } else {
             GoQueryResp goQueryResp = goBangGameService.queryGame(roomDO.getGoId());
             roomGameVO.setGoQueryResp(goQueryResp);
-            try {
                 WebSocketServer.send(roomGameVO, goQueryResp.getWhiteUserId());
                 WebSocketServer.send(roomGameVO, goQueryResp.getBlackUserId());
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw ExceptionHelper.newSysException();
-            }
         }
     }
 

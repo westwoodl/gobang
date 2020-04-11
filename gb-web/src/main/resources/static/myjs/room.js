@@ -19,8 +19,25 @@ function roomListShow() {
     });
     $("body").css("background", "#F8F9FA");
 
+    onlineCountRequest();
     roomUseLayuiPage();
     return false;
+}
+
+function onlineCountRequest() {
+    $.ajax({
+        type: "GET",
+        url: base_gobang_url + "/user/online",
+        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+        crossDomain: true,
+        data: {},
+        dataType: "json",
+        success: function (data) {
+            if (data.success) {
+                $("#online_span").html(data.data);
+            }
+        }
+    });
 }
 
 function alertLayer(msg) {
@@ -143,8 +160,6 @@ function roomUseLayuiPage() {
             , count: room_list_vue.totalCount //数据总数，从服务端得到
             , layout: ['count', 'prev', 'page', 'next', 'limit', 'skip'] //refresh
             , jump: function (obj, first) {
-                //obj包含了当前分页的所有参数，比如：
-                // //首次不执行
                 if (!first) {
                     queryRoomRequest(obj.curr, obj.limit, true);
                 }

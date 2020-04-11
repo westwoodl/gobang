@@ -1,9 +1,18 @@
 var user_vue; //当前用户信息
 var user_detail_vue;//查询用户信息详情显示信息
 var user_my_friend_vue;
+var user_record_list_vue;
 
 //用户信息初始化加载
 $(function () {
+    user_record_list_vue = new Vue({
+        el:"#record_table_div",
+        data: {
+            isSuccess: false,
+            recordList: null
+        }
+    });
+
     user_vue = new Vue({
         el: "#user_a",
         data: {
@@ -88,24 +97,76 @@ function recordListShow() {
         $("#record_page_tr").attr({"style": "background:#ffffff"});
     });
     $("body").css("background", "#F8F9FA");
-
-    comingSoon();
-    // useLayuiPage('record_page_div');
-
-    console.log("record");
+    recordUserLayuiPage();
     return false;
+}
+
+function recordUserLayuiPage() {
+    layui.use('laypage', function () {
+        var laypage = layui.laypage;
+        let count = queryRecordRequest(1, 10, false);
+        //执行一个laypage实例
+        laypage.render({
+            elem: "record_page_div" //注意，这里的 test1 是 ID，不用加 # 号
+            , count: count //数据总数，从服务端得到
+            , layout: ['count', 'prev', 'page', 'next', 'limit', 'skip'] //refresh
+            , jump: function (obj, first) {
+                if (!first) {
+                    queryRecordRequest(obj.curr, obj.limit, true);
+                }
+            }
+        });
+    });
+}
+
+function queryRecordRequest(pageIndex, pageSize, sync) {
+    let totalCount = 0;
+    layui.use('layer', function () {
+        let index = layer.load(1, {
+            shade: [0.1, '#fff'] //0.1透明度的白色背景
+        });
+        $.ajax({
+            async: sync,
+            type: "GET",
+            url: base_gobang_url + "/gobang",
+            xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+            crossDomain: true,
+            data: {
+                pageIndex: pageIndex,
+                pageSize: pageSize
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.success) {
+                    totalCount = data.data.totalCount;
+                    user_record_list_vue.dataList = data.data.data;
+                    user_record_list_vue.isSuccess = true;
+                } else {
+                    alertLayer(data.msg);
+                }
+                layer.close(index);
+            },
+            error: function () {
+                alert("系统繁忙");
+                layer.close(index);
+            }
+        });
+    });
+    return totalCount;
 }
 
 function userDetailShow() {
     if (!isLogin()) {
         return false;
     }
+
+    user_detail_vue.isSuccess = user_vue.isSuccess;
+    user_detail_vue.user = user_vue.user;
+
     displayWhat("user_detail_div");
     $("body").css("background", "#F8F9FA");
     userStartShow(3.5);
 
-    user_detail_vue.isSuccess = user_vue.isSuccess;
-    user_detail_vue.user = user_vue.user;
     return false;
 }
 

@@ -9,6 +9,9 @@ import lombok.Setter;
  */
 public enum PlaceResultTypeEnum {
 
+    /**
+     *
+     */
     WHITE_WIN_GAME(1, "白胜"),
     BLACK_WIN_GAME(2, "黑胜"),
     PLACING_PIECES_SUCCESS(3, "落子成功");
@@ -33,4 +36,17 @@ public enum PlaceResultTypeEnum {
     public int getCode() {
         return code;
     }
+
+    public static String getDescByCode(Integer code) {
+        if (code == null) {
+            return null;
+        }
+        for (PlaceResultTypeEnum e : PlaceResultTypeEnum.values()) {
+            if (e.getCode() == code) {
+                return e.getDesc();
+            }
+        }
+        return null;
+    }
+
 }

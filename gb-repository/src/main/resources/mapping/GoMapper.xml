@@ -25,38 +25,22 @@
         where go_id = #{id}
     </select>
 
-    <!--查询指定行数据-->
-    <select id="queryAllByLimit" resultMap="GbGoMap">
+    <select id="countAll" resultType="int">
         select
-          go_id, create_time, modify_time, black_user_id, white_user_Id, go_context, is_end, end_time, last_user_id, go_result, go_status, go_type
+        count(1)
         from gobang.gb_go
         <where>
-            <if test="t.id != null">
-                and go_id = #{t.id}
+            <if test="t.blackUserId != null and t.whiteUserId != null ">
+                black_user_id = #{t.blackUserId} or white_user_Id = #{t.whiteUserId}
             </if>
-            <if test="t.createTime != null">
-                and create_time = #{t.createTime}
-            </if>
-            <if test="t.modifyTime != null">
-                and modify_time = #{t.modifyTime}
-            </if>
-            <if test="t.blackUserId != null">
+            <if test="t.blackUserId != null and t.whiteUserId == null">
                 and black_user_id = #{t.blackUserId}
             </if>
-            <if test="t.whiteUserId != null">
+            <if test="t.whiteUserId != null and t.blackUserId == null">
                 and white_user_Id = #{t.whiteUserId}
-            </if>
-            <if test="t.goContext != null and t.goContext != ''">
-                and go_context = #{t.goContext}
             </if>
             <if test="t.isEnd != null">
                 and is_end = #{t.isEnd}
-            </if>
-            <if test="t.endTime != null">
-                and end_time = #{t.endTime}
-            </if>
-            <if test="t.lastUserId != null">
-                and last_user_id = #{t.lastUserId}
             </if>
             <if test="t.goResult != null and goResult != ''">
                 and go_result = #{t.goResult}
@@ -65,6 +49,34 @@
                 and go_type = #{t.goType}
             </if>
         </where>
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="GbGoMap">
+        select
+          go_id, create_time, black_user_id, white_user_Id, is_end, end_time, last_user_id, go_result, go_status, go_type
+        from gobang.gb_go
+        <where>
+            <if test="t.blackUserId != null and t.whiteUserId != null ">
+                black_user_id = #{t.blackUserId} or white_user_Id = #{t.whiteUserId}
+            </if>
+            <if test="t.blackUserId != null and t.whiteUserId == null">
+                and black_user_id = #{t.blackUserId}
+            </if>
+            <if test="t.whiteUserId != null and t.blackUserId == null">
+                and white_user_Id = #{t.whiteUserId}
+            </if>
+            <if test="t.isEnd != null">
+                and is_end = #{t.isEnd}
+            </if>
+            <if test="t.goResult != null and goResult != ''">
+                and go_result = #{t.goResult}
+            </if>
+            <if test="t.goType != null">
+                and go_type = #{t.goType}
+            </if>
+        </where>
+        order by end_time desc
         limit #{offset}, #{limit}
     </select>
 

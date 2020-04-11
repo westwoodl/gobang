@@ -32,6 +32,8 @@ public class GoQueryResp implements Serializable {
 
     private Integer goStatus;
 
+    private Integer goResult;
+
     /**
      * {@link com.xrc.gb.common.enums.GameTypeEnum}
      */

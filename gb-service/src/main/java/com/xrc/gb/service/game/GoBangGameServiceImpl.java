@@ -79,6 +79,7 @@ public class GoBangGameServiceImpl implements GoService {
         goDO.setLastUserId(goQueryResp.getLastUserId());
         goDO.setGoStatus(goQueryResp.getGoStatus());
         goDO.setGoType(goQueryResp.getGoType());
+        goDO.setGoResult(goQueryResp.getGoResult());
         return goDO;
     }
 
@@ -105,6 +106,14 @@ public class GoBangGameServiceImpl implements GoService {
         goQuery.setModifyTime(queryGo.getModifyTime());
         goQuery.setGoStatus(queryGo.getGoStatus());
         goQuery.setGoType(queryGo.getGoType());
+        if (queryGo.getGoResult() == null) {
+            if (queryGo.getLastUserId() != null) {
+                goQuery.setGoResult(queryGo.getLastUserId().equals(queryGo.getBlackUserId()) ? PlaceResultTypeEnum.BLACK_WIN_GAME.getCode() :
+                        PlaceResultTypeEnum.WHITE_WIN_GAME.getCode());
+            }
+        } else {
+            goQuery.setGoResult(queryGo.getGoResult());
+        }
         return goQuery;
     }
 

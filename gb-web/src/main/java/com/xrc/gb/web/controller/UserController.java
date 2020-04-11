@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.xrc.gb.repository.domain.user.UserDO;
 import com.xrc.gb.service.user.UserService;
 import com.xrc.gb.web.common.JSONObjectResult;
+import com.xrc.gb.web.common.OnlineCountUtils;
+import com.xrc.gb.web.controller.ws.WebSocketServer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,11 @@ import java.util.List;
 public class UserController extends AbstractController {
     @Autowired
     UserService userService;
+
+    @GetMapping("/online")
+    public JSONObject getOnlineNum() {
+        return JSONObjectResult.create().success(OnlineCountUtils.getOnlineCount());
+    }
 
     @GetMapping("/{id}")
     public JSONObject getUser(@PathVariable Integer id) {
