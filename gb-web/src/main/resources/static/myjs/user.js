@@ -139,7 +139,7 @@ function queryRecordRequest(pageIndex, pageSize, sync) {
             success: function (data) {
                 if (data.success) {
                     totalCount = data.data.totalCount;
-                    user_record_list_vue.dataList = data.data.data;
+                    user_record_list_vue.recordList = data.data.data;
                     user_record_list_vue.isSuccess = true;
                 } else {
                     alertLayer(data.msg);
