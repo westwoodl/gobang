@@ -34,7 +34,7 @@ public class PageQueryReq<T> {
     private T data;
 
     public int getOffSet() {
-        return (1-pageIndex) * pageSize;
+        return (pageIndex-1) * pageSize;
     }
 
 }
