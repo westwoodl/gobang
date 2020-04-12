@@ -59,15 +59,15 @@ public abstract class AbstractCacheManager<T extends BaseDO, D extends BaseDAO<T
         if (t != null && t.getId() != null && t.getId().equals(id)) {
             return t;
         }
-        T domian = baseDAO.queryById(id);
-        if (domian == null) {
+        T domain = baseDAO.queryById(id);
+        if (domain == null) {
             log.info("RoomDo缓存穿透：{}", id);
             setNullCache(id);
             return null;
         }
-        log.info("RoomDO缓存击穿" + domian);
-        setCache(domian);
-        return domian;
+        log.info("RoomDO缓存击穿" + domain);
+        setCache(domain);
+        return domain;
     }
 
     public boolean deleteById(final int id) {

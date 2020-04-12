@@ -42,6 +42,9 @@
             display: flex;
             justify-content: space-between;
         }
+        .radius_img {
+             border-radius:50%
+        }
 
         table {
             box-shadow: 1px 1px 3px gray;
@@ -424,20 +427,21 @@
     <!--用户信息div-->
     <div id="user_detail_div" class="layui-anim layui-anim-scale" style="display: none;margin-top: 40px;">
         <div class="layui-card" style="box-shadow: 1px 1px 2px gray;width: 700px" v-if="user!=null">
-            <div class="layui-card-header" style="height: 70px;display: flex;justify-content: space-between;">
+            <div class="layui-card-header" style="height: 120px;display: flex;justify-content: space-between;" >
                 <div style="margin-top: 10px">
 
                     <img v-if="!isSuccess || user.img==null"
                          src="https://s1.ax1x.com/2020/04/06/GsWKDH.jpg"
-                         class="layui-nav-img">
-                    <img v-else v-bind:src="user.img" class="layui-nav-img">
+                          width="100px" height="100px" class="radius_img">
+                    <img v-else v-bind:src="user.img" width="100px" height="100px" class="radius_img">
 
-                    <span v-if="isSuccess">{{user.userName}}</span>
+                    <span  v-if="isSuccess" style="font-size: 30px;margin-top: 60px;margin-left: 30px;">{{user.userName}}</span>
                 </div>
+
                 <div id="user_start_div"></div>
             </div>
-            <div class="layui-card-body" style="">
-                <i class="layui-icon layui-icon-email" style="font-size: 18px; color: #1E9FFF;"></i>
+            <div class="layui-card-body" style="font-size: 15px;padding-top: 10px">
+                <i class="layui-icon layui-icon-email" style="font-size: 18px; color: #1E9FFF;font-family: 'Consolas'"></i>
                 &nbsp;{{user.account}}<br>
                 <i class="layui-icon layui-icon-key" style="font-size: 18px; color: #1E9FFF;"></i>
                 &nbsp;*************
