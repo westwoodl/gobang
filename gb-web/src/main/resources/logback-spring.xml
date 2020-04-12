@@ -16,7 +16,7 @@
 
 
     <!-- 控制台输出 -->
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="STDOUT_LOGGING" class="ch.qos.logback.core.ConsoleAppender">
         <!--日志级别过滤INFO以下-->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
@@ -42,7 +42,7 @@
 
     <!-- 日志输出级别 -->
     <root level="DEBUG">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT_LOGGING" />
     </root>
 
 

@@ -69,8 +69,8 @@ function killOpp(x, y, arr, isPlay) {
         } else{
             playSound("../static/media/remove1.wav", "remove1");
         }
-        deadNum = 0;
     }
+    deadNum = 0;
     return isKill;
 }
 
