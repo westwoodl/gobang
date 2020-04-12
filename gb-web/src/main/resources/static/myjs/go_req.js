@@ -81,14 +81,16 @@ function loadBroadArray(goQueryResp) {
         // 死亡棋子
         if (goPieces.dead != null && goPieces.dead === true) {
             play_sound_dead++;
-            chressBord[goPieces.x][goPieces.y] = 0;
+            chessBord[goPieces.x][goPieces.y] = 0;
             continue;
         }
-        chressBord[goPieces.x][goPieces.y] = goPieces.pieceType;
+        chessBord[goPieces.x][goPieces.y] = goPieces.pieceType;
         if (i === placeArrays.length - 1) {
             end_i = goPieces.x;
             end_j = goPieces.y;
         }
+        placeRecord[placeNum - 1] = {value: goPieces.pieceType, x: goPieces.x, y: goPieces.y, dead: goPieces.dead, num: placeNum}
+        placeNum++;
     }
     if (!is_me) {
         playSound();

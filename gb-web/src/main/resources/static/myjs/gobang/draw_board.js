@@ -1,11 +1,13 @@
-// 图片
-var img = new Image();
-img.src = "../../static/image/go/board.jpg";
-
-var broad_size = 700; //****** 棋盘的大小
+var broad_size = 875; //****** 棋盘的大小
 var line_num = 19; // *****线的数量
 var bSize = broad_size / (line_num + 1);
 var font_size = 13;
+
+// 图片
+var img = new Image();
+img.src = "../../static/image/go/board.jpg";
+img.height = broad_size;
+img.width = broad_size;
 
 //棋子
 var b1_img = new Image();
@@ -18,6 +20,11 @@ b2_img.src = "../../static/image/go/b2.png";
 b2_img.width = bSize - 1;
 b2_img.height = bSize - 1;
 
+var b3_img = new Image();
+b3_img.src = "../../static/image/go/b3.png";
+b3_img.width = bSize - 1;
+b3_img.height = bSize - 1;
+
 var w1_img = new Image();
 w1_img.src = "../../static/image/go/w1.png";
 w1_img.width = bSize - 1;
@@ -28,15 +35,35 @@ w2_img.src = "../../static/image/go/w2.png";
 w2_img.width = bSize - 1;
 w2_img.height = bSize - 1;
 
+var w3_img = new Image();
+w3_img.src = "../../static/image/go/w3.png";
+w3_img.width = bSize - 1;
+w3_img.height = bSize - 1;
 
 
-var chressBord = [];//棋盘 19*19
-for (var i = 0; i < line_num; i++) {
-    chressBord[i] = [];
-    for (var j = 0; j < line_num; j++) {
-        chressBord[i][j] = 0;
+var placeRecord = []; // x,y,value,num,dead
+var placeNum = 1;
+var show_hand_num = false;
+
+var chessBord = [];//棋盘 19*19
+initChessArry();
+
+// 下棋
+function place(i, j, one_or_two) {
+    placeRecord[placeNum - 1] = {value: one_or_two, x: i, y: j, dead: false, num: placeNum}
+    initSlider(placeNum);
+    placeNum++;
+}
+
+// 杀棋
+function killPlaceRecord(arr, placeRecord) {
+    for (let i = 0; i < placeRecord.length; i++) {
+        if (arr[placeRecord[i].x][placeRecord[i].y] === 0) {
+            placeRecord[i].dead = true;
+        }
     }
 }
+
 var chess = document.getElementById("chess");
 chess.width = broad_size;
 chess.height = broad_size;
@@ -44,10 +71,23 @@ chess.height = broad_size;
 var context = chess.getContext('2d');
 context.strokeStyle = '#000000'; //边框颜色
 
+var getPixelRatio = function (context) {
+    var backingStore = context.backingStorePixelRatio ||
+        context.webkitBackingStorePixelRatio ||
+        context.mozBackingStorePixelRatio ||
+        context.msBackingStorePixelRatio ||
+        context.oBackingStorePixelRatio ||
+        context.backingStorePixelRatio || 1;
+    return (window.devicePixelRatio || 1) / backingStore;
+};
+var ratio = getPixelRatio(context);
+
+chess.style.width = chess.width * ratio;
+chess.style.height = chess.height * ratio;
 
 window.onload = function () {
-    drawChessBoard(img, line_num, broad_size, font_size); // 画棋盘
-
+    // drawChessBoard(img, line_num, broad_size, font_size); // 画棋盘
+    reflash();
 };
 
 /**
@@ -57,8 +97,7 @@ window.onload = function () {
  * @param broad_size 正方形画布边长
  */
 function drawChessBoard(img, line_num, broad_size, font_size) {
-    // context.drawImage(img, 0, 0, broad_size, broad_size);
-    context.drawImage(img, 0, 0);
+    context.drawImage(img, 0, 0, broad_size, broad_size);
     context.strokeStyle = '#000000';
     for (var i = 0; i < line_num; i++) {
         if (i === 0 || i === line_num - 1) { //画粗线
@@ -66,7 +105,7 @@ function drawChessBoard(img, line_num, broad_size, font_size) {
             context.lineWidth = 2;
         } else { //画细线
             context.beginPath();
-            context.lineWidth = 1;
+            context.lineWidth = 1.1;
         }
 
         var bSize = broad_size / (line_num + 1);
@@ -117,29 +156,66 @@ function drawChessBoard(img, line_num, broad_size, font_size) {
  * @param bSize 格子大小
  * @param xuanting 是否悬停
  */
-function oneStep(i, j, isWhite, bSize, xuanting) {
+function oneStep(i, j, isWhite, bSize, xuanting, hand_num) {
     if (xuanting) {
         if (!isWhite) {
-            context.strokeStyle = "#000000";
+            context.fillStyle = 'rgba(0,0,0,0.3)';
         } else {
-            context.strokeStyle = "#ffffff";
+            context.fillStyle = 'rgba(255,255,255,0.3)';
         }
         context.beginPath();
-        context.arc(bSize + i * bSize, bSize + j * bSize, bSize / 5, bSize / 5, 0, 2 * Math.PI);// 画圆
+        context.arc(bSize + i * bSize, bSize + j * bSize, bSize / 4, bSize / 4, 0, 2 * Math.PI);// 画圆
+        context.fill();
         context.closePath();
-        context.stroke();
         return;
     }
+    context.save();
+    context.shadowOffsetX = 1; // 阴影Y轴偏移
+    context.shadowOffsetY = 5; // 阴影X轴偏移
+    context.shadowBlur = 3; // 模糊尺寸
+    context.shadowColor = 'rgba(0,0,0, 0.3)';
+    var random_img;
     if (!isWhite) {
-        var random_img = i > 5 ? b1_img : b2_img;
+        if (i < 6) {
+            random_img = b1_img;
+        } else if (i > 6 && i < 13) {
+            random_img = b2_img;
+        } else {
+            random_img = b3_img;
+        }
         context.drawImage(random_img, bSize / 2 + i * bSize, bSize / 2 + j * bSize, random_img.height, random_img.width);
         //random_img.height,random_img.width,null,null, bSize - 0.5, bSize - 0.5);
     } else {
-        var random_img = j > 8 ? w1_img : w2_img;
+        if (j < 6) {
+            random_img = w1_img;
+        } else if (j > 6 && j < 13) {
+            random_img = w2_img;
+        } else {
+            random_img = w3_img;
+        }
         context.drawImage(random_img, bSize / 2 + i * bSize, bSize / 2 + j * bSize, random_img.height, random_img.width);
     }
-// 最后落子提示
-    if (end_j > -1 && end_i > -1 && chressBord[end_i][end_j] !== 0 && i === end_i && j === end_j) {
+    context.restore();
+
+    if (show_hand_num) {
+        if (end_j > -1 && end_i > -1 && chessBord[end_i][end_j] !== 0 && i === end_i && j === end_j) {
+            context.fillStyle = "#FF0000";
+        } else if (isWhite) {
+            context.fillStyle = '#000000';
+        } else {
+            context.fillStyle = '#ffffff';
+        }
+        context.font = 20 + "px Arial";
+        if (hand_num < 10) {
+            context.fillText(hand_num, bSize + i * bSize - 6, bSize + j * bSize + 6);
+        } else if (hand_num >= 10 && hand_num < 100) {
+            context.fillText(hand_num, bSize + i * bSize - 10, bSize + j * bSize + 6);
+        } else if (hand_num >= 100) {
+            context.fillText(hand_num, bSize + i * bSize - 15, bSize + j * bSize + 6);
+        }
+    }
+    // 最后落子提示
+    if (!show_hand_num && end_j > -1 && end_i > -1 && chessBord[end_i][end_j] !== 0 && i === end_i && j === end_j) {
         context.fillStyle = "#FF0000";
         context.beginPath();
         context.arc(bSize + i * bSize, bSize + j * bSize, 5, 0, 2 * Math.PI);
@@ -147,6 +223,106 @@ function oneStep(i, j, isWhite, bSize, xuanting) {
         context.closePath();
     }
 }
+
+
+function showHandNum(obj) {
+    if (!show_hand_num) {
+        $(obj).html("取消手数");
+        show_hand_num = true;
+    } else {
+        $(obj).html("显示手数");
+        show_hand_num = false;
+    }
+    reflash();
+}
+
+function initChessArry() {
+    for (let i = 0; i < line_num; i++) {
+        chessBord[i] = [];
+        for (let j = 0; j < line_num; j++) {
+            chessBord[i][j] = 0;
+        }
+    }
+    placeRecord = [];
+    placeNum = 1;
+}
+
+function cleanChess() {
+    initChessArry();
+    reflash();
+    initSlider(0);
+}
+
+/**
+ * 回退棋盘
+ */
+let chessBord2;
+let hand_num2;
+let placeRecord2;
+
+function backChessToThis() {
+    if (chessBord2 != null && hand_num2 != null && placeRecord2 != null) {
+        placeRecord = placeRecord2;
+        placeNum = hand_num2;
+        chessBord = chessBord2;
+        reflash();
+        initSlider(placeNum);
+        chessBord2 = null;
+        hand_num2 = null;
+        placeRecord2 = null;
+    }
+}
+
+
+function reflash(end) {
+    drawChessBoard(img, line_num, broad_size, font_size);
+    if (placeRecord.length > 200 && !show_hand_num && end == null) {
+        for (let k = 0; k < line_num; k++) {
+            for (let l = 0; l < line_num; l++) {
+                if (chessBord[k][l] === 2) {
+                    oneStep(k, l, true, bSize)
+                }
+                if (chessBord[k][l] === 1) {
+                    oneStep(k, l, false, bSize)
+                }
+            }
+        }
+    } else {
+        if (end == null || end === placeRecord.length) {
+            for (let i = 0; i < placeRecord.length; i++) {
+                if (!placeRecord[i].dead || i === end - 1)
+                    oneStep(placeRecord[i].x, placeRecord[i].y, placeRecord[i].value === 2, bSize, false, placeRecord[i].num);
+            }
+            return;
+        }
+        // 回退棋盘
+        chessBord2 = [];
+        hand_num2 = 1;
+        placeRecord2 = [];
+        for (let i = 0; i < chessBord.length; i++) {
+            chessBord2[i] = [];
+            for (let j = 0; j < chessBord.length; j++) {
+                chessBord2[i][j] = 0;
+            }
+        }
+        for (let i = 0; i < end; i++) {
+            goStepOne(placeRecord[i].x, placeRecord[i].y, placeRecord[i].value, chessBord2, placeRecord2, false);
+            placeRecord2[hand_num2 - 1] = {
+                value: placeRecord[i].value,
+                x: placeRecord[i].x,
+                y: placeRecord[i].y,
+                dead: false,
+                num: hand_num2
+            }
+            hand_num2++;
+        }
+        for (let i = 0; i < end; i++) {
+            if (!placeRecord2[i].dead || i === end - 1)
+                oneStep(placeRecord2[i].x, placeRecord2[i].y, placeRecord2[i].value === 2, bSize, false, placeRecord2[i].num);
+        }
+    }
+}
+
 
 /**
  * 播放落子音
@@ -159,24 +335,23 @@ function playSound(src, id) {
     if (id == null) {
         id = "play";
     }
-    var borswer = window.navigator.userAgent.toLowerCase();
+    let borswer = window.navigator.userAgent.toLowerCase();
     if (borswer.indexOf("ie") >= 0) {
         //IE内核浏览器
-        var strEmbed = '<embed id="' + id + '" name="embedPlay" src="' + src + '" autostart="true" hidden="true" loop="false"/>';
+        let strEmbed = '<embed id="' + id + '" name="embedPlay" src="' + src + '" autostart="true" hidden="true" loop="false"/>';
         if ($("#" + id).length === 0)
             $("body").append(strEmbed);
-        var embed = document.embedPlay;
+        let embed = document.embedPlay;
 
         //浏览器不支持 audion，则使用 embed 播放
         embed.volume = 100;
         //embed.play();这个不需要
     } else {
-        //非IE内核浏览器
-        var strAudio = "<audio id='" + id + "' src=\"" + src + "\" hidden='true'>";
-        if ($("#" + id).length === 0)
-            $("body").append(strAudio);
-        var audio = document.getElementById(id);
-        //浏览器支持 audion
+        // //非IE内核浏览器
+        // var strAudio = "<audio id='" + id + "' src=\"" + src + "\" hidden='true'>";
+        // if ($("#" + id).length === 0)
+        //     $("body").append(strAudio);
+        let audio = document.getElementById(id);
         audio.play();
     }
 }

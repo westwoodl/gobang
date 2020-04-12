@@ -84,13 +84,8 @@
                         <a href="javascript:;">{{user.userName}}
                             <span class="layui-badge layui-bg-green" v-if="user.status==1">在线</span>
                             <span class="layui-badge layui-bg-cyan" v-if="user.status==2">游戏中</span>
+                            <span class="layui-badge layui-bg-gray" v-if="user.status==null">离线</span>
                             <span class="layui-badge layui-bg-gray" v-if="user.status==0">离线</span>
-                        </a>
-                    </dd>
-                    <dd>
-                        <a href="javascript:;">
-                            无敌是duomo寂寞
-                            <span class="layui-badge layui-bg-cyan">游戏中</span>
                         </a>
                     </dd>
                 </dl>
@@ -175,7 +170,7 @@
     </div>
 
     <div id="chess_div" class="layui-anim layui-anim-scale">
-        <canvas id="chess"></canvas>
+        <canvas id="chess" style="width:700px; height:700px"></canvas>
     </div>
 
     <!--房间-->
@@ -465,62 +460,34 @@
     <div id="chess_config_div" class="layui-anim" data-anim="layui-anim-fadein"
          style="width: 300px;height: 700px;margin-top: 20px;margin-right: 20px">
         <!--        -->
-        <div id="chess_config_card_div" style="background: #333D49;display: none" v-if="room!=null">
-            <div class="layui-card-body">当前位置：{{room.roomName}}</div>
-            <div class="layui-card-body">
-                <span style="margin-right: 10px">黑棋</span>
+        <div id="chess_config_card_div" style="background: #333D49;">
+            <div class="layui-card-body">当前位置：首页</div>
 
-                <img v-if="!isSuccess || room.createUserImg==null"
-                     src="https://s1.ax1x.com/2020/04/06/GsWKDH.jpg" class="layui-nav-img">
-                <img v-else v-bind:src="room.createUserImg" class="layui-nav-img">
-                {{room.createUserName}}
-                <!--                    <button type="button" class="layui-btn layui-btn-sm" style="float: right">添加好友</button>-->
-
-                <button type="button" class="layui-btn layui-btn-sm" style="float: right">
-                    <i class="layui-icon">&#xe654;</i>
-                </button>
-                <br>
-            </div>
             <div class="layui-card-body">
-                <span style="margin-right: 10px">白棋</span>
-                <img v-if="!isSuccess || room.opponentsImg==null"
-                     src="https://s1.ax1x.com/2020/04/06/GsWKDH.jpg" class="layui-nav-img">
-                <img v-else v-bind:src="room.opponentsImg" class="layui-nav-img">
-                {{room.opponentsName}}
-                <button type="button" class="layui-btn layui-btn-sm" style="float: right">
-                    <i class="layui-icon">&#xe65a;</i>
-                </button>
-                <br>
-            </div>
-            <div class="layui-card-body">
-                <span style="margin-right: 10px">观众</span>
-                <br>
-
-            </div>
-            <div class="layui-card-body">
-                <span style="margin-right: 10px">配置</span>
                 <form class="layui-form" action="">
                     <div class="layui-form-item">
                         <input type="radio" name="sex" value="nan" title="围棋" checked>
                         <input type="radio" name="sex" value="nv" title="五子棋">
                     </div>
                 </form>
-                <button type="button" class="layui-btn layui-btn-sm">开始游戏</button>
-                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal">离开房间</button>
+                <button type="button" class="layui-btn layui-btn-sm" onclick="showHandNum(this)">显示手数</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="cleanChess()">清空棋盘</button>
             </div>
-            <div class="layui-card-body" style="display:none;">
-                <span style="margin-right: 10px">配置</span>
-                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal">认输</button>
-                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal">离开房间</button>
-            </div>
-            <div class="layui-card-body">
-                等待房主开始...
+            <div class="layui-card-body" style="height: 100px;margin-top: 30px">
+                <div id="slideTest4" class="demo-slider" ></div>
+                <div style="margin-top: 20px">
+                    <span>第 </span><span id="hand_num_span">0/0</span><span> 手</span>
+                    <button type="button" class="layui-btn layui-btn-sm" style="float: right" onclick="backChessToThis()">回退到此处</button>
+                </div>
             </div>
         </div>
 
     </div>
 </div>
-
+<audio id="play" src="../static/media/play.wav" hidden="true"></audio>
+<audio id="remove2" src="../static/media/remove2.wav" hidden="true"></audio>
+<audio id="remove0" src="../static/media/remove0.wav" hidden="true"></audio>
+<audio id="remove1" src="../static/media/remove1.wav" hidden="true"></audio>
 <script type="text/javascript" src="../static/js/jQuery/jQuery.js"></script>
 <!--画棋盘和画棋子的方法-->
 <script type="text/javascript" src="../static/myjs/gobang/draw_board.js"></script>
@@ -540,6 +507,27 @@
 <script src="../static/js/vue/vue.min.js"></script>
 <script type="text/javascript" charset="utf-8">
 
+    $(initSlider(0));
+    function initSlider(maxVal) {
+        $("#hand_num_span").html(maxVal+"/"+maxVal);
+        layui.use('slider', function () {
+            let slider = layui.slider;
+            slider.render({
+                elem: '#slideTest4'
+                ,min:0
+                ,value:maxVal
+                ,max: maxVal
+                ,change: function(value) {
+                    if (value == null || isNaN(value)) {
+                        return;
+                    }
+                    $("#hand_num_span").html(value+"/"+(placeNum-1));
+                    reflash(value);
+                }
+            });
+        });
+    }
+
     $(function () {
         game_mode = 2;
     });
@@ -556,7 +544,7 @@
 
     function displayWhat(dom_id) {
         var dom_arr = [];
-        dom_arr = ["chess_div", "room_div", "collection_div", "record_div", "user_detail_div"];
+        dom_arr = ["chess_div", "room_div", "collection_div", "record_div", "user_detail_div", "chess_config_card_div"];
         for (let i = 0; i < dom_arr.length; i++) {
             if (dom_id === dom_arr[i]) {
                 $("#" + dom_arr[i]).show();

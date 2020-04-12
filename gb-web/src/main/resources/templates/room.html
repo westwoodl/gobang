@@ -130,13 +130,16 @@
 
     <!--    棋盘-->
     <div id="chess_div" class="layui-anim layui-anim-scale">
-        <canvas id="chess"></canvas>
+        <canvas id="chess" style="width:700px; height:700px"></canvas>
     </div>
 
     <div style="width: 300px"></div>
 
 </div>
-
+<audio id="play" src="../static/media/play.wav" hidden="true"></audio>
+<audio id="remove2" src="../static/media/remove2.wav" hidden="true"></audio>
+<audio id="remove0" src="../static/media/remove0.wav" hidden="true"></audio>
+<audio id="remove1" src="../static/media/remove1.wav" hidden="true"></audio>
 <script type="text/javascript" src="../static/js/jQuery/jQuery.js"></script>
 <!--画棋盘和画棋子的方法 todo-->
 <script type="text/javascript" src="../static/myjs/gobang/draw_board.js"></script>

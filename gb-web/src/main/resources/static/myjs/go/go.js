@@ -1,7 +1,10 @@
 /*
     type: 1.b  2.w
  */
-function goStepOne(i, j, type, arr) {
+function goStepOne(i, j, type, arr, placeRecord, isPlay) {
+    if (isPlay == null) {
+        isPlay = true;
+    }
     if (isOut(i, j, arr)) {
         return false;
     }
@@ -10,7 +13,8 @@ function goStepOne(i, j, type, arr) {
     }
 
     arr[i][j] = type;
-    if(killOpp(i, j, arr)) {
+    if(killOpp(i, j, arr, isPlay)) {
+        killPlaceRecord(arr, placeRecord);
         return true;
     }
     if (countQi(i, j, arr) === 0) {
@@ -26,7 +30,7 @@ function goStepOne(i, j, type, arr) {
  * 让身边的气为零的敌棋变为死棋，变不了返回false
  *能否杀死对手
  */
-function killOpp(x, y, arr) {
+function killOpp(x, y, arr, isPlay) {
     // 可能会导致多边杀
     let isKill = false;
     let curType = arr[x][y];
@@ -54,7 +58,7 @@ function killOpp(x, y, arr) {
             isKill = true;
         }
     }
-    if (isKill ) {
+    if (isKill && isPlay ) {
         if (deadNum === 1) {
 
         }
