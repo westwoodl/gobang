@@ -10,6 +10,7 @@ $(function () {
         if (game_mode === 3 || game_mode === 4) {
             if (go_game_is_end || !is_me) {
                 alertLayer(go_vue.goStatus);
+                return;
             }
         }
 

@@ -110,7 +110,7 @@ public class GameGoBangController extends AbstractController {
             WebSocketServer.send(roomGameVO, goQueryResp.getBlackUserId());
         }
 
-        return JSONObjectResult.create().success(placeResultTypeEnum.getDesc(), placeResultTypeEnum.getPlaceTime());
+        return JSONObjectResult.create().success(placeResultTypeEnum.getDesc());
     }
 
     private GoQueryResp buildGoQueryResp(GoBangGameVO goBangGameVO) {

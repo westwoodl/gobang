@@ -35,36 +35,35 @@ function killOpp(x, y, arr, isPlay) {
     let isKill = false;
     let curType = arr[x][y];
     if (isOpp(x - 1, y, arr, curType)) {
-        if (countQi(x - 1, y, arr) === 0) {
+        if (!haveQi(x - 1, y, arr)) {
             killNow(x - 1, y, arr, arr[x-1][y]);
             isKill = true;
         }
     }
     if (isOpp(x + 1, y, arr, curType)) {
-        if (countQi(x + 1, y, arr) === 0) {
+        if (!haveQi(x + 1, y, arr)) {
             killNow(x + 1, y, arr, arr[x+1][y]);
             isKill = true;
         }
     }
     if (isOpp(x, y - 1, arr, curType)) {
-        if (countQi(x, y - 1, arr) === 0) {
+        if (!haveQi(x, y - 1, arr)) {
             killNow(x, y - 1, arr, arr[x][y-1]);
             isKill = true;
         }
     }
     if (isOpp(x, y + 1, arr, curType)) {
-        if (countQi(x, y + 1, arr) === 0) {
+        if (!haveQi(x, y + 1, arr)) {
             killNow(x, y + 1, arr, arr[x][y+1]);
             isKill = true;
         }
     }
     if (isKill && isPlay ) {
-        if (deadNum === 1) {
-
-        }
-        if(deadNum > 4) {
+        if (deadNum > 4) {
             playSound("../static/media/remove0.wav", "remove0");
-        } else if (deadNum > 2) {
+        } else if(deadNum > 3) {
+            playSound("../static/media/remove0.wav", "remove4");
+        } else if (deadNum > 1) {
             playSound("../static/media/remove2.wav", "remove2");
         } else{
             playSound("../static/media/remove1.wav", "remove1");
@@ -95,6 +94,30 @@ function killNow(i, j, arr, curType) {
         killNow(i + 1, j, arr, curType);
         killNow(i, j - 1, arr, curType);
         killNow(i, j + 1, arr, curType);
+    }
+}
+
+function haveQi(i, j, arr) {
+    let count = have_qi(i, j, arr[i][j], arr);
+    right_chess_broad(arr);
+    return count;
+}
+
+function have_qi(i, j, type, arrs) {
+    if (isOut(i, j, arrs)) {
+        return false;
+    }
+    if (arrs[i][j] === 0) {
+        return true;
+    }
+    if (arrs[i][j] !== type) {
+        return false;
+    } else {
+        arrs[i][j] = -type;
+        return have_qi(i - 1, j, type, arrs)
+            || have_qi(i + 1, j, type, arrs)
+            || have_qi(i, j - 1, type, arrs)
+            || have_qi(i, j + 1, type, arrs);
     }
 }
 
@@ -152,11 +175,12 @@ function right_chess_broad(error_arr) {
             if (error_arr[i][j] === 0) {
                 continue;
             }
+            if (error_arr[i][j] < 0) {
+                error_arr[i][j] = -error_arr[i][j]
+                continue;
+            }
             if (error_arr[i][j] === 3) {
                 error_arr[i][j] = 0;
-            }
-            if (error_arr[i][j] < 0) {
-                error_arr[i][j] = mathAbs(error_arr[i][j]);
             }
         }
     }

@@ -178,11 +178,17 @@ public class GoBangGameServiceImpl implements GoService {
             throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_GAME_NOT_EXIST);
         }
         GoQueryResp goQueryResp = buildGoQueryResp(goDO);
-        // 验证用户id和piecesType
+        // 验证用户id和piecesType和用户能否下棋
         if (goPlaceReq.getUserId().equals(goDO.getWhiteUserId())) {
+            if (!GoStatusEnum.WHITE_PLACE.getCode().equals(goQueryResp.getGoStatus())) {
+                throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_OPERATE_NOT_ALLOW);
+            }
             goPlaceReq.getGoPieces().setPieceType(PieceTypeEnum.WHITE_PIECE.getCode());
             goQueryResp.setGoStatus(GoStatusEnum.BLACK_PLACE.getCode());
         } else if (goPlaceReq.getUserId().equals(goDO.getBlackUserId())) {
+            if (GoStatusEnum.WHITE_PLACE.getCode().equals(goQueryResp.getGoStatus())) {
+                throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_OPERATE_NOT_ALLOW);
+            }
             goPlaceReq.getGoPieces().setPieceType(PieceTypeEnum.BLACK_PIECE.getCode());
             goQueryResp.setGoStatus(GoStatusEnum.WHITE_PLACE.getCode());
         } else {
@@ -192,28 +198,25 @@ public class GoBangGameServiceImpl implements GoService {
         List<GoPieces> goPiecesList = goQueryResp.getGoContext().getPlaceArrays();
         goPlaceReq.getGoPieces().setHandNum(goPiecesList.size() + 1);
         goPiecesList.add(goPlaceReq.getGoPieces());
-        // 下面两行代码简直完美
+        // 落子逻辑运算
         GameTypeEnum gameTypeEnum = GameTypeEnum.getEnum(goQueryResp.getGoType());
         PlaceResultTypeEnum resultTypeEnum = GoGameFactory.subscribe(gameTypeEnum).place(goQueryResp.getGoContext());
-        //  结束房间
+
         if (!resultTypeEnum.equals(PlaceResultTypeEnum.PLACING_PIECES_SUCCESS)) {
+            //  结束房间
+            endRoom(goQueryResp);
+            goQueryResp.setLastUserId(resultTypeEnum.equals(PlaceResultTypeEnum.BLACK_WIN_GAME) ?
+                    goQueryResp.getBlackUserId() : goQueryResp.getWhiteUserId());
+        }
+        goDataManager.update(buildGoDO(goQueryResp));
+        return resultTypeEnum;
+    }
+
+    private void endRoom(GoQueryResp goQueryResp) {
             goQueryResp.setGoStatus(GoStatusEnum.END.getCode());
             goQueryResp.setEndTime(new Date());
             goQueryResp.setIsEnd(1);
             endRoom(goQueryResp.getId());
-        }
-        if (resultTypeEnum.equals(PlaceResultTypeEnum.BLACK_WIN_GAME)) {
-            goQueryResp.setLastUserId(goQueryResp.getBlackUserId());
-        }
-        if (resultTypeEnum.equals(PlaceResultTypeEnum.WHITE_WIN_GAME)) {
-            goQueryResp.setLastUserId(goQueryResp.getWhiteUserId());
-        }
-        if (goDataManager.update(buildGoDO(goQueryResp))) {
-            resultTypeEnum.setPlaceTime(goDataManager.queryById(goPlaceReq.getId()).getModifyTime().getTime());
-            return resultTypeEnum;
-        } else {
-            throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BOZ_PLACE_ERROR);
-        }
     }
 
     @Resource

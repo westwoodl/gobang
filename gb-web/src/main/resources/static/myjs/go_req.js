@@ -74,6 +74,7 @@ var play_sound_dead_old = 0;
 var not_first_load = false;
 
 function loadBroadArray(goQueryResp) {
+    initChessArry();
     let play_sound_dead = 0;
     var placeArrays = goQueryResp.goContext.placeArrays;
     for (let i = 0; i < placeArrays.length; i++) {
@@ -132,6 +133,8 @@ function placeChessRequest(x, y) {
                     go_vue.goStatus = data.msg + " 等待对方行棋";
                     is_me = false;
                 }
+            } else {
+                alertLayer(data.msg);
             }
         },
         error: function () {

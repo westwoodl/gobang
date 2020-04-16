@@ -27,7 +27,7 @@ public class WebSocketServer {
      */
     @OnOpen
     public void onOpen(Session session, @PathParam("userId") Integer userId) {
-        if (session!=null && userId !=null) {
+        if (session != null && userId != null) {
             webSocketMap.put(userId, session);
             OnlineCountUtils.addOnlineCount();
             log.info("用户连接:" + userId + ",当前在线人数为:" + OnlineCountUtils.getOnlineCount());
@@ -39,7 +39,7 @@ public class WebSocketServer {
      */
     @OnClose
     public void onClose(@PathParam("userId") Integer userId) {
-        if (userId !=null) {
+        if (userId != null) {
             webSocketMap.remove(userId);
             OnlineCountUtils.subOnlineCount();
             log.info("用户退出:" + userId + ",当前在线人数为:" + OnlineCountUtils.getOnlineCount());

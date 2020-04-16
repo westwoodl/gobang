@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class GoGameFactory {
     
-    private static Map<GameTypeEnum, AbstractGoGameRunner> factory = new HashMap<>();
+    private static final Map<GameTypeEnum, AbstractGoGameRunner> factory = new HashMap<>();
     
     public static void register(GameTypeEnum code, AbstractGoGameRunner abstractGoGameRunner) {
         factory.put(code, abstractGoGameRunner);

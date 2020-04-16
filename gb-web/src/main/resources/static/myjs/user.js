@@ -56,7 +56,7 @@ $(function () {
 
         },
         error: function () {
-            alert("系统繁忙");
+            alertLayer("系统繁忙");
         }
     });
 });

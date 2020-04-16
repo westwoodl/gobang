@@ -55,7 +55,7 @@ public class WeiQiGameRunner extends AbstractGoGameRunner implements Initializin
         if (weiQi.killOpp()) {
             return true;
         }
-        if (weiQi.countQi() == 0) {
+        if (!weiQi.isHaveQi()) {
             throw new PlaceNotAllowException("这里没有气，不能下这里哦");
         }
         return false;
@@ -109,25 +109,25 @@ public class WeiQiGameRunner extends AbstractGoGameRunner implements Initializin
             // 可能会导致多边杀
             boolean isKill = false;
             if (isOpp(x - 1, y)) {
-                if (countQi(x - 1, y, arr[x - 1][y]) == 0) {
+                if (!isHaveQi(x - 1, y, arr[x - 1][y])) {
                     killNow(x - 1, y, arr[x - 1][y]);
                     isKill = true;
                 }
             }
             if (isOpp(x + 1, y)) {
-                if (countQi(x + 1, y, arr[x + 1][y]) == 0) {
+                if (!isHaveQi(x + 1, y, arr[x + 1][y])) {
                     killNow(x + 1, y, arr[x + 1][y]);
                     isKill = true;
                 }
             }
             if (isOpp(x, y - 1)) {
-                if (countQi(x, y - 1, arr[x][y - 1]) == 0) {
+                if (!isHaveQi(x, y - 1, arr[x][y - 1])) {
                     killNow(x, y - 1, arr[x][y - 1]);
                     isKill = true;
                 }
             }
             if (isOpp(x, y + 1)) {
-                if (countQi(x, y + 1, arr[x][y + 1]) == 0) {
+                if (!isHaveQi(x, y + 1, arr[x][y + 1])) {
                     killNow(x, y + 1, arr[x][y + 1]);
                     isKill = true;
                 }
@@ -157,13 +157,25 @@ public class WeiQiGameRunner extends AbstractGoGameRunner implements Initializin
             }
         }
 
+        @Deprecated
         public int countQi() {
             return countQi(x, y, type);
+        }
+
+        public boolean isHaveQi() {
+            return isHaveQi(x, y, type);
+        }
+
+        public boolean isHaveQi(int i, int j, int curType) {
+            boolean is = isHaveQi(i, j, curType, arr);
+            right_chess_broad(arr);
+            return is;
         }
 
         /**
          * 计算当前 i, j的气
          */
+        @Deprecated
         private int countQi(int i, int j, int curType) {
             int count = count_qi(i, j, curType, arr);
             right_chess_broad(arr);
@@ -185,12 +197,12 @@ public class WeiQiGameRunner extends AbstractGoGameRunner implements Initializin
         }
 
         private boolean isOut(int i, int j) {
-            return !isNotOut(i, j);
+            return i < 0 || j < 0 || i > arr.length - 1 || j > arr.length - 1;
         }
 
         // type 1. black 2. white
-        private static int count_qi(int i, int j, int type, int[][] arrs) {
-            if (i < 0 || j < 0 || i > arrs.length - 1 || j > arrs.length - 1) {
+        private int count_qi(int i, int j, int type, int[][] arrs) {
+            if (isOut(i, j)) {
                 return 0;
             }
             if (arrs[i][j] == 0) {
@@ -208,19 +220,40 @@ public class WeiQiGameRunner extends AbstractGoGameRunner implements Initializin
             }
         }
 
+        /**
+         * 有气立马返回true
+         */
+        private boolean isHaveQi(int i, int j, int type, int[][] arrs) {
+            if (isOut(i, j)) {
+                return false;
+            }
+            if (arrs[i][j] == 0) {
+                return true;
+            }
+            if (arrs[i][j] != type) {
+                return false;
+            } else {
+                arrs[i][j] = -type;
+                return isHaveQi(i - 1, j, type, arrs)
+                        || isHaveQi(i + 1, j, type, arrs)
+                        || isHaveQi(i, j - 1, type, arrs)
+                        || isHaveQi(i, j + 1, type, arrs);
+            }
+        }
 
-        private static void right_chess_broad(int[][] error_arr) {
 
+        private void right_chess_broad(int[][] error_arr) {
             for (int i = 0; i < error_arr.length; i++) {
                 for (int j = 0; j < error_arr[0].length; j++) {
                     if (error_arr[i][j] == 0) {
                         continue;
                     }
+                    if (error_arr[i][j] < 0) {
+                        error_arr[i][j] = -error_arr[i][j];
+                        continue;
+                    }
                     if (error_arr[i][j] == 3) {
                         error_arr[i][j] = 0;
-                    }
-                    if (error_arr[i][j] < 0) {
-                        error_arr[i][j] = Math.abs(error_arr[i][j]);
                     }
                 }
             }

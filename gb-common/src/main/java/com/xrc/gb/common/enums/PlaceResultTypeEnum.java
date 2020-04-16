@@ -22,6 +22,7 @@ public enum PlaceResultTypeEnum {
 
     @Getter
     @Setter
+    @Deprecated
     private Long placeTime;
 
     PlaceResultTypeEnum(int code, String desc) {
