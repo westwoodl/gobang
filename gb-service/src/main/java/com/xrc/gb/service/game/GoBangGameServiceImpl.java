@@ -4,10 +4,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.xrc.gb.common.consts.CommonConst;
 import com.xrc.gb.common.consts.ErrorInfoConstants;
 import com.xrc.gb.common.consts.GoGameConst;
-import com.xrc.gb.common.dto.GoContext;
-import com.xrc.gb.common.dto.GoPieces;
-import com.xrc.gb.common.dto.GoPlaceReq;
-import com.xrc.gb.common.dto.GoQueryResp;
+import com.xrc.gb.common.dto.go.GoContext;
+import com.xrc.gb.common.dto.go.GoPieces;
+import com.xrc.gb.common.dto.go.GoPlaceReq;
+import com.xrc.gb.common.dto.go.GoQueryResp;
 import com.xrc.gb.common.enums.*;
 import com.xrc.gb.common.util.CheckParameter;
 import com.xrc.gb.common.util.ExceptionHelper;
@@ -61,7 +61,7 @@ public class GoBangGameServiceImpl implements GoService {
         goQueryResp.setIsEnd(0);
 
         GoDO goDO = buildGoDO(goQueryResp);
-        if(goDataManager.insert(goDO)) {
+        if (goDataManager.insert(goDO)) {
             return goDO.getId();
         }
         return null;
@@ -143,7 +143,7 @@ public class GoBangGameServiceImpl implements GoService {
         CheckParameter.isNotNull(expectModifyTime);
 
         long deadLine = System.currentTimeMillis() + CommonConst.GO_BANG_REQUEST_BLOCK_TIMES;
-        for (;;) {
+        for (; ; ) {
             if (System.currentTimeMillis() > deadLine) {
                 throw ExceptionHelper.newBusinessException(ErrorInfoConstants.DATA_FLASH_TIME_OUT);
             }
@@ -213,10 +213,10 @@ public class GoBangGameServiceImpl implements GoService {
     }
 
     private void endRoom(GoQueryResp goQueryResp) {
-            goQueryResp.setGoStatus(GoStatusEnum.END.getCode());
-            goQueryResp.setEndTime(new Date());
-            goQueryResp.setIsEnd(1);
-            endRoom(goQueryResp.getId());
+        goQueryResp.setGoStatus(GoStatusEnum.END.getCode());
+        goQueryResp.setEndTime(new Date());
+        goQueryResp.setIsEnd(1);
+        endRoom(goQueryResp.getId());
     }
 
     @Resource
@@ -232,5 +232,27 @@ public class GoBangGameServiceImpl implements GoService {
         updateDO.setId(roomDO.getId());
         updateDO.setRoomStatus(RoomStatusEnum.ENDED.getCode());
         roomDataManager.update(updateDO);
+    }
+
+    public void defeat(Integer goId, Integer userId) {
+        CheckParameter.isNotNull(goId);
+        CheckParameter.isNotNull(userId);
+
+        GoDO goDO = goDataManager.queryById(goId);
+        if (goDO == null) {
+            throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_GAME_NOT_EXIST);
+        }
+        GoDO updateGoDo = new GoDO();
+        updateGoDo.setId(goDO.getId());
+        updateGoDo.setGoStatus(GoStatusEnum.END.getCode());
+        if (goDO.getBlackUserId().equals(userId)) {
+            updateGoDo.setGoResult(PlaceResultTypeEnum.WHITE_WIN_GAME.getCode());
+        } else if (goDO.getWhiteUserId().equals(userId)) {
+            updateGoDo.setGoResult(PlaceResultTypeEnum.BLACK_WIN_GAME.getCode());
+        } else {
+            throw ExceptionHelper.newBusinessException(ErrorInfoConstants.BIZ_YOU_ARE_NOT_IN_ROOM);
+        }
+        endRoom(goId);
+        goDataManager.update(updateGoDo);
     }
 }

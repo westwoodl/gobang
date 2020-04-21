@@ -1,14 +1,11 @@
 package com.xrc.gb.web.controller.game;
 
 import com.alibaba.fastjson.JSONObject;
-import com.xrc.gb.common.consts.GoGameConst;
 import com.xrc.gb.common.enums.DateFormatEnum;
 import com.xrc.gb.common.enums.GameTypeEnum;
 import com.xrc.gb.common.enums.JoinRoomResultEnum;
 import com.xrc.gb.common.enums.RoomStatusEnum;
-import com.xrc.gb.common.dto.GoContext;
-import com.xrc.gb.common.dto.GoQueryResp;
-import com.xrc.gb.common.util.ExceptionHelper;
+import com.xrc.gb.common.dto.go.GoQueryResp;
 import com.xrc.gb.repository.domain.go.RoomDO;
 import com.xrc.gb.repository.domain.user.UserDO;
 import com.xrc.gb.service.game.GoBangGameServiceImpl;

@@ -20,7 +20,7 @@ $(function () {
         data: {
             isSuccess: false,
             room: null,
-            currentUserId:null
+            currentUserId: null
         }
     });
 
@@ -121,18 +121,17 @@ function connectWebSocket() {
         console.log("来消息了：" + msg.data.roomDO + msg.data.goQueryResp);
         let data = JSON.parse(msg.data);
         if (data.success) {
-            if (data.data.roomDO == null) {
-                fetchGoData(data.data.goQueryResp);
-                return;
+            if (data.data.roomDO != null) {
+                fetchRoomData(data.data.roomDO);
             }
-            fetchRoomData(data.data.roomDO);
-
+            if (data.data.goQueryResp != null) {
+                fetchGoData(data.data.goQueryResp);
+            }
             if (data.data.roomDO.roomStatus === 2) {
                 if (!is_game_start_for_room) {
                     is_game_start_for_room = true;
                     alertLayer("开始游戏");
                 }
-                fetchGoData(data.data.goQueryResp);
             }
             if (data.data.roomDO.roomStatus === 3) {
                 is_room_end = true;

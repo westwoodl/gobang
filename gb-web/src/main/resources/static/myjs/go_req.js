@@ -70,44 +70,57 @@ function loadGoDO(goQueryResp) {
     setColor(goQueryResp.goStatus);
 }
 
-var play_sound_dead_old = 0;
-var not_first_load = false;
-
 function loadBroadArray(goQueryResp) {
-    initChessArry();
-    let play_sound_dead = 0;
     var placeArrays = goQueryResp.goContext.placeArrays;
-    for (let i = 0; i < placeArrays.length; i++) {
-        let goPieces = placeArrays[i];
-        // 死亡棋子
-        if (goPieces.dead != null && goPieces.dead === true) {
-            play_sound_dead++;
-            chessBord[goPieces.x][goPieces.y] = 0;
-            continue;
-        }
-        chessBord[goPieces.x][goPieces.y] = goPieces.pieceType;
-        if (i === placeArrays.length - 1) {
-            end_i = goPieces.x;
-            end_j = goPieces.y;
-        }
-        placeRecord[placeNum - 1] = {value: goPieces.pieceType, x: goPieces.x, y: goPieces.y, dead: goPieces.dead, num: placeNum}
-        placeNum++;
-    }
-    if (!is_me) {
-        playSound();
-    }
-    if (play_sound_dead > play_sound_dead_old && not_first_load) {
-        if (play_sound_dead - play_sound_dead_old > 4) {
-            playSound("../static/media/remove0.wav", "remove0");
-        } else if (play_sound_dead - play_sound_dead_old > 2) {
-            playSound("../static/media/remove2.wav", "remove2");
-        } else {
-            playSound("../static/media/remove1.wav", "remove1");
+    if (placeArrays.length - 1 === placeRecord.length) {
+        let goPieces = placeArrays[placeArrays.length - 1];
+        placeOneChess(goPieces.x, goPieces.y, goPieces.pieceType);
+    } else {
+        initChessArry();
+        for (let i = 0; i < placeArrays.length; i++) {
+            let goPieces = placeArrays[i];
+            // 死亡棋子
+            if (goPieces.dead != null && goPieces.dead === true) {
+                chessBord[goPieces.x][goPieces.y] = 0;
+                continue;
+            }
+            chessBord[goPieces.x][goPieces.y] = goPieces.pieceType;
+            if (i === placeArrays.length - 1) {
+                end_i = goPieces.x;
+                end_j = goPieces.y;
+            }
+            placeRecord[placeRecord.length] = {value: goPieces.pieceType, x: goPieces.x, y: goPieces.y, dead: goPieces.dead, num: placeRecord.length}
         }
     }
-    play_sound_dead_old = play_sound_dead;
-    not_first_load = true;
+
     reflash();
+}
+
+/**
+ * 弃子投降
+ */
+function giveUp() {
+    $.ajax({
+        type: "PUT",
+        url: base_gobang_url + "/gobang/defeat",
+        xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+        crossDomain: true,
+        data: {
+            id: go_vue.goId
+        },
+        dataType: "json",
+        success: function (data) {
+            if (data.success) {
+
+            } else {
+                alertLayer(data.msg);
+            }
+        },
+        error: function () {
+            alert("系统繁忙");
+        }
+    });
+
 }
 
 function placeChessRequest(x, y) {

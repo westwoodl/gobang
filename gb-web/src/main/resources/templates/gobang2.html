@@ -42,8 +42,9 @@
             display: flex;
             justify-content: space-between;
         }
+
         .radius_img {
-             border-radius:50%
+            border-radius: 50%
         }
 
         table {
@@ -108,7 +109,7 @@
                 </dl>
             </li>
             <li class="layui-nav-item">
-                <a href="javascript:comingSoon();">
+                <a href="javascript:showMsg();">
                     <i class="layui-icon layui-icon-dialogue" style="font-size: 18px; color: gray;"></i>
                     &nbsp;消息中心<span class="layui-badge">99+</span>
                 </a>
@@ -427,21 +428,23 @@
     <!--用户信息div-->
     <div id="user_detail_div" class="layui-anim layui-anim-scale" style="display: none;margin-top: 40px;">
         <div class="layui-card" style="box-shadow: 1px 1px 2px gray;width: 700px" v-if="user!=null">
-            <div class="layui-card-header" style="height: 120px;display: flex;justify-content: space-between;" >
+            <div class="layui-card-header" style="height: 120px;display: flex;justify-content: space-between;">
                 <div style="margin-top: 10px">
 
                     <img v-if="!isSuccess || user.img==null"
                          src="https://s1.ax1x.com/2020/04/06/GsWKDH.jpg"
-                          width="100px" height="100px" class="radius_img">
+                         width="100px" height="100px" class="radius_img">
                     <img v-else v-bind:src="user.img" width="100px" height="100px" class="radius_img">
 
-                    <span  v-if="isSuccess" style="font-size: 30px;margin-top: 60px;margin-left: 30px;">{{user.userName}}</span>
+                    <span v-if="isSuccess"
+                          style="font-size: 30px;margin-top: 60px;margin-left: 30px;">{{user.userName}}</span>
                 </div>
 
                 <div id="user_start_div"></div>
             </div>
             <div class="layui-card-body" style="font-size: 15px;padding-top: 10px">
-                <i class="layui-icon layui-icon-email" style="font-size: 18px; color: #1E9FFF;font-family: 'Consolas'"></i>
+                <i class="layui-icon layui-icon-email"
+                   style="font-size: 18px; color: #1E9FFF;font-family: 'Consolas'"></i>
                 &nbsp;{{user.account}}<br>
                 <i class="layui-icon layui-icon-key" style="font-size: 18px; color: #1E9FFF;"></i>
                 &nbsp;*************
@@ -475,13 +478,21 @@
                     </div>
                 </form>
                 <button type="button" class="layui-btn layui-btn-sm" onclick="showHandNum(this)">显示手数</button>
-                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="cleanChess()">清空棋盘</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="cleanChess()">清空棋盘
+                </button>
             </div>
             <div class="layui-card-body" style="height: 100px;margin-top: 30px">
-                <div id="slideTest4" class="demo-slider" ></div>
+                <div id="slideTest4" class="demo-slider"></div>
                 <div style="margin-top: 20px">
                     <span>第 </span><span id="hand_num_span">0/0</span><span> 手</span>
-                    <button type="button" class="layui-btn layui-btn-sm" style="float: right" onclick="backChessToThis()">回退到此处</button>
+                    <button type="button" class="layui-btn layui-btn-sm" style="float: right;margin-left: 10px" onclick="addPieces()">
+                        <i class="layui-icon"></i></button>
+                    <button type="button" class="layui-btn layui-btn-sm" style="float: right" onclick="cutPieces()">
+                        <i class="layui-icon"></i>
+                    </button>
+                    <button type="button" class="layui-btn layui-btn-sm" style="float: right"
+                            onclick="backChessToThis()">回退到此处
+                    </button>
                 </div>
             </div>
         </div>
@@ -506,6 +517,8 @@
 <script type="text/javascript" src="../static/myjs/gobang/place_event.js"></script>
 <!--围棋-->
 <script type="text/javascript" src="../static/myjs/go/go.js"></script>
+<!--聊天-->
+<script type="text/javascript" src="../static/myjs/msg/msg.js"></script>
 <!--layui-->
 <script src="../static/js/layui/layui.js" charset="utf-8"></script>
 <!--vue-->
@@ -513,24 +526,53 @@
 <script type="text/javascript" charset="utf-8">
 
     $(initSlider(0));
-    function initSlider(maxVal) {
-        $("#hand_num_span").html(maxVal+"/"+maxVal);
+
+    function initSlider(maxVal, curValue) {
+        if (curValue == null) {
+            curValue = maxVal;
+        }
+        $("#hand_num_span").html(curValue + "/" + maxVal);
         layui.use('slider', function () {
             let slider = layui.slider;
             slider.render({
                 elem: '#slideTest4'
-                ,min:0
-                ,value:maxVal
-                ,max: maxVal
-                ,change: function(value) {
+                , min: 0
+                , value: curValue
+                , max: maxVal
+                , change: function (value) {
                     if (value == null || isNaN(value)) {
                         return;
                     }
-                    $("#hand_num_span").html(value+"/"+(placeNum-1));
+                    $("#hand_num_span").html(value + "/" + (placeRecord.length));
                     reflash(value);
                 }
             });
         });
+    }
+
+    function getHandNumArr() {
+        let str = $("#hand_num_span").html();
+        str = str.replace("第 ", "").replace(" 手", "");
+        let result = []
+        result[0] = Number(str.split("/")[0]);
+        result[1] = Number(str.split("/")[1]);
+        return result;
+    }
+
+    function addPieces() {
+        let curNum = getHandNumArr()[0];
+        if (++curNum <= getHandNumArr()[1]) {
+            initSlider(placeRecord.length, curNum);
+            reflash(curNum);
+        }
+    }
+
+    function cutPieces() {
+        let curNum = getHandNumArr()[0];
+        if (--curNum >= 0) {
+            initSlider(placeRecord.length, curNum);
+            reflash(curNum);
+        }
     }
 
     $(function () {
@@ -562,6 +604,23 @@
     function comingSoon() {
         alertLayer("敬请期待");
         return false;
+    }
+
+
+    function showMsg() {
+        layui.use('layer', function () {
+            let layer = layui.layer;
+            layer.open({
+                type: 2,
+                title: '消息中心',
+                shadeClose: false,
+                shade: 0.5,
+                maxmin: false, //开启最大化最小化按钮
+                area: ['893px', '100%'],
+                resize: false,
+                content: 'http://localhost/templates/msg2.html'
+            });
+        });
     }
 </script>
 </body>

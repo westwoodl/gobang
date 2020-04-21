@@ -3,18 +3,16 @@ package com.xrc.gb.web.controller.game;
 import com.alibaba.fastjson.JSONObject;
 import com.xrc.gb.common.enums.DateFormatEnum;
 import com.xrc.gb.common.enums.PlaceResultTypeEnum;
-import com.xrc.gb.common.dto.GoContext;
-import com.xrc.gb.common.dto.GoPieces;
-import com.xrc.gb.common.dto.GoPlaceReq;
-import com.xrc.gb.common.dto.GoQueryResp;
+import com.xrc.gb.common.dto.go.GoContext;
+import com.xrc.gb.common.dto.go.GoPieces;
+import com.xrc.gb.common.dto.go.GoPlaceReq;
+import com.xrc.gb.common.dto.go.GoQueryResp;
 import com.xrc.gb.common.util.DateFormatUtils;
 import com.xrc.gb.common.util.PageQueryResultResp;
 import com.xrc.gb.service.game.GoBangGameServiceImpl;
 import com.xrc.gb.common.util.PageQueryReq;
-import com.xrc.gb.service.game.RoomServiceImpl;
 import com.xrc.gb.service.user.UserService;
 import com.xrc.gb.web.common.JSONObjectResult;
-import com.xrc.gb.web.common.PageResult;
 import com.xrc.gb.web.controller.AbstractController;
 import com.xrc.gb.web.controller.vo.GoBangGameVO;
 import com.xrc.gb.web.controller.vo.GoRespVO;
@@ -24,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,6 +40,17 @@ public class GameGoBangController extends AbstractController {
 
     @Resource
     private UserService userService;
+
+
+    @PutMapping("/defeat")
+    public JSONObject gobangDefeat(@RequestParam("id") Integer goId) {
+        goBangGameService.defeat(goId, getUserId());
+        GoQueryResp goQueryResp = goBangGameService.queryGame(goId);
+        RoomGameVO roomGameVO = new RoomGameVO();
+        roomGameVO.setGoQueryResp(goQueryResp);
+        WebSocketServer.send(roomGameVO, goQueryResp.getBlackUserId(), goQueryResp.getWhiteUserId());
+        return JSONObjectResult.create().success();
+    }
 
     @GetMapping
     public JSONObject queryPage() {

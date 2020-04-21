@@ -1,4 +1,4 @@
-package com.xrc.gb.common.dto;
+package com.xrc.gb.common.dto.go;
 
 import lombok.Data;
 

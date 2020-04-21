@@ -5,7 +5,7 @@ var font_size = 13;
 
 // 图片
 var img = new Image();
-img.src = "../../static/image/go/board.jpg";
+img.src = "../../static/image/go/board1.jpg";
 img.height = broad_size;
 img.width = broad_size;
 
@@ -42,7 +42,6 @@ w3_img.height = bSize - 1;
 
 
 var placeRecord = []; // x,y,value,num,dead
-var placeNum = 1;
 var show_hand_num = false;
 
 var chessBord = [];//棋盘 19*19
@@ -50,9 +49,7 @@ initChessArry();
 
 // 下棋
 function place(i, j, one_or_two) {
-    placeRecord[placeNum - 1] = {value: one_or_two, x: i, y: j, dead: false, num: placeNum}
-    initSlider(placeNum);
-    placeNum++;
+    placeRecord[placeRecord.length] = {value: one_or_two, x: i, y: j, dead: false, num: placeRecord.length}
 }
 
 // 杀棋
@@ -206,6 +203,7 @@ function oneStep(i, j, isWhite, bSize, xuanting, hand_num) {
             context.fillStyle = '#ffffff';
         }
         context.font = 20 + "px Arial";
+        hand_num = hand_num + 1;
         if (hand_num < 10) {
             context.fillText(hand_num, bSize + i * bSize - 6, bSize + j * bSize + 6);
         } else if (hand_num >= 10 && hand_num < 100) {
@@ -244,82 +242,63 @@ function initChessArry() {
         }
     }
     placeRecord = [];
-    placeNum = 1;
 }
 
 function cleanChess() {
     initChessArry();
     reflash();
-    initSlider(0);
 }
 
 /**
  * 回退棋盘
  */
 let chessBord2;
-let hand_num2;
 let placeRecord2;
 
 function backChessToThis() {
-    if (chessBord2 != null && hand_num2 != null && placeRecord2 != null) {
+    if (chessBord2 != null && placeRecord2 != null) {
         placeRecord = placeRecord2;
-        placeNum = hand_num2;
         chessBord = chessBord2;
+        me_of_2 = placeRecord[placeRecord.length - 1].value === 2;
         reflash();
-        initSlider(placeNum);
         chessBord2 = null;
-        hand_num2 = null;
         placeRecord2 = null;
+        initSlider(placeRecord.length);
     }
 }
 
 
 function reflash(end) {
     drawChessBoard(img, line_num, broad_size, font_size);
-    if (placeRecord.length > 200 && !show_hand_num && end == null) {
-        for (let k = 0; k < line_num; k++) {
-            for (let l = 0; l < line_num; l++) {
-                if (chessBord[k][l] === 2) {
-                    oneStep(k, l, true, bSize)
-                }
-                if (chessBord[k][l] === 1) {
-                    oneStep(k, l, false, bSize)
-                }
-            }
+    if (end == null || end === placeRecord.length) {
+        for (let i = 0; i < placeRecord.length; i++) {
+            if (!placeRecord[i].dead || i === end - 1)
+                oneStep(placeRecord[i].x, placeRecord[i].y, placeRecord[i].value === 2, bSize, false, placeRecord[i].num);
         }
-    } else {
-        if (end == null || end === placeRecord.length) {
-            for (let i = 0; i < placeRecord.length; i++) {
-                if (!placeRecord[i].dead || i === end - 1)
-                    oneStep(placeRecord[i].x, placeRecord[i].y, placeRecord[i].value === 2, bSize, false, placeRecord[i].num);
-            }
-            return;
+        return;
+    }
+    // 回退棋盘
+    chessBord2 = [];
+    placeRecord2 = [];
+    for (let i = 0; i < chessBord.length; i++) {
+        chessBord2[i] = [];
+        for (let j = 0; j < chessBord.length; j++) {
+            chessBord2[i][j] = 0;
         }
-        // 回退棋盘
-        chessBord2 = [];
-        hand_num2 = 1;
-        placeRecord2 = [];
-        for (let i = 0; i < chessBord.length; i++) {
-            chessBord2[i] = [];
-            for (let j = 0; j < chessBord.length; j++) {
-                chessBord2[i][j] = 0;
-            }
+    }
+    for (let i = 0; i < end; i++) {
+        goStepOne(placeRecord[i].x, placeRecord[i].y, placeRecord[i].value, chessBord2, placeRecord2, false);
+        placeRecord2[placeRecord2.length] = {
+            value: placeRecord[i].value,
+            x: placeRecord[i].x,
+            y: placeRecord[i].y,
+            dead: false,
+            num: placeRecord2.length
         }
-        for (let i = 0; i < end; i++) {
-            goStepOne(placeRecord[i].x, placeRecord[i].y, placeRecord[i].value, chessBord2, placeRecord2, false);
-            placeRecord2[hand_num2 - 1] = {
-                value: placeRecord[i].value,
-                x: placeRecord[i].x,
-                y: placeRecord[i].y,
-                dead: false,
-                num: hand_num2
-            }
-            hand_num2++;
-        }
-        for (let i = 0; i < end; i++) {
-            if (!placeRecord2[i].dead || i === end - 1)
-                oneStep(placeRecord2[i].x, placeRecord2[i].y, placeRecord2[i].value === 2, bSize, false, placeRecord2[i].num);
-        }
+    }
+    for (let i = 0; i < end; i++) {
+        if (!placeRecord2[i].dead || i === end - 1)
+            oneStep(placeRecord2[i].x, placeRecord2[i].y, placeRecord2[i].value === 2, bSize, false, placeRecord2[i].num);
     }
 }
 

@@ -54,7 +54,7 @@
         }
     </style>
     <link rel="icon" href="https://s1.ax1x.com/2020/04/06/GszKsJ.png" >
-    <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.5.6/css/layui.css" media="all">
+    <link rel="stylesheet" href="../static/js/layui/css/layui.css" media="all">
 </head>
 <body bgcolor="#2B2B2B">
 
@@ -107,6 +107,7 @@
                     <button type="button" class="layui-btn layui-btn-sm" onclick="startGameRequest()"  v-if="room.roomStatus==1">开始五子棋</button>
                     <button type="button" class="layui-btn layui-btn-sm" onclick="startGameRequest(1)"  v-if="room.roomStatus==1">开始围棋</button>
                     <button type="button" class="layui-btn layui-btn-sm" onclick="giveUp()"  v-if="room.roomStatus==2">弃子认输</button>
+                    <button type="button" class="layui-btn layui-btn-sm" onclick="showHandNum(this)" v-if="room.roomStatus==2">显示手数</button>
                     <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="leaveRoomRequest()">
                         离开房间
                     </button>

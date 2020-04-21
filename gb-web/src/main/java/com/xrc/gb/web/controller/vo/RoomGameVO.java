@@ -1,6 +1,6 @@
 package com.xrc.gb.web.controller.vo;
 
-import com.xrc.gb.common.dto.GoQueryResp;
+import com.xrc.gb.common.dto.go.GoQueryResp;
 import com.xrc.gb.repository.domain.go.RoomDO;
 import lombok.Data;
 

@@ -1,8 +1,8 @@
 package com.xrc.gb.service.game;
 
 import com.xrc.gb.common.enums.PlaceResultTypeEnum;
-import com.xrc.gb.common.dto.GoPlaceReq;
-import com.xrc.gb.common.dto.GoQueryResp;
+import com.xrc.gb.common.dto.go.GoPlaceReq;
+import com.xrc.gb.common.dto.go.GoQueryResp;
 import com.xrc.gb.common.util.PageQueryReq;
 import com.xrc.gb.common.util.PageQueryResultResp;
 

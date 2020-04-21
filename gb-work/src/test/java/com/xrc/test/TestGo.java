@@ -1,11 +1,7 @@
 package com.xrc.test;
 
-import com.xrc.gb.common.dto.GoContext;
-import com.xrc.gb.common.dto.GoPieces;
 import com.xrc.gb.work.game.WeiQiGameRunner;
 import org.junit.Test;
-
-import java.util.ArrayList;
 
 /**
  * @author xu rongchao

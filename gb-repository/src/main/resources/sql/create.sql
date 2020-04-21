@@ -57,4 +57,15 @@ create table gb_room (
     room_password varchar(20) comment '房间密码'
 );
 create index query_room_by_create_user_index on gb_room(create_user);
-insert into gb_room values (1, null,now(),1,1,2,null,null,1,'fuckYouRoom','123');
+-- insert into gb_room values (1, null,now(),1,1,2,null,null,1,'fuckYouRoom','123');
+
+
+-- 好友聊天表
+drop table if exists gb_chat;
+create table gb_chat(
+    chat_id int primary key auto_increment,
+    create_time timestamp not null default now(),
+    modify_time timestamp,
+    user_user_date
+
+)

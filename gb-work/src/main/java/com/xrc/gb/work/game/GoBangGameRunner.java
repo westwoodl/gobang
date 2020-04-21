@@ -1,7 +1,7 @@
 package com.xrc.gb.work.game;
 
-import com.xrc.gb.common.dto.GoContext;
-import com.xrc.gb.common.dto.GoPieces;
+import com.xrc.gb.common.dto.go.GoContext;
+import com.xrc.gb.common.dto.go.GoPieces;
 import com.xrc.gb.common.enums.GameTypeEnum;
 import com.xrc.gb.work.AbstractGoGameRunner;
 import com.xrc.gb.work.GoGameFactory;

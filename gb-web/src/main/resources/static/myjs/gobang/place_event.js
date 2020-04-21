@@ -4,56 +4,75 @@ var me_of_2 = true;
 // 最后红点标识
 var end_i = -1;
 var end_j = -1;
-// 我，下棋
-$(function () {
-    chess.onclick = function (e) {
-        if (game_mode === 3 || game_mode === 4) {
-            if (go_game_is_end || !is_me) {
-                alertLayer(go_vue.goStatus);
-                return;
-            }
-        }
 
-        let i = getArrIndex(e.offsetX);
-        let j = getArrIndex(e.offsetY);
-        if (i > -1 && j > -1 && i < chessBord.length && j < chessBord.length && chessBord[i][j] === 0) {
-            if (game_mode === 1) {
-                // todo
+/**
+ * 在棋盘上下棋
+ * role 1黑棋 2白棋
+ */
+function placeOneChess(i, j, role) {
+    if (i > -1 && j > -1 && i < chessBord.length && j < chessBord.length && chessBord[i][j] === 0) {
+        if (game_mode === 1) {
+            // todo
+            return;
+        }
+        //围棋打谱
+        if (game_mode === 2) {
+            if (!goStepOne(i, j, me_of_2 ? 1 : 2, chessBord, placeRecord)) {
                 return;
             }
-            //围棋打谱
-            if (game_mode === 2) {
-                if (!goStepOne(i, j, me_of_2 ? 1 : 2, chessBord, placeRecord)) {
-                    return;
-                }
-                place(i, j, me_of_2 ? 1 : 2);
-                me_of_2 = !me_of_2;
-                end_i = i;
-                end_j = j;
-                reflash();
-                playSound();
-                return;
-            }
-            // 围棋落子
-            if (game_mode === 4) {
-                is_me = false;
-                if (!goStepOne(i, j, my_role, chessBord, placeRecord)) {
-                    return;
-                }
-            }
-            // 五子棋落子
-            if (game_mode === 3) {
-                is_me = false;
-                chessBord[i][j] = my_role; //我，已占位置
-            }
-            placeRecord[placeNum - 1] = {value: my_role, x: i, y: j, dead: false, num: placeNum}
-            placeNum++;
+            place(i, j, me_of_2 ? 1 : 2);
+            me_of_2 = !me_of_2;
             end_i = i;
             end_j = j;
             reflash();
+            initSlider(placeRecord.length);
             playSound();
-            placeChessRequest(i, j);
+            return;
         }
+        // 围棋落子
+        if (game_mode === 4) {
+            if (role === my_role) {
+                is_me = false;
+            }
+            if (!goStepOne(i, j, role, chessBord, placeRecord)) {
+                if (role === my_role) {
+                    is_me = true;
+                }
+                return;
+            }
+        }
+        // 五子棋落子
+        if (game_mode === 3) {
+            if (role === my_role) {
+                is_me = false;
+            }
+            chessBord[i][j] = role; //我，已占位置
+        }
+        placeRecord[placeRecord.length] = {value: role, x: i, y: j, dead: false, num: placeRecord.length}
+        end_i = i;
+        end_j = j;
+        reflash();
+        playSound();
+        return true;
+    }
+}
+// 我，下棋
+$(function () {
+    chess.onclick = function (e) {
+        let i = getArrIndex(e.offsetX);
+        let j = getArrIndex(e.offsetY);
+
+        if (game_mode === 3 || game_mode === 4) {
+            if (go_game_is_end || !is_me) {
+                // alertLayer(go_vue.goStatus);
+                return;
+            }
+            if(placeOneChess(i, j, my_role)) {
+                placeChessRequest(i, j);
+                return;
+            }
+        }
+        placeOneChess(i, j);
     };
 //悬停提示，防止ij不动时re flash
     var las_move_i = -1;

@@ -1,7 +1,7 @@
 package com.xrc.gb.work;
 
-import com.xrc.gb.common.dto.GoContext;
-import com.xrc.gb.common.dto.GoPieces;
+import com.xrc.gb.common.dto.go.GoContext;
+import com.xrc.gb.common.dto.go.GoPieces;
 import com.xrc.gb.common.enums.PieceTypeEnum;
 import com.xrc.gb.common.enums.PlaceResultTypeEnum;
 import com.xrc.gb.common.util.CheckParameter;
