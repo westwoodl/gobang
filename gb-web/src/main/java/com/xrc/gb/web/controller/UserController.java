@@ -5,14 +5,10 @@ import com.xrc.gb.repository.domain.user.UserDO;
 import com.xrc.gb.service.user.UserService;
 import com.xrc.gb.web.common.JSONObjectResult;
 import com.xrc.gb.web.common.OnlineCountUtils;
-import com.xrc.gb.web.controller.ws.WebSocketServer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 

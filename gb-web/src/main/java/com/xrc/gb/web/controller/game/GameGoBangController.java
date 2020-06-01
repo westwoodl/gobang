@@ -17,7 +17,7 @@ import com.xrc.gb.web.controller.AbstractController;
 import com.xrc.gb.web.controller.vo.GoBangGameVO;
 import com.xrc.gb.web.controller.vo.GoRespVO;
 import com.xrc.gb.web.controller.vo.RoomGameVO;
-import com.xrc.gb.web.controller.ws.WebSocketServer;
+import com.xrc.gb.web.ws.WebSocketServer;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

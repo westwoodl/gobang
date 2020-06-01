@@ -4,7 +4,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="format-detection" content="telephone=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta content="yes" name="apple-mobile-web-app-capable">
@@ -18,34 +19,59 @@
     <meta name="x5-fullscreen" content="true">
     <meta name="x5-page-mode" content="app">
     <base target="_blank">
-    <title>会话_聊天机器人</title>
+    <title>消息中心</title>
     <link rel="stylesheet" href="../static/css/chat.css">
     <script src="../static/js/jQuery/jQuery.js"></script>
+    <script src="../static/myjs/msg/msg.js"></script>
+
+    <style type='text/css'>
+        /** 滚动条 **/
+        ::-webkit-scrollbar {
+            width: 1px;
+            height: 5px;
+        }
+
+        ::-webkit-scrollbar-button:vertical {
+            display: none;
+        }
+
+        ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner {
+            background-color: rgba(245,245,245,0);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            border-radius: 0;
+            background-color: rgba(96, 98, 100, .3);
+        }
+
+        ::-webkit-scrollbar-thumb:vertical:hover {
+            background-color: rgba(0, 0, 0, .35);
+        }
+
+        ::-webkit-scrollbar-thumb:vertical:active {
+            background-color: rgba(0, 0, 0, .38);
+        }
+    </style>
 </head>
 <body lang="zh" style="background-color: whitesmoke">
-<div class="abs cover contaniner" >
-    <div class="abs cover pnl" >
-<!--        <div class="top" style="height: 30px">美食家老八</div>-->
+<div class="abs cover contaniner">
+    <div class="abs cover pnl">
+        <!--        <div class="top" style="height: 30px">美食家老八</div>-->
         <div class="abs cover pnl-body" id="pnlBody">
             <div class="abs cover pnl-left">
                 <div class="abs cover pnl-msgs scroll" id="show">
-                    <div class="msg min time" id="histStart">加载历史消息</div>
-                    <div class="pnl-list" id="hists">
-                        <!-- 历史消息 -->
-                    </div>
+<!--                    <div class="msg min time" id="histStart">你进入房间...</div>-->
+<!--                    <div class="pnl-list" id="hists">-->
+<!--                        &lt;!&ndash; 历史消息 &ndash;&gt;-->
+<!--                    </div>-->
                     <div class="pnl-list" id="msgs">
-                        <div class="msg robot">
-                            <div class="msg-left" >
-                                <div class="msg-host photo" title="机器人" style="background-image: url(https://s1.ax1x.com/2020/04/06/GsWKDH.jpg)"></div>
-                                <div class="msg-ball" title="今天 17:52:06">你好，我是只能打字的聊天机器人                <br><br>您是想要了解哪些方面呢？</div>
-                            </div>
-                        </div>
-                        <div class="msg guest">
-                            <div class="msg-right">
-                                <div class="msg-host headDefault"></div>
-                                <div class="msg-ball" title="今天 17:52:06">你好</div>
-                            </div>
-                        </div>
+<!--                        <div class="msg robot">-->
+<!--                            <div class="msg-left" worker="&nbsp;系统提示">-->
+<!--                                <div class="msg-host photo" title="机器人"-->
+<!--                                     style="background-image: url(https://s1.ax1x.com/2020/04/06/GsWKDH.jpg)" ></div>-->
+<!--                                <div class="msg-ball" >欢迎来到聊天大厅</div>-->
+<!--                            </div>-->
+<!--                        </div>-->
                     </div>
                     <div class="pnl-list hide" id="unreadLine">
                         <div class="msg min time unread">未读消息</div>
@@ -53,11 +79,16 @@
                 </div>
                 <div class="abs bottom pnl-text">
                     <div class="abs top pnl-warn" id="pnlWarn">
-                        <div class="fl btns rel pnl-warn-free">
-                            <img src="https://s1.ax1x.com/2020/04/06/GsWKDH.jpg" class="kh warn-btn" title="表情" id="emojiBtn" />
-                            <img src="https://s1.ax1x.com/2020/04/06/GsWKDH.jpg" class="kh warn-btn" title="截屏" id="emojiBtn" />
-                            <img src="https://s1.ax1x.com/2020/04/06/GsWKDH.jpg" class="kh warn-btn" title="图片" id="emojiBtn" />
-                            <img src="https://s1.ax1x.com/2020/04/06/GsWKDH.jpg" class="kh warn-btn" title="保存" id="emojiBtn" />
+                        <div class="fl btns rel pnl-warn-free" id="currentNum">
+<!--                            <img src="https://s1.ax1x.com/2020/04/06/GsWKDH.jpg" class="kh warn-btn" title="表情"-->
+<!--                                 id="emojiBtn"/>-->
+<!--                            <img src="https://s1.ax1x.com/2020/04/06/GsWKDH.jpg" class="kh warn-btn" title="截屏"-->
+<!--                                 id="emojiBtn"/>-->
+<!--                            <img src="https://s1.ax1x.com/2020/04/06/GsWKDH.jpg" class="kh warn-btn" title="图片"-->
+<!--                                 id="emojiBtn"/>-->
+<!--                            <img src="https://s1.ax1x.com/2020/04/06/GsWKDH.jpg" class="kh warn-btn" title="保存"-->
+<!--                                 id="emojiBtn"/>-->
+                            当前在线人数 0
                         </div>
                     </div>
                     <div class="abs cover pnl-input">
@@ -66,8 +97,10 @@
                             <ul class="atcom" id="atcom"></ul>
                         </div>
                     </div>
-                    <div class="abs br pnl-btn" id="submit" style="background-color: rgb(32, 196, 202); color: rgb(255, 255, 255);" onclick="SendMsg()">发送</div>
-                    <div class="pnl-support" id="copyright"><a>按enter发送</a></div>
+                    <div class="abs br pnl-btn" id="submit"
+                         style="background-color: rgb(32, 196, 202); color: rgb(255, 255, 255);" onclick="SendMsg()">发送
+                    </div>
+                    <div class="pnl-support" id="copyright"><a>按ctrl+enter发送</a></div>
                 </div>
             </div>
             <div class="abs right pnl-right">
@@ -93,59 +126,170 @@
     </div>
 </div>
 <script type="text/javascript">
-    let hh =false;
-    // 发送信息
-    function SendMsg()
-    {
-        if (hh) {
-            receiveMsg();
-            hh= !hh;
-            return;
-        }
-        hh= !hh;
+    /*
+       ctrl + enter 发送
+   */
+    $(window).keydown(function (event) {
+        // 监听esc键退出全屏
+        if (event.keyCode === 27) {
 
-        var text = document.getElementById("text");
-        if (text.value == "" || text.value == null)
-        {
         }
-        else
-        {
-            AddMsg('default', SendMsgDispose(text.value));
-            text.value = "";
+        // 监听 Ctrl + Enter 可全屏查看
+        if (event.ctrlKey && event.keyCode === 13) {
+            SendMsg();
         }
+    });
+
+    let text = document.getElementById("text");
+    $(function () {
+        document.getElementById("text").focus();
+        text.value = "";
+    })
+
+    // 发送信息
+    function SendMsg() {
+        if (text.value !== "" && text.value != null) {
+            if (isConnect) {
+                messageSocket.send(text.value);
+                AddMsg('default', filterContent(text.value), new Date().toLocaleString(), user.img);
+            } else {
+                alert("系统繁忙");
+            }
+        }
+        text.value = "";
     }
-    function receiveMsg() {
-        AddMsg('美食家老八', SendMsgDispose(text.value));
-    }
-    // 发送的信息处理
-    function SendMsgDispose(detail)
-    {
+
+    // 发送的信息处理 过滤空字符
+    function filterContent(detail) {
+        if (detail.replace("\n", '') === '') {
+            return '';
+        }
+        if (detail.replace(" ", '') === '') {
+            return '';
+        }
         detail = detail.replace("\n", "<br>").replace(" ", "&nbsp;")
         return detail;
     }
 
-    // 增加信息
-    function AddMsg(user,content)
-    {
-        var str = CreadMsg(user, content);
-        var msgs = document.getElementById("msgs");
-        msgs.innerHTML = msgs.innerHTML + str;
+
+    /*
+        增加信息
+        user === me_user 为自己的消息 否则为别人的消息 title和 img有默认值
+     */
+    function AddMsg(user, content, title, img) {
+        if (content === null || content === '') {
+            alert("请输入消息");
+            return;
+        }
+        let str = creadMsg(user, content, title, img);
+        addStrToMessage(str);
     }
 
+    function addStrToMessage(str) {
+        $("#msgs").append(str);
+        let e=document.getElementById("show");
+        e.scrollTop=e.scrollHeight;
+    }
+
+    //我
+    let me_user = 'default';
+
     // 生成内容
-    function CreadMsg(user, content)
-    {
-        var str = "";
-        if(user == 'default')
-        {
-            str = "<div class=\"msg guest\"><div class=\"msg-right\"><div class=\"msg-host headDefault\"></div><div class=\"msg-ball\" title=\"今天 17:52:06\">" + content +"</div></div></div>"
+    function creadMsg(user, content, title, img) {
+        let str;
+        if (title == null) {
+            title = new Date().toLocaleString();
         }
-        else
-        {
-            str = "<div class=\"msg robot\"><div class=\"msg-left\" worker=\"" + user + "\"><div class=\"msg-host photo\" style=\"background-image: url(https://s1.ax1x.com/2020/04/06/GsWKDH.jpg)\"></div><div class=\"msg-ball\" title=\"今天 17:52:06\">" + content + "</div></div></div>";
+        if (img == null) {
+            img = 'https://s1.ax1x.com/2020/04/06/GsWKDH.jpg';
+        }
+        if (user === me_user) {
+            str = "<div class=\"msg guest\"><div class=\"msg-right\"><div class=\"msg-host photo\" " +
+                "style=\"background-image: url("+img+")\"></div><div class=\"msg-ball\" title=\""+ title +"\">" + content + "</div></div></div>";
+        } else {
+            str = "<div class=\"msg robot\"><div class=\"msg-left\" worker=\"&nbsp;" + user + "\"><div class=\"msg-host photo\" " +
+                "style=\"background-image: url("+img+")\"></div><div class=\"msg-ball\" title=\""+ title +"\">" + content + "</div></div></div>";
         }
         return str;
     }
+
+    var chat_type = 0; // 聊天大厅 否则为用户id
+
+    $(function () {
+        if(messagePageLoadUser()) {
+            connectMessageWebSocket();
+        }
+    })
+    var base_url = "http://localhost:8080";
+    var user;
+    function messagePageLoadUser() {
+        let isSuccess = false;
+        $.ajax({
+            async: false,
+            type: "GET",
+            url: base_url + "/user/load",
+            xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+            crossDomain: true,
+            data: {},
+            dataType: "json",
+            success: function (res) {
+                if (res.success) {
+                    user = res.data;
+                    isSuccess = true;
+                } else {
+                    alert(res.msg);
+                }
+            },
+            error: function () {
+                alert("系统繁忙");
+            }
+        });
+        return isSuccess;
+    }
+
+    var isConnect = false;
+    var messageSocket;
+
+    function connectMessageWebSocket() {
+        if (typeof (WebSocket) == "undefined") {
+            alert("您的浏览器不支持，建议使用谷歌浏览器");
+            return;
+        }
+        let socketUrl = base_url + "/socket/square/message/" + user.id;
+        socketUrl = socketUrl.replace("https", "ws").replace("http", "ws");
+        messageSocket = new WebSocket(socketUrl);
+        //打开事件
+        messageSocket.onopen = function () {
+            console.log("进入连接");
+            isConnect = true;
+        };
+        //获得消息事件
+        messageSocket.onmessage = function (msg) {
+            console.log("来消息了：" + msg);
+            let data = JSON.parse(msg.data);
+
+            $("#currentNum").html("当前在线人数&nbsp;" + data.num);
+
+            if (data.messageType === 1 || data.messageType === 2) {
+                addStrToMessage("<div class=\"msg min time\" id=\"histStart\">" + data.message + "</div>")
+            }
+            if (data.messageType === 3) {
+                AddMsg(data.userDO.userName, filterContent(data.message), new Date(data.time).toLocaleString(), data.userDO.img);
+            }
+        };
+        //关闭事件
+        messageSocket.onclose = function () {
+            console.log("会话已关闭");
+            isConnect = false;
+        };
+
+        //发生了错误事件
+        messageSocket.onerror = function () {
+            console.log("websocket发生了错误");
+            isConnect = false;
+        }
+    }
+
 </script>
 </body>
 </html>

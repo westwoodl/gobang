@@ -1,4 +1,4 @@
-package com.xrc.gb.web.controller.ws;
+package com.xrc.gb.web.ws;
 
 import com.xrc.gb.web.common.JSONObjectResult;
 import com.xrc.gb.web.common.OnlineCountUtils;
@@ -10,18 +10,16 @@ import org.springframework.stereotype.Component;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author xu rongchao
- * @date 2020/4/18 9:27
+ * @date 2020/4/7 14:12
  */
-@ServerEndpoint("/socket/square/message/{userId}")
+@ServerEndpoint("/socket/go/{userId}")
 @Component
 @Slf4j
-public class MessageSocketServer {
-
+public class WebSocketServer {
     private static final ConcurrentHashMap<Integer, Session> webSocketMap = new ConcurrentHashMap<>();
 
     /**
@@ -77,15 +75,6 @@ public class MessageSocketServer {
                 if (session != null) {
                     session.getAsyncRemote().sendText(message);
                 }
-            }
-        }
-    }
-
-    public static void sendAll(String message) {
-        for (Map.Entry<Integer, Session> e : webSocketMap.entrySet()) {
-            Session session = e.getValue();
-            if (session != null) {
-                session.getAsyncRemote().sendText(message);
             }
         }
     }

@@ -18,7 +18,7 @@ import com.xrc.gb.web.common.JSONObjectResult;
 import com.xrc.gb.web.controller.AbstractController;
 import com.xrc.gb.web.controller.vo.RoomCreateVO;
 import com.xrc.gb.web.controller.vo.RoomGameVO;
-import com.xrc.gb.web.controller.ws.WebSocketServer;
+import com.xrc.gb.web.ws.WebSocketServer;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

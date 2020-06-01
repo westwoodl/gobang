@@ -95,7 +95,7 @@ window.onload = function () {
  */
 function drawChessBoard(img, line_num, broad_size, font_size) {
     context.drawImage(img, 0, 0, broad_size, broad_size);
-    context.strokeStyle = '#000000';
+    context.strokeStyle = 'rgb(0,0,0)';
     for (var i = 0; i < line_num; i++) {
         if (i === 0 || i === line_num - 1) { //画粗线
             context.beginPath();

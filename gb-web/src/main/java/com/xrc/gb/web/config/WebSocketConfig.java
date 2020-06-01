@@ -1,5 +1,8 @@
 package com.xrc.gb.web.config;
 
+import com.xrc.gb.service.user.UserService;
+import com.xrc.gb.web.ws.MessageSocketServer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
@@ -17,4 +20,9 @@ public class WebSocketConfig {
         return new ServerEndpointExporter();
     }
 
+
+    @Autowired
+    public void setMessageSocketUserService(UserService userService) {
+        MessageSocketServer.userService = userService;
+    }
 }

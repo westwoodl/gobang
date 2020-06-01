@@ -291,7 +291,7 @@ function loginOrRegister() {
 
         '<div  style="margin-top: 10px;display: flex">' +
         '<i class="layui-icon layui-icon-key" style="margin-right: 10px;margin-top:5px;font-size: 30px; color: gray"></i>' +
-        '<input type="text" id="pwd_input" name="title" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">' +
+        '<input type="password" id="pwd_input" name="title" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">' +
         '</div>';
 
     let register_user_html =

@@ -114,12 +114,12 @@
                     &nbsp;消息中心<span class="layui-badge">99+</span>
                 </a>
             </li>
-            <li class="layui-nav-item">
-                <a href="javascript:comingSoon();">
-                    <i class="layui-icon layui-icon-windows" style="font-size: 18px; color: gray;"></i>
-                    &nbsp;对战电脑
-                </a>
-            </li>
+<!--            <li class="layui-nav-item">-->
+<!--                <a href="javascript:comingSoon();">-->
+<!--                    <i class="layui-icon layui-icon-windows" style="font-size: 18px; color: gray;"></i>-->
+<!--                    &nbsp;对战电脑-->
+<!--                </a>-->
+<!--            </li>-->
             <li class="layui-nav-item layui-this">
                 <a href="">
                     <i class="layui-icon layui-icon-form" style="font-size: 18px; color: gray;"></i>
@@ -158,12 +158,12 @@
                     </a></dd>
                 </dl>
             </li>
-            <li class="layui-nav-item">
-                <a href="javascript:searchUser();">
-                    <i class="layui-icon layui-icon-search" style="font-size: 18px; color: gray;"></i>
-                    &nbsp;用户查找
-                </a>
-            </li>
+<!--            <li class="layui-nav-item">-->
+<!--                <a href="javascript:searchUser();">-->
+<!--                    <i class="layui-icon layui-icon-search" style="font-size: 18px; color: gray;"></i>-->
+<!--                    &nbsp;用户查找-->
+<!--                </a>-->
+<!--            </li>-->
             <li class="layui-nav-item">
                 <a href="javascript:loginOrRegister();">
                     <i class="layui-icon layui-icon-light" style="font-size: 18px; color: gray;"></i>
@@ -478,16 +478,16 @@
                     </div>
                 </form>
                 <button type="button" class="layui-btn layui-btn-sm" onclick="showHandNum(this)">显示手数</button>
-                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="cleanChess()">清空棋盘
-                </button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="cleanChess()">清空棋盘</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="changeBoard()">更换棋盘</button>
             </div>
             <div class="layui-card-body" style="height: 100px;margin-top: 30px">
                 <div id="slideTest4" class="demo-slider"></div>
                 <div style="margin-top: 20px">
                     <span>第 </span><span id="hand_num_span">0/0</span><span> 手</span>
-                    <button type="button" class="layui-btn layui-btn-sm" style="float: right;margin-left: 10px" onclick="addPieces()">
+                    <button type="button" class="layui-btn layui-btn-sm" style="float: right;margin-left: 10px" title="下一手" onclick="addPieces()">
                         <i class="layui-icon"></i></button>
-                    <button type="button" class="layui-btn layui-btn-sm" style="float: right" onclick="cutPieces()">
+                    <button type="button" class="layui-btn layui-btn-sm" style="float: right" title="上一手" onclick="cutPieces()">
                         <i class="layui-icon"></i>
                     </button>
                     <button type="button" class="layui-btn layui-btn-sm" style="float: right"
@@ -524,6 +524,33 @@
 <!--vue-->
 <script src="../static/js/vue/vue.min.js"></script>
 <script type="text/javascript" charset="utf-8">
+    let board_img_arr = [];
+    $(function () {
+        // let img1 = new Image();
+        // img1.src = "../../static/image/go/board.jpg";
+        // img1.height = broad_size;
+        // img1.width = broad_size;
+        let img2 = new Image();
+        img2.src = "../../static/image/go/board2.jpg";
+        img2.height = broad_size;
+        img2.width = broad_size;
+        // let img3 = new Image();
+        // img3.src = "../../static/image/go/board3.jpg";
+        // img3.height = broad_size;
+        // img3.width = broad_size;
+
+        board_img_arr[0] = img;
+        board_img_arr[1] = img2;
+        // img = img2;
+    });
+    let board_img_index = 0;
+    function changeBoard() {
+        if (++board_img_index >= board_img_arr.length) {
+            board_img_index = 0;
+        }
+        img = board_img_arr[board_img_index];
+        reflash();
+    }
 
     $(initSlider(0));
 
@@ -576,7 +603,7 @@
     }
 
     $(function () {
-        game_mode = 2;
+        // game_mode = 2;
     });
 
     var base_gobang_url = "http://localhost:8080";
@@ -608,6 +635,9 @@
 
 
     function showMsg() {
+        if (!isLogin()) {
+            return;
+        }
         layui.use('layer', function () {
             let layer = layui.layer;
             layer.open({
@@ -618,7 +648,7 @@
                 maxmin: false, //开启最大化最小化按钮
                 area: ['893px', '100%'],
                 resize: false,
-                content: 'http://localhost/templates/msg2.html'
+                content: 'http://localhost/templates/msg2.html?userId=' + user_vue.user.id
             });
         });
     }

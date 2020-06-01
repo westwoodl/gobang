@@ -1,4 +1,4 @@
-package com.xrc.gb.web.controller.ws;
+package com.xrc.gb.web.ws;
 
 /**
  * @author xu rongchao

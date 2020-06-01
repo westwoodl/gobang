@@ -200,6 +200,7 @@ public class WeiQiGameRunner extends AbstractGoGameRunner implements Initializin
         }
 
         // type 1. black 2. white
+        @Deprecated
         private int count_qi(int i, int j, int type, int[][] arrs) {
             if (isOut(i, j)) {
                 return 0;
